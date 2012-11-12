@@ -26,6 +26,16 @@ class TransmissionFormatNode(base.Base):
         DUPLICITY_ZERO_OR_MORE: "({match})*",
         DUPLICITY_FIXED: "({match}){{{count}}}"
     }
+    DUPLICITY_JOIN_TEMPLATES = {
+        #~ DUPLICITY_ONE: "(?P<{key0}>)(?P<{key1}>{match})",
+        #~ DUPLICITY_ONE_OR_MORE: "(?P<{key0}>({match}{sep})*)(?P<{key1}>{match})",
+        #~ DUPLICITY_ZERO_OR_MORE: "((?P<{key0}>({match}{sep})*)(?P<{key1}>{match}))?",
+        #~ DUPLICITY_FIXED: "(?P<{key0}>({match}{sep}){{{count_minus_one}}})(?P<{key1}>{match})"
+        DUPLICITY_ONE: "{match}",
+        DUPLICITY_ONE_OR_MORE: "({match}{sep})*{match}",
+        DUPLICITY_ZERO_OR_MORE: "(({match}{sep})*{match})?",
+        DUPLICITY_FIXED: "({match}{sep}){{{count_minus_one}}}{match}"
+    }
 
     id = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey("transmission_format_nodes.id"))
@@ -36,9 +46,11 @@ class TransmissionFormatNode(base.Base):
         DUPLICITY_ZERO_OR_MORE,
         DUPLICITY_FIXED
     ), nullable=False)
+    saved = Column(Boolean, nullable=False)
     count = Column(Integer)
     content_match = Column(String(127))
     key = Column(String(63), nullable=True)
+    join = Column(Boolean, nullable=False)
 
     children = relationship(
         "TransmissionFormatNode",
@@ -46,22 +58,13 @@ class TransmissionFormatNode(base.Base):
     )
 
     def __init__(self, first_arg, *args, **kwargs):
-        try:
-            parent = kwargs.pop("parent")
-        except KeyError:
-            parent = None
-        try:
-            duplicity = kwargs.pop("duplicity")
-        except KeyError:
-            duplicity = self.DUPLICITY_ONE
-        try:
-            count = kwargs.pop("count")
-        except KeyError:
-            count = None
-        try:
-            key = kwargs.pop("key") or None
-        except KeyError:
-            key = None
+        parent = kwargs.pop("parent", None)
+        duplicity = kwargs.pop("duplicity", self.DUPLICITY_ONE)
+        count = kwargs.pop("count", None)
+        key = kwargs.pop("key", None)
+        saved = kwargs.pop("saved", key is not None)
+        separator = kwargs.pop("separator", None)
+        join = kwargs.pop("join", separator is not None)
 
         super(TransmissionFormatNode, self).__init__(**kwargs)
         self.parent = parent
@@ -73,10 +76,18 @@ class TransmissionFormatNode(base.Base):
             self.children.append(first_arg)
             for arg in args:
                 self.children.append(arg)
+            if separator is not None:
+                self.content_match = separator
         self.duplicity = duplicity
         self.count = count
         self.key = key
         self.regex = None
+        self.saved = saved
+        self.join = join
+        self.join_separator = None
+
+    def _get_join_keys(self):
+        return "jk"+str(id(self))+"k0", "jk"+str(id(self))+"k1"
 
     @validates('key')
     def validate_key(self, key, value):
@@ -126,66 +137,135 @@ class TransmissionFormatNode(base.Base):
             raise ValueError("Supplied content_match is not a valid regular expression: {0!r}", content_match)
         return content_match
 
-    def build_inner_regex(self):
-        if self.content_match is None:
-            match = "".join(map(TransmissionFormatNode.build_regex, self.children))
+    def parse_subtree(self, message):
+        regex = re.compile(self.build_inner_regex())
+        results = []
+        for match in regex.finditer(message):
+            groupdict = match.groupdict()
+            if not groupdict:
+                results.append(message[match.start():match.end()])
+            else:
+                resultdict = {}
+                for child in self.children:
+                    child.propagate_parse(groupdict, resultdict)
+                results.append(resultdict)
+        return self, results
+
+    def propagate_parse(self, groupdict, resultdict):
+        if self.key is not None:
+            result = self.parse_subtree(groupdict[self.key])
+            resultdict[self.key] = result
+        else:
+            for child in self.children:
+                child.propagate_parse(groupdict, resultdict)
+
+    def parse(self, message):
+        #regex = re.compile(self.build_regex())
+        #m = regex.match(message)
+        #if m is None:
+        #    raise ValueError("{0!r} doesn't match format.".format(message))
+        #resultdict = {}
+        #groupdict = m.groupdict()
+        #self.propagate_parse(groupdict, resultdict)
+        #return resultdict
+        return self.parse_subtree(message)[1][0]
+
+    def build_inner_regex(self, keyed=True):
+        if self.content_match is None or self.join:
+            match = "".join(child.build_regex(keyed=keyed) for child in self.children)
         else:
             match = self.content_match
         return match
 
-    def build_regex(self):
-        match = self.build_inner_regex()
-        regex = self.DUPLICITY_TEMPLATES[self.duplicity].format(
-            match=match,
-            count=self.count
-        )
-        if self.key:
+    def build_regex(self, keyed=True):
+        match = self.build_inner_regex(keyed=keyed and self.key is None)
+        if self.join:
+            key0, key1 = self._get_join_keys()
+            regex = self.DUPLICITY_JOIN_TEMPLATES[self.duplicity].format(
+                match=match,
+                key0=key0,
+                key1=key1,
+                count_minus_one=(self.count - 1) if self.count is not None else 0,
+                sep=self.content_match
+            )
+        else:
+            regex = self.DUPLICITY_TEMPLATES[self.duplicity].format(
+                match=match,
+                count=self.count
+            )
+        if self.key and keyed:
             regex = "(?P<{key}>{regex})".format(key=self.key, regex=regex)
         return regex
 
-    def unparse_content(self, keymap):
-        if self.key is None:
-            yield self.content_match
-            return
-
-        instance_values = keymap[self.key]
-        if self.duplicity == self.DUPLICITY_ONE:
-            if len(instance_values) != 1:
-                raise ValueError(
-                    "Exactly one value required for key {0!r} (got {1})".format(
-                        self.key,
-                        len(instance_values)
-                    )
-                )
-        elif self.duplicity == self.DUPLICITY_ONE_OR_MORE:
-            if len(instance_values) < 1:
-                raise ValueError(
-                    "Too few values for key {0!r} (got {1}, need at least one)".format(
-                        self.key,
-                        len(instance_values)
-                    )
-                )
-        elif self.duplicity == self.DUPLICITY_FIXED:
-            if len(instance_values) < 1:
-                raise ValueError(
-                    "Exactly {2} values for key {0!r} required (got {1})".format(
-                        self.key,
-                        len(instance_values),
-                        self.count
-                    )
-                )
-        for item in instance_values:
-            yield item
-
-    def unparse(self, keymap):
-        if self.content_match is not None or self.key is not None:
-            for item in self.unparse_content(keymap):
-                yield item
-            return
-
+    def propagate_unparse(self, struct):
         for child in self.children:
-            for segment in child.unparse(keymap):
-                yield segment
+            for item in child.unparse(struct):
+                yield item
+
+    def unparse_children(self, values):
+        if not values:
+            return
+        if isinstance(values[0], basestring):
+            for item in values:
+                yield item
+        else:
+            for struct in values:
+                yield "".join(self.propagate_unparse(struct))
+
+    def unparse(self, struct):
+        if self.key is not None:
+            _, values = struct[self.key]
+            assert _ is self
+
+            if self.join:
+                iterator = iter(self.unparse_children(values))
+                yield next(iterator)
+                for item in iterator:
+                    yield self.join_separator or self.content_match
+                    yield item
+            else:
+                for item in self.unparse_children(values):
+                    yield item
+        elif self.content_match is not None:
+            yield self.content_match
+        else:
+            for item in self.propagate_unparse(struct):
+                yield item
+
+    #~ def unparse_content(self, keymap):
+        #~ if self.key is None:
+            #~ yield self.content_match
+            #~ return
+#~
+        #~ instance_values = keymap[self.key]
+        #~ if self.duplicity == self.DUPLICITY_ONE:
+            #~ if len(instance_values) != 1:
+                #~ raise ValueError(
+                    #~ "Exactly one value required for key {0!r} (got {1})".format(
+                        #~ self.key,
+                        #~ len(instance_values)
+                    #~ )
+                #~ )
+        #~ elif self.duplicity == self.DUPLICITY_ONE_OR_MORE:
+            #~ if len(instance_values) < 1:
+                #~ raise ValueError(
+                    #~ "Too few values for key {0!r} (got {1}, need at least one)".format(
+                        #~ self.key,
+                        #~ len(instance_values)
+                    #~ )
+                #~ )
+        #~ elif self.duplicity == self.DUPLICITY_FIXED:
+            #~ if len(instance_values) < 1:
+                #~ raise ValueError(
+                    #~ "Exactly {2} values for key {0!r} required (got {1})".format(
+                        #~ self.key,
+                        #~ len(instance_values),
+                        #~ self.count
+                    #~ )
+                #~ )
+        #~ # no need to check DUPLICITY_ZERO_OR_MORE as it cannot be wrong :)
+        #~ for item in instance_values:
+            #~ yield item
 
 class TransmissionFormat(base.TopLevel):
     __tablename__ = "transmission_formats"
@@ -210,29 +290,31 @@ class TransmissionFormat(base.TopLevel):
         for node in curr.children:
             self.build_node_dict(node, dct)
 
-    def parse_raw(self, message):
-        """
-        Parse *message* and return a list which consists of tuples of the
-        matching keyed :cls:`TransmissionFormatNode` and the matched strings.
+    def _build_tree_leaves(self, items, contents, parent):
+        primitive_order = 0
+        for key, (node, values) in items:
+            for value in values:
+                order = len(parent.children) if parent else primitive_order
+                content_node = TransmissionContentNode(contents, node, order, value, parent=parent)
+                primitive_order += 1
 
-        Raises ValueError if the message cannot be parsed by this format.
-        """
-        regex = re.compile(self.root_node.build_regex())
-        m = regex.match(message)
-        if m is None:
-            raise ValueError("{0!r} is not a valid {1!s} message".format(
-                message,
-                self
-            ))
-        node_dict = {}
-        # FIXME: do that only when neccessary
-        self.build_node_dict(self.root_node, node_dict)
+    def _build_tree_nodes(self, items, contents, parent):
+        primitive_order = 0
+        for key, (node, values) in items:
+            for value in values:
+                order = len(parent.children) if parent else primitive_order
+                content_node = TransmissionContentNode(contents, node, order, None, parent=parent)
+                self._build_tree(value, contents, content_node)
+                primitive_order += 1
 
-        for key, value in m.groupdict().items():
-            node, order = node_dict[key]
-            regex = re.compile(node.build_inner_regex())
-            matches = list(map(lambda x: value[x.start():x.end()], regex.finditer(value)))
-            yield order, node, matches
+    def _build_tree(self, parse_result, contents, parent):
+        items = sorted(parse_result.items(), key=lambda x: x[1][0].order)
+        if not items:
+            return
+        if items[0][1][1] and isinstance(items[0][1][1][0], basestring):
+            self._build_tree_leaves(items, contents, parent)
+        else:
+            self._build_tree_nodes(items, contents, parent)
 
     def parse(self, message):
         """
@@ -242,22 +324,12 @@ class TransmissionFormat(base.TopLevel):
 
         Raises ValueError if the message cannot be parsed by this format.
         """
-        sorted_result = sorted( self.parse_raw(message),
-                                key=operator.itemgetter(0))
+        result = self.root_node.parse(message)
         contents = TransmissionStructuredContents("text/plain", self)
-        order = 0
-        for _, node, matches in sorted_result:
-            for match in matches:
-                content_node = TransmissionContentNode(
-                    contents,
-                    node,
-                    order,
-                    match
-                )
-                order += 1
+        self._build_tree(result, contents, None)
         return contents
 
-    def unparse(self, keymap):
+    def unparse(self, struct):
         """
         Unparse a previously parsed message whose important information is
         stored in *keymap*.
@@ -272,7 +344,7 @@ class TransmissionFormat(base.TopLevel):
         This will raise a :cls:`KeyError` if the keymap is missing a key defined
         by this format.
         """
-        return "".join(self.root_node.unparse(keymap))
+        return "".join(self.root_node.unparse(struct))
 
     def __str__(self):
         return self.display_name.encode("utf-8")
@@ -336,13 +408,15 @@ class TransmissionStructuredContents(TransmissionContents):
         super(TransmissionStructuredContents, self).__init__(mime, **kwargs)
         self.format = fmt
 
-    def unparse(self):
-        # put our nodes in a handy structure
-        keymap = {}
-        for node in self.nodes:
-            keymap.setdefault(node.format_node.key, []).append(node.segment)
+    def unparse_struct(self):
+        result = {}
+        for node in filter(lambda x: x.parent is None, self.nodes):
+            _, child_list = result.setdefault(node.format_node.key, (node.format_node, []))
+            child_list.append(node.unparse_struct())
+        return result
 
-        return self.format.unparse(keymap)
+    def unparse(self):
+        return self.format.unparse(self.unparse_struct())
 
 
 class TransmissionContentNode(base.Base):
@@ -350,19 +424,36 @@ class TransmissionContentNode(base.Base):
 
     id = Column(Integer, primary_key=True)
     content_id = Column(Integer, ForeignKey(TransmissionStructuredContents.id), nullable=False)
+    parent_id = Column(Integer, ForeignKey(__tablename__ + ".id"), nullable=True)
     format_node_id = Column(Integer, ForeignKey(TransmissionFormatNode.id), nullable=False)
     order = Column(Integer, nullable=False)
     segment = Column(Binary, nullable=False)
 
+    children = relationship(
+        "TransmissionContentNode",
+        backref=backref("parent", remote_side=[id])
+    )
     format_node = relationship(TransmissionFormatNode)
     contents = relationship(TransmissionStructuredContents, backref=backref("nodes", order_by=order))
 
-    def __init__(self, structured_contents, format_node, order, segment):
-        super(TransmissionContentNode, self).__init__()
+    def __init__(self, structured_contents, format_node, order, segment,
+            parent=None, **kwargs):
+        super(TransmissionContentNode, self).__init__(**kwargs)
         self.contents = structured_contents
         self.format_node = format_node
         self.order = order
         self.segment = segment
+        self.parent = parent
+
+    def unparse_struct(self):
+        if len(self.children) > 0:
+            result = {}
+            for child in self.children:
+                _, child_list = result.setdefault(child.format_node.key, (child.format_node, []))
+                child_list.append(child.unparse_struct())
+            return result
+        else:
+            return self.segment
 
 class TransmissionAttachment(attachment.Attachment):
     __tablename__ = "transmission_attachments"

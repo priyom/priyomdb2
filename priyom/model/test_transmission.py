@@ -85,6 +85,60 @@ class TransmissionFormatNode(unittest.TestCase):
         self.assertIsNotNone(match)
         self.assertEqual(match.groupdict(), {"foobar": "foofoobarbarbarbar"})
 
+    def test_parse(self):
+        TFN = model.TransmissionFormatNode
+        call = TFN("[0-9]{2}\s+[0-9]{3}", key="call")
+        callwrap = TFN(
+            call,
+            duplicity="+",
+            separator=" ",
+            key="callwrap",
+            saved=False
+        )
+        codeword = TFN("\w+", key="codeword")
+        numbers = TFN("([0-9]{2} ){3}[0-9]{2}", key="numbers")
+        messagewrap = TFN(
+            TFN(
+                codeword,
+                TFN(" "),
+                numbers,
+            ),
+            duplicity="+",
+            separator=" ",
+            key="messagewrap",
+            saved=False
+        )
+        tree = TFN(
+            callwrap,
+            TFN(" "),
+            messagewrap
+        )
+        self.assertEqual(
+            tree.parse("11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22"),
+            {
+                "callwrap": (callwrap, [
+                    {
+                        "call": (call, ["11 111"])
+                    },
+                    {
+                        "call": (call, ["22 222"])
+                    },
+                    {
+                        "call": (call, ["33 333"])
+                    }
+                ]),
+                "messagewrap": (messagewrap, [
+                    {
+                        "codeword": (codeword, ["FOOBAR"]),
+                        "numbers": (numbers, ["11 11 11 11"])
+                    },
+                    {
+                        "codeword": (codeword, ["BAZ"]),
+                        "numbers": (numbers, ["22 22 22 22"])
+                    }
+                ])
+            }
+        )
 
 class TransmissionFormat(unittest.TestCase):
     @staticmethod
@@ -100,16 +154,36 @@ class TransmissionFormat(unittest.TestCase):
             )
         ), foo_node, bar_node
 
-    def test_parse_raw(self):
-        fmt, foo_node, bar_node = self.multikey_format()
-        parsed = list(sorted(   fmt.parse_raw("foofoobarbarbarbarbaz"),
-                                key=operator.itemgetter(0)))
-        self.assertEqual(parsed,
-            [
-                (0, foo_node, ["foo"]*2),
-                (1, bar_node, ["bar"]*4),
-            ]
+    @staticmethod
+    def mdzhb_format():
+        TF, TFN = model.TransmissionFormat, model.TransmissionFormatNode
+        call = TFN("[0-9]{2}\s+[0-9]{3}", key="call")
+        callwrap = TFN(
+            call,
+            duplicity="+",
+            separator=" ",
+            key="callwrap",
+            saved=False
         )
+        codeword = TFN("\w+", key="codeword")
+        numbers = TFN("([0-9]{2} ){3}[0-9]{2}", key="numbers")
+        messagewrap = TFN(
+            TFN(
+                codeword,
+                TFN(" "),
+                numbers,
+            ),
+            duplicity="+",
+            separator=" ",
+            key="messagewrap",
+            saved=False
+        )
+        tree = TFN(
+            callwrap,
+            TFN(" "),
+            messagewrap
+        )
+        return TF("test", tree), callwrap, call, messagewrap, codeword, numbers
 
     def test_parse(self):
         fmt, foo_node, bar_node = self.multikey_format()
@@ -129,8 +203,50 @@ class TransmissionFormat(unittest.TestCase):
         self.assertEqual(test_list, reference_list)
         self.assertIs(parsed.format, fmt)
 
+    def _check_children(self, nodes, reference):
+        for (order, format_node, value), child in zip(reference, nodes):
+            self.assertEqual(child.order, order)
+            self.assertIs(child.format_node, format_node)
+            if isinstance(value, basestring):
+                self.assertEqual(value, child.segment)
+            else:
+                self._check_children(child.children, value)
+
+    def test_parse_mdzhb(self):
+        fmt, callwrap, call, messagewrap, codeword, numbers = self.mdzhb_format()
+        parsed = fmt.parse("11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22")
+        reference = [
+            (0, callwrap, [
+                (0, call, "11 111")
+            ]),
+            (1, callwrap, [
+                (0, call, "22 222")
+            ]),
+            (2, callwrap, [
+                (0, call, "33 333")
+            ]),
+            (3, messagewrap, [
+                (0, codeword, "FOOBAR"),
+                (1, numbers, "11 11 11 11")
+            ]),
+            (4, messagewrap, [
+                (0, codeword, "BAZ"),
+                (1, numbers, "22 22 22 22")
+            ])
+        ]
+        self._check_children(
+            filter(lambda x: x.parent is None, parsed.nodes),
+            reference
+        )
+
     def test_unparse(self):
         fmt, foo_node, bar_node = self.multikey_format()
         s = "foofoobarbarbaz"
         parsed = fmt.parse(s)
         self.assertEqual(parsed.unparse(), s)
+
+    def test_unparse_mdzhb(self):
+        fmt, callwrap, call, messagewrap, codeword, numbers = self.mdzhb_format()
+        message = "11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22"
+        parsed = fmt.parse(message)
+        self.assertEqual(parsed.unparse(), message)
