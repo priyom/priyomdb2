@@ -7,21 +7,19 @@ from sqlalchemy.orm import relationship, backref
 from . import base as base
 from . import misc as misc
 from . import station as station
+from . import event as event
 
-class Broadcast(base.TopLevel):
+class Broadcast(event.Event):
     __tablename__ = 'broadcasts'
+    __mapper_args__ = {"polymorphic_identity": "broadcast_event"}
 
-    id = Column(Integer, primary_key=True)
-    station_id = Column(Integer, ForeignKey(station.Station.id))
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime)
+    id = Column(Integer, ForeignKey(event.Event.id), primary_key=True)
     kind = Column(Enum(
         "transmission",
         "marker",
         "other / unknown"
     ))
 
-    station = relationship(station.Station, backref=backref("broadcasts"), order_by=start_time)
     frequencies = relationship("BroadcastFrequency", order_by="BroadcastFrequency.frequency")
 
 class BroadcastFrequency(base.Base):
