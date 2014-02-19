@@ -24,7 +24,8 @@ class Station(base.TopLevel):
 
     def __init__(self, enigma_id, priyom_id):
         if not enigma_id and not priyom_id:
-            raise ValueError("Station must be provided with at least one of the identifiers, priyom_id or enigma_id.")
+            raise ValueError("Station must be provided with at least one of the"
+                             " identifiers, priyom_id or enigma_id.")
         super(Station, self).__init__()
         self.enigma_id = enigma_id or ""
         self.priyom_id = priyom_id or ""
