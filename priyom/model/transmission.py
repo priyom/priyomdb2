@@ -68,7 +68,7 @@ class TransmissionFormatNode(base.Base):
 
         super(TransmissionFormatNode, self).__init__(**kwargs)
         self.parent = parent
-        if isinstance(first_arg, basestring):
+        if isinstance(first_arg, str):
             self.content_match = first_arg
             if len(args) > 0:
                 raise TypeError("TransmissionFormatNode.__init__ takes one string argument or one or more node arguments")
@@ -93,7 +93,7 @@ class TransmissionFormatNode(base.Base):
     def validate_key(self, key, value):
         if value is None:
             return value
-        if len(filter(lambda x: ord(x) > 127 or x == '<' or x == '>', value)) > 0:
+        if any(ord(x) > 127 or x == '<' or x == '>' for x in value):
             raise ValueError("key must be ASCII only, without < or >.")
         return value
 
@@ -214,7 +214,7 @@ class TransmissionFormatNode(base.Base):
     def unparse_children(self, values):
         if not values:
             return
-        if isinstance(values[0], basestring):
+        if isinstance(values[0], str):
             for item in values:
                 yield item
         else:
@@ -291,7 +291,7 @@ class TransmissionFormat(base.TopLevel):
         items = sorted(parse_result.items(), key=lambda x: x[1][0].order)
         if not items:
             return
-        if items[0][1][1] and isinstance(items[0][1][1][0], basestring):
+        if items[0][1][1] and isinstance(items[0][1][1][0], str):
             self._build_tree_leaves(items, contents, parent)
         else:
             self._build_tree_nodes(items, contents, parent)

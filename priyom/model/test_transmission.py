@@ -207,7 +207,7 @@ class TransmissionFormat(unittest.TestCase):
         for (order, format_node, value), child in zip(reference, nodes):
             self.assertEqual(child.order, order)
             self.assertIs(child.format_node, format_node)
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 self.assertEqual(value, child.segment)
             else:
                 self._check_children(child.children, value)
