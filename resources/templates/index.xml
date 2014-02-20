@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+  <head>
+    <title>PriyomAPI version <exec:text>arguments["version"]</exec:text></title>
+  </head>
+  <body>
+    <h1>Welcome to PriyomAPI</h1>
+  </body>
+</html>

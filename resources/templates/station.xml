@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+  <head>
+    <title>Station #<exec:text>arguments["station_id"]</exec:text></title>
+  </head>
+  <body>
+    <exec:code>station = arguments["station"]</exec:code>
+    <h1>Station #<exec:text>arguments["station_id"]</exec:text></h1>
+    <dl>
+      <dt>Enigma Identifier</dt>
+      <dd><exec:text>station.enigma_id</exec:text></dd>
+      <dt>Priyom Identifier</dt>
+      <dd><exec:text>station.priyom_id</exec:text></dd>
+      <dt>Nickname</dt>
+      <dd><exec:text>station.nickname</exec:text></dd>
+      <dt>Description</dt>
+      <dd><exec:text>station.description</exec:text></dd>
+      <dt>Status</dt>
+      <dd><exec:text>station.status</exec:text></dd>
+      <dt>Location</dt>
+      <dd><exec:text>station.location</exec:text></dd>
+    </dl>
+  </body>
+</html>
