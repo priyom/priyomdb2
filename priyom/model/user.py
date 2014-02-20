@@ -14,7 +14,11 @@ from sqlalchemy import Column, DateTime, Unicode, Binary, Table, Integer, \
     ForeignKey, UniqueConstraint, BINARY
 from sqlalchemy.orm import relationship, backref
 
+from datetime import timedelta, datetime
+
 _secure_random = random.SystemRandom()
+
+DEFAULT_ITERATION_COUNT = 2**14
 
 user_capability_table = Table(
     "user_capabilities",
@@ -116,7 +120,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
 
-    username = Column(Unicode(length=63), nullable=False)
+    loginname = Column(Unicode(length=63), nullable=False)
     email = Column(Unicode(length=255), nullable=False)
     password_verifier = Column(Binary(length=1023), nullable=False)
 
@@ -124,6 +128,11 @@ class User(Base):
         "Capability",
         secondary=user_capability_table,
         backref="users")
+
+    def __init__(self, loginname, email):
+        super().__init__()
+        self.loginname = loginname
+        self.email = email
 
     def set_password_from_plaintext(self,
                                     plaintext,
@@ -152,6 +161,14 @@ class UserSession(Base):
         "Capability",
         secondary=session_capability_table,
         backref="sessions")
+
+    def __init__(self, from_user, lifetime=timedelta(days=7)):
+        super().__init__()
+        self.session_key = _secure_random.getrandbits(8*32).to_bytes(32, "big")
+        self.expiration = datetime.utcnow() + lifetime
+        self.user = from_user
+        for capability in self.user.capabilities:
+            self.capabilities.add(capability)
 
 class Capability(Base):
     __tablename__ = "capabilities"
