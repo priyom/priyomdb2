@@ -48,8 +48,8 @@ class TransmissionFormatNode(base.Base):
     ), nullable=False)
     saved = Column(Boolean, nullable=False)
     count = Column(Integer)
-    content_match = Column(String(127))
-    key = Column(String(63), nullable=True)
+    content_match = Column(Unicode(127))
+    key = Column(Unicode(63), nullable=True)
     join = Column(Boolean, nullable=False)
 
     children = relationship(
@@ -251,7 +251,7 @@ class TransmissionFormat(base.TopLevel):
     __tablename__ = "transmission_formats"
 
     id = Column(Integer, primary_key=True)
-    display_name = Column(String(127), nullable=False)
+    display_name = Column(Unicode(127), nullable=False)
     description = Column(Text)
     root_node_id = Column(Integer, ForeignKey(TransmissionFormatNode.id), nullable=False)
 
@@ -340,11 +340,11 @@ class TransmissionContents(base.Base):
 
     id = Column(Integer, primary_key=True)
     transmission_id = Column(Integer, ForeignKey(Transmission.id), nullable=False)
-    mime = Column(String(127), nullable=False)
+    mime = Column(Unicode(127), nullable=False)
     is_transcribed = Column(Boolean, nullable=False)
     is_transcoded = Column(Boolean, nullable=False)
     alphabet_id = Column(Integer, ForeignKey(misc.Alphabet.id))
-    attribution = Column(String(255), nullable=True)
+    attribution = Column(Unicode(255), nullable=True)
 
     transmission = relationship(Transmission, backref=backref("contents"))
     alphabet = relationship(misc.Alphabet)
@@ -364,7 +364,7 @@ class TransmissionRawContents(TransmissionContents):
     __mapper_args__ = {"polymorphic_identity": "raw_contents"}
 
     id = Column(Integer, ForeignKey(TransmissionContents.id), primary_key=True)
-    encoding = Column(String(63), nullable=False)
+    encoding = Column(Unicode(63), nullable=False)
     contents = Column(Binary, nullable=True)
 
 class TransmissionStructuredContents(TransmissionContents):

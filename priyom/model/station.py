@@ -14,13 +14,13 @@ class Station(base.TopLevel):
     id = Column(Integer, primary_key=True)
 
     # at least InnoDB won't enforce uniqueness over nullable columns
-    enigma_id = Column(String(23), nullable=False)
-    priyom_id = Column(String(23), nullable=False)
+    enigma_id = Column(Unicode(23), nullable=False)
+    priyom_id = Column(Unicode(23), nullable=False)
 
-    nickname = Column(String(127))
-    description = Column(Text)
-    status = Column(String(255))
-    location = Column(String(255))
+    nickname = Column(Unicode(127))
+    description = Column(UnicodeText)
+    status = Column(Unicode(255))
+    location = Column(Unicode(255))
 
     def __init__(self, enigma_id, priyom_id):
         if not enigma_id and not priyom_id:
