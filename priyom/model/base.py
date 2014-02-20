@@ -1,6 +1,4 @@
 # encoding=utf8
-from __future__ import unicode_literals, print_function
-
 from datetime import datetime
 
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
@@ -17,7 +15,7 @@ class TopLevelMeta(DeclarativeMeta):
         if dct.get("__metaclass__", None) is not TopLevelMeta:
             event.listen(cls, "before_update", update_timestamp)
 
-class TopLevel(Base):
+class TopLevel(Base, metaclass=TopLevelMeta):
     """
     TopLevel objects come with :attr:`created` and :attr:`modified` timestamps.
     ``modified`` gets updated automatically when an attribute of the object is
@@ -25,7 +23,6 @@ class TopLevel(Base):
     net change in column values.
     """
     __abstract__ = True
-    __metaclass__ = TopLevelMeta
 
     created = Column(DateTime, nullable=False)
     modified = Column(DateTime, nullable=False)
