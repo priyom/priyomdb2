@@ -6,5 +6,8 @@
   </head>
   <body>
     <h1>Welcome to PriyomAPI</h1>
+    <exec:if condition="arguments['auth'] is not None">
+      <p>Logged in as: <exec:text>arguments["auth"].user.loginname</exec:text></p>
+    </exec:if>
   </body>
 </html>

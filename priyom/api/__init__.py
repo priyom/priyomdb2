@@ -1,3 +1,5 @@
+import binascii
+
 import sqlalchemy
 import sqlalchemy.orm
 
@@ -55,12 +57,28 @@ class API(metaclass=teapot.RoutableMeta):
             self._session.add(admin_user)
             self._session.commit()
 
+    def get_auth(self, request):
+        if "api_session_key" in request.cookie_data:
+            try:
+                key = request.cookie_data["api_session_key"].pop()
+            except ValueError:
+                return None
+            try:
+                session = self._session.query(priyom.model.UserSession).filter(
+                    priyom.model.UserSession.session_key == \
+                        binascii.a2b_hex(key.encode())).one()
+            except sqlalchemy.orm.exc.NoResultFound as err:
+                return None
+
+            return session
+
     @teapot.route("/", methods={teapot.request.Method.GET})
     @xsltea_pipeline.with_template("index.xml")
-    def index(self):
+    def index(self, request: teapot.request.Request):
         yield teapot.response.Response(None)
         yield {
-            "version": "devel"
+            "version": "devel",
+            "auth": request.auth
         }
 
     @teapot.route("/login", methods={teapot.request.Method.GET})
@@ -77,7 +95,7 @@ class API(metaclass=teapot.RoutableMeta):
         error = False
         error_msg = None
         try:
-            user, _ = self._session.query(
+            user = self._session.query(
                 priyom.model.User).filter(
                     priyom.model.User.loginname == loginname).one()
             print(user)
@@ -103,9 +121,15 @@ class API(metaclass=teapot.RoutableMeta):
 
         session = priyom.model.UserSession(user)
         self._session.add(session)
+        self._session.commit()
 
         # FIXME: login!
-        yield teapot.response.Response(None)
+        response = teapot.response.Response(None)
+        response.cookies["api_session_key"] = binascii.b2a_hex(
+            session.session_key).decode()
+        response.cookies["api_session_key"]["httponly"] = True
+
+        yield response
         yield {
             "error": "success"
         }
@@ -131,3 +155,6 @@ class Router(teapot.routing.Router):
     def __init__(self, *args, **kwargs):
         self._api = API(*args, **kwargs)
         super().__init__(self._api)
+
+    def pre_route_hook(self, request):
+        request.auth = self._api.get_auth(request)
