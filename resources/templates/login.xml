@@ -1,23 +1,41 @@
 <?xml version="1.0" ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors">
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title>PriyomAPI login</title>
   </head>
   <body>
-    <h1>Login</h1>
-    <form name="login" method="POST">
-      <label for="name">
-        User name: <input type="text" name="name" placeholder="e.g. franknord"/>
-      </label><br />
-      <label for="password">
-        Password: <input type="password" name="password" />
-      </label><br />
-      <exec:if condition="'error' in arguments">
-        <p><strong><exec:text>arguments['error']</exec:text></strong></p>
-      </exec:if>
-      <input type="submit" name="submit" value="Login"/>
-    </form>
+    <nav>
+      <sitemap:insert sitemap:name="anonymous" />
+    </nav>
+    <main>
+      <div class="ym-grid">
+        <div class="ym-gl ym-g33" style="margin-left: 33%; margin-right: 33%"><div class="ym-gbox">
+          <h2>Login</h2>
+          <form name="login" method="POST" class="ym-form">
+            <div class="ym-fbox">
+              <label for="name">User name</label>
+              <input type="text" name="name" id="name" placeholder="e.g. franknord" />
+            </div>
+            <div class="ym-fbox">
+              <label for="password">Password: </label>
+              <input type="password" name="password" id="password" />
+            </div>
+            <exec:if condition="'error' in arguments">
+              <div class="ym-fbox">
+                <p class="box error">
+                  <exec:text>arguments['error']</exec:text>
+                </p>
+              </div>
+            </exec:if>
+            <div class="ym-fbox-footer">
+              <input type="submit" name="submit" class="ym-button ym-primary" value="Login"/>
+            </div>
+          </form>
+        </div></div>
+      </div>
+    </main>
   </body>
 </html>

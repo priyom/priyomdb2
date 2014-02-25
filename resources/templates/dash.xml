@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>Radio Dash</title>
+  </head>
+  <body>
+    <nav>
+      <sitemap:insert sitemap:name="user" />
+      <exec:if condition="request.auth.user.has_capability('moderator')">
+        <sitemap:insert sitemap:name="moderator" />
+      </exec:if>
+      <exec:if condition="request.auth.user.has_capability('admin')">
+        <sitemap:insert sitemap:name="admin" />
+      </exec:if>
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Radio dash</h2>
+        <div class="ym-grid linearize-level-2">
+          <div class="ym-gl ym-g50"><div class="ym-gbox">
+            <h3>Log entry moderation queue</h3>
+            <table>
+              <colgroup>
+                <col class="id" />
+                <col />
+                <col />
+                <col />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Submitter</th>
+                  <th>Station</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1234</td>
+                  <td>Vassilis</td>
+                  <td>S28</td>
+                  <td>2014-02-22T13:00Z</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></div>
+          <div class="ym-gr ym-g50"><div class="ym-gbox">
+            <h3>Recent entries</h3>
+            <table>
+              <colgroup>
+                <col class="id" />
+                <col />
+                <col />
+                <col />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Submitter</th>
+                  <th>Station</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1234</td>
+                  <td>Vassilis</td>
+                  <td>S28</td>
+                  <td>2014-02-22T13:00Z</td>
+                </tr>
+              </tbody>
+            </table>
+          </div></div>
+        </div>
+        <h3>Activities</h3>
+        <div class="ym-grid linearize-level-1">
+          <div class="ym-gl ym-g50"><div class="ym-gbox">
+            <h4><a class="ym-button ym-add">Log transmission</a></h4>
+            <p>Log a new transmission into the database system. If you do not
+            have unmoderated privilegues, your submission will need to await
+            moderator approval.</p>
+          </div></div>
+          <div class="ym-gr ym-g50"><div class="ym-gbox">
+            <h4><a class="ym-button ym-add">Log event</a></h4>
+            <p>Log a new event into the database system. If you do not
+            have unmoderated privilegues, your submission will need to await
+            moderator approval.</p>
+          </div></div>
+        </div>
+        <div class="ym-grid linearize-level-1">
+          <div class="ym-gl ym-g50"><div class="ym-gbox">
+            <h4><a class="ym-button icon-station">Create station</a></h4>
+            <p>Create a new station in the database.</p>
+          </div></div>
+          <div class="ym-gr ym-g50"><div class="ym-gbox">
+            <h4><a class="ym-button icon-user">Create user</a></h4>
+            <p>Create a new user in the database.</p>
+          </div></div>x
+        </div>
+        <div>
+          <h3>My logs</h3>
+          <table>
+            <colgroup>
+              <col class="id" />
+              <col />
+              <col />
+              <col class="tx-content"/>
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Station</th>
+                <th>Timestamp</th>
+                <th>Contents / Event</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>412</td>
+                <td>S28</td>
+                <td>2014-02-10T12:00Z</td>
+                <td class="tx-content">12 345 FOOBAR 10 20 30 40</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div></div>
+    </main>
+  </body>
+</html>

@@ -8,11 +8,14 @@ import random
 import struct
 import unicodedata
 
+import sqlalchemy
+import sqlalchemy.orm
+
 from .base import Base
 
 from sqlalchemy import Column, DateTime, Unicode, Binary, Table, Integer, \
     ForeignKey, UniqueConstraint, BINARY
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship, backref, Session
 
 from datetime import timedelta, datetime
 
@@ -134,6 +137,18 @@ class User(Base):
         self.loginname = loginname
         self.email = email
 
+    def has_capability(self, key):
+        session = Session.object_session(self)
+        if not session:
+            raise RuntimeError("Cannot get capabilities of non-persisted user.")
+        try:
+            capability = session.query(Capability).filter(
+                Capability.key == key).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return False
+
+        return capability in self.capabilities
+
     def set_password_from_plaintext(self,
                                     plaintext,
                                     iterations,
@@ -157,18 +172,11 @@ class UserSession(Base):
                         backref=backref("sessions"))
     expiration = Column(DateTime, nullable=False)
 
-    capabilities = relationship(
-        "Capability",
-        secondary=session_capability_table,
-        backref="sessions")
-
     def __init__(self, from_user, lifetime=timedelta(days=7)):
         super().__init__()
         self.session_key = _secure_random.getrandbits(8*32).to_bytes(32, "big")
         self.expiration = datetime.utcnow() + lifetime
         self.user = from_user
-        for capability in self.user.capabilities:
-            self.capabilities.add(capability)
 
 class Capability(Base):
     __tablename__ = "capabilities"

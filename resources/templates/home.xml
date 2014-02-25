@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>Radio Dash</title>
+  </head>
+  <body>
+    <nav>
+      <sitemap:insert sitemap:name="anonymous" />
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Welcome, anonymous!</h2>
+        <p>Sorry, currently there is no content for unauthenticated
+        users. Please log in, if you have credentials. If you don’t, please join
+        our <a href="irc://irc.freenode.net/#priyom">IRC</a> so that
+        we get to know you. Eventually, you’ll get access.</p>
+      </div></div>
+    </main>
+  </body>
+</html>

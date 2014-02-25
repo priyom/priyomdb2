@@ -9,6 +9,4 @@ sys.path.insert(0, "/var/www/docroot/horazont/projects/priyomdb2/")
 
 import priyom.api
 
-application = teapot.wsgi.Application(priyom.api.Router(
-    database="mysql+mysqlconnector://priyom2@localhost/priyom2?charset=utf8"
-))
+application = teapot.wsgi.Application(priyom.api.router)
