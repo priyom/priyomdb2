@@ -30,6 +30,7 @@ def login():
 @router.route("/login", methods={teapot.request.Method.POST}, order=1)
 @xsltea_site.with_template("login.xml")
 def login_POST(loginname, password, request: teapot.request.Request):
+    dbsession = request.dbsession
     error = False
     error_msg = None
     try:

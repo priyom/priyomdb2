@@ -66,8 +66,8 @@ def mdzhb_format():
 @require_capability("admin")
 @router.route("/formats", order=0)
 @xsltea_site.with_template("view_formats.xml")
-def view_formats():
-    formats = list(dbsession.query(priyom.model.TransmissionFormat))
+def view_formats(request: teapot.request.Request):
+    formats = list(request.dbsession.query(priyom.model.TransmissionFormat))
 
     yield teapot.response.Response(None)
     yield {
@@ -164,14 +164,15 @@ def try_conversion_to_db_objects(node, index):
 @teapot.queryarg("id", "format_id", int, default=None)
 @router.route("/formats/edit", methods={teapot.request.Method.GET}, order=0)
 @xsltea_site.with_template("format_form.xml")
-def edit_format(format_id=None):
+def edit_format(request: teapot.request.Request, format_id=None):
     if format_id is None:
         # format = mdzhb_format()[0]
         format = priyom.model.TransmissionFormat(
             "",
             priyom.model.TransmissionFormatNode())
     else:
-        format = dbsession.query(priyom.model.TransmissionFormat).get(format_id)
+        format = request.dbsession.query(priyom.model.TransmissionFormat).get(
+            format_id)
     root_node = format.root_node
 
     yield teapot.response.Response(None)
@@ -187,6 +188,7 @@ def edit_format(format_id=None):
 @xsltea_site.with_template("format_form.xml")
 def edit_format_POST(request: teapot.request.Request):
     postdata = request.post_data
+    dbsession = request.dbsession
 
     root_node, by_index = _unlinearize_parsing_tree(postdata)
 
@@ -276,8 +278,8 @@ def edit_format_POST(request: teapot.request.Request):
 @router.route("/station/{station_id:d}/edit", methods={
     teapot.request.Method.GET})
 @xsltea_site.with_template("station_form.xml")
-def edit_station(station_id):
-    station = dbsession.query(priyom.model.Station).get(station_id)
+def edit_station(station_id, request: teapot.request.Request):
+    station = request.dbsession.query(priyom.model.Station).get(station_id)
     yield teapot.response.Response(None)
 
     yield {
