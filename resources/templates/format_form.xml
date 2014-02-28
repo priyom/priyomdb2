@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>Edit format</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>parsing_tree = arguments["parsing_tree"]</exec:code>
+    <nav>
+      <sitemap:insert sitemap:name="user" />
+      <exec:if condition="request.auth.user.has_capability('moderator')">
+        <sitemap:insert sitemap:name="moderator" />
+      </exec:if>
+      <exec:if condition="request.auth.user.has_capability('admin')">
+        <sitemap:insert sitemap:name="admin" />
+      </exec:if>
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Edit transmission format</h2>
+        <form class="ym-form" method="POST" name="format">
+          <input type="hidden" name="id" exec:value="arguments['id']" />
+          <h6 class="ym-fbox-heading">General properties</h6>
+          <div class="ym-fbox">
+            <label for="display-name">Display name</label>
+            <input type="text" id="display-name"
+                   name="display_name"
+                   placeholder="e.g. S28 default format"
+                   exec:value="arguments['display_name']"/>
+          </div>
+          <div class="ym-fbox">
+            <label for="description">Description</label>
+            <textarea id="description" name="description">
+            <exec:text>arguments['description']</exec:text>
+            </textarea>
+          </div>
+          <h6 class="ym-fbox-heading">Parsing tree</h6>
+          <table class="ym-fbox parsing-tree">
+            <colgroup>
+              <col class="parsing-tree-key" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Format node</th>
+                <th>Controls</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tea:for-each tea:bind="level, node, index" tea:from="parsing_tree">
+                <tr>
+                  <td exec:style="'padding-left: {}px'.format(level*12)">
+                    <div class="ym-fbox">
+                      <label exec:for="'node[{}].comment'.format(index)">Comment</label>
+                      <input type="text"
+                             exec:id="'node[{}].comment'.format(index)"
+                             exec:name="'node[{}].comment'.format(index)"
+                             exec:value="node.comment" />
+                    </div>
+                    <div class="ym-fbox">
+                      <label exec:for="'node[{}].key'.format(index)">Key</label>
+                      <input type="text"
+                             exec:id="'node[{}].key'.format(index)"
+                             exec:name="'node[{}].key'.format(index)"
+                             exec:value="node.key" />
+                    </div>
+                    <input type="hidden"
+                           exec:name="'node[{}].id'.format(index)"
+                           exec:value="node.id" />
+                    <input type="hidden"
+                           exec:name="'node[{}].level'.format(index)"
+                           exec:value="level" />
+                  </td>
+                  <tea:include tea:source="format_form_controls_column.xml"/>
+                </tr>
+              </tea:for-each>
+            </tbody>
+          </table>
+          <div class="ym-fbox-footer ym-fbox-button">
+            <input type="submit"
+                   name="action:update"
+                   value="Update"
+                   class="ym-primary" />
+            <input type="submit"
+                   name="action:save_to_db"
+                   value="Save to database"
+                   class="ym-warning" />
+          </div>
+        </form>
+        <p class="box warning"><strong>Warning:</strong> Until you click “Save to database” <em>no</em> changes are made to the entries in the database. Leaving the page without saving will make you lose all your changes!</p>
+      </div></div>
+    </main>
+  </body>
+</html>

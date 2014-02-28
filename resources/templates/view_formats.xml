@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>View transmission formats</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <nav>
+      <sitemap:insert sitemap:name="user" />
+      <exec:if condition="request.auth.user.has_capability('moderator')">
+        <sitemap:insert sitemap:name="moderator" />
+      </exec:if>
+      <exec:if condition="request.auth.user.has_capability('admin')">
+        <sitemap:insert sitemap:name="admin" />
+      </exec:if>
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Transmission formats</h2>
+        <div style="margin-bottom: 1.5em;"><strong>Activities:</strong>
+        <a class="ym-button ym-success ym-add"
+           exec:href="href(arguments['add_format'])">Add new format</a>
+        </div>
+        <table>
+          <colgroup>
+            <col class="id" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Display name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tea:for-each tea:bind="format" tea:from="arguments['formats']">
+              <tr>
+                <td><exec:text>format.id</exec:text></td>
+                <td><a exec:href="href(arguments['edit_format'], format_id=format.id)"><exec:text>format.display_name</exec:text></a></td>
+              </tr>
+            </tea:for-each>
+          </tbody>
+        </table>
+      </div></div>
+    </main>
+  </body>
+</html>

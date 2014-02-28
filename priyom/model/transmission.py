@@ -51,13 +51,14 @@ class TransmissionFormatNode(base.Base):
     content_match = Column(Unicode(127))
     key = Column(Unicode(63), nullable=True)
     join = Column(Boolean, nullable=False)
+    comment = Column(Unicode(127))
 
     children = relationship(
         "TransmissionFormatNode",
         backref=backref("parent", remote_side=[id])
     )
 
-    def __init__(self, first_arg, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         parent = kwargs.pop("parent", None)
         duplicity = kwargs.pop("duplicity", self.DUPLICITY_ONE)
         count = kwargs.pop("count", None)
@@ -65,17 +66,14 @@ class TransmissionFormatNode(base.Base):
         saved = kwargs.pop("saved", key is not None)
         separator = kwargs.pop("separator", None)
         join = kwargs.pop("join", separator is not None)
+        comment = kwargs.pop("comment", "")
 
         super(TransmissionFormatNode, self).__init__(**kwargs)
         self.parent = parent
-        if isinstance(first_arg, str):
-            self.content_match = first_arg
-            if len(args) > 0:
-                raise TypeError("TransmissionFormatNode.__init__ takes one string argument or one or more node arguments")
+        if len(args) == 1 and isinstance(args[0], str):
+            self.content_match = args[0]
         else:
-            self.children.append(first_arg)
-            for arg in args:
-                self.children.append(arg)
+            self.children.extend(args)
             if separator is not None:
                 self.content_match = separator
         self.duplicity = duplicity
@@ -85,6 +83,7 @@ class TransmissionFormatNode(base.Base):
         self.saved = saved
         self.join = join
         self.join_separator = None
+        self.comment = comment
 
     def _get_join_keys(self):
         return "jk"+str(id(self))+"k0", "jk"+str(id(self))+"k1"
@@ -115,6 +114,8 @@ class TransmissionFormatNode(base.Base):
 
     @validates('children')
     def validate_child(self, key, child):
+        if not isinstance(child, TransmissionFormatNode):
+            raise TypeError("Only TransmissionFormatNode instances are allowed as children")
         if child.order is None:
             try:
                 max_order = max(map(operator.attrgetter("order"), self.children))
@@ -125,8 +126,6 @@ class TransmissionFormatNode(base.Base):
 
     @validates('parent')
     def validate_parent(self, key, parent):
-        if parent is not None:
-            assert parent.content_match is None
         return parent
 
     @validates('content_match')
@@ -252,12 +251,12 @@ class TransmissionFormat(base.TopLevel):
 
     id = Column(Integer, primary_key=True)
     display_name = Column(Unicode(127), nullable=False)
-    description = Column(Text)
+    description = Column(Text, nullable=False)
     root_node_id = Column(Integer, ForeignKey(TransmissionFormatNode.id), nullable=False)
 
     root_node = relationship(TransmissionFormatNode)
 
-    def __init__(self, display_name, root_node, description=None, **kwargs):
+    def __init__(self, display_name, root_node, description="", **kwargs):
         super(TransmissionFormat, self).__init__(**kwargs)
         self.display_name = display_name
         self.root_node = root_node

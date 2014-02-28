@@ -1,10 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title>Radio Dash</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <nav>

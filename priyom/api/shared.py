@@ -4,6 +4,8 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import teapot
+import teapot.routing.selectors
+import teapot.sqlalchemy
 import teapot.templating
 
 import xsltea
@@ -18,7 +20,7 @@ __all__ = [
     "user_sitemap",
     "admin_sitemap",
     "moderator_sitemap",
-    "dbsession",
+    "Session",
     "router"]
 
 source = teapot.templating.FileSystemSource(
@@ -37,8 +39,9 @@ _transform_loader = xsltea.TransformLoader(source)
 
 _xsltea_loader = xsltea.Pipeline()
 _xsltea_loader.loader = xsltea.XMLTemplateLoader(source)
-_xsltea_loader.loader.add_processor(xsltea.ForeachProcessor)
-_xsltea_loader.loader.add_processor(xsltea.ExecProcessor)
+_xsltea_loader.loader.add_processor(xsltea.ForeachProcessor(allow_unsafe=True))
+_xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
+_xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "anonymous", anonymous_sitemap
 ))
@@ -63,19 +66,20 @@ xsltea_site.local_transforms.append(_transform_loader.load_transform(
 del _xsltea_website_output
 del _xsltea_loader
 
-dbengine = sqlalchemy.create_engine(
+_dbengine = sqlalchemy.create_engine(
     "mysql+mysqlconnector://priyom2@localhost/priyom2?charset=utf8",
     echo=False,
     encoding="utf8",
     convert_unicode=True)
-priyom.model.Base.metadata.create_all(dbengine)
-dbsession = sqlalchemy.orm.sessionmaker(bind=dbengine)()
+priyom.model.Base.metadata.create_all(_dbengine)
+Session = sqlalchemy.orm.sessionmaker(bind=_dbengine)
+del _dbengine
 
 # main router
 
-class _Router(teapot.routing.Router):
+class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
     def __init__(self, *args, **kwargs):
-        super().__init__()
+        super().__init__(*args, sessionmaker=Session, **kwargs)
 
     def _reauth(self, request):
         if "api_session_key" in request.cookie_data:
@@ -84,7 +88,7 @@ class _Router(teapot.routing.Router):
             except ValueError:
                 return None
             try:
-                session = dbsession.query(
+                session = request.dbsession.query(
                     priyom.model.UserSession).filter(
                         priyom.model.UserSession.session_key == \
                         binascii.a2b_hex(key.encode())).one()
@@ -94,6 +98,9 @@ class _Router(teapot.routing.Router):
             return session
 
     def pre_route_hook(self, request):
+        super().pre_route_hook(request)
         request.auth = self._reauth(request)
 
 router = _Router()
+
+del _Router

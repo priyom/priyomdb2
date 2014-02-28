@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>Edit format</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>station = arguments['station']</exec:code>
+    <nav>
+      <sitemap:insert sitemap:name="user" />
+      <exec:if condition="request.auth.user.has_capability('moderator')">
+        <sitemap:insert sitemap:name="moderator" />
+      </exec:if>
+      <exec:if condition="request.auth.user.has_capability('admin')">
+        <sitemap:insert sitemap:name="admin" />
+      </exec:if>
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Edit station</h2>
+        <form class="ym-form" method="POST" name="format">
+          <input type="hidden" name="id" exec:value="station.id" />
+          <h6 class="ym-fbox-heading">Station properties</h6>
+          <div class="ym-fbox">
+            <label for="enigma-id">Enigma Identifier</label>
+            <input type="text" id="enigma-id"
+                   name="enigma_id"
+                   placeholder="e.g. S28"
+                   exec:value="station.enigma_id"/>
+          </div>
+          <div class="ym-fbox">
+            <label for="priyom-id">Priyom Identifier</label>
+            <input type="text" id="priyom-id"
+                   name="priyom_id"
+                   placeholder="e.g. S28"
+                   exec:value="station.priyom_id"/>
+          </div>
+          <div class="ym-fbox">
+            <label for="nickname">Nickname</label>
+            <input type="text" id="nickname"
+                   name="nickname"
+                   placeholder="e.g. S28"
+                   exec:value="station.nickname"/>
+          </div>
+          <div class="ym-fbox">
+            <label for="description">Description</label>
+            <textarea name="description" id="description"><exec:text>station.description or ''</exec:text></textarea>
+          </div>
+          <div class="ym-fbox-footer ym-fbox-button">
+            <input type="submit"
+                   name="action:save"
+                   value="Update"
+                   class="ym-primary" />
+          </div>
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>

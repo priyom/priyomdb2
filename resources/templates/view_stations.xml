@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>View stations</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>view_stations = arguments['view_stations']</exec:code>
+    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>edit_station = arguments['edit_station']</exec:code>
+    <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
+    <exec:code>def pagecolumn(new_column):
+    nonlocal page
+    if page.order_by[0].name == new_column:
+        return page.with_order_by_direction(
+            "asc" if page.order_by[1] == "desc" else "desc")
+    else:
+        return page.with_order_by_field(new_column)</exec:code>
+    <nav>
+      <sitemap:insert sitemap:name="user" />
+      <exec:if condition="request.auth.user.has_capability('moderator')">
+        <sitemap:insert sitemap:name="moderator" />
+      </exec:if>
+      <exec:if condition="request.auth.user.has_capability('admin')">
+        <sitemap:insert sitemap:name="admin" />
+      </exec:if>
+    </nav>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Stations</h2>
+        <table>
+          <colgroup>
+            <col class="id" />
+            <col class="enigma_id" />
+            <col class="priyom_id" />
+            <col />
+            <exec:if condition="is_admin">
+              <col class="actions" />
+            </exec:if>
+          </colgroup>
+          <thead>
+            <tr>
+              <th><a exec:href="href(view_stations,
+                                     page=pagecolumn('id'))">#</a></th>
+              <th><a exec:href="href(view_stations,
+                                     page=pagecolumn('enigma_id'))">Enigma ID</a></th>
+              <th><a exec:href="href(view_stations,
+                                     page=pagecolumn('priyom_id'))">Priyom ID</a></th>
+              <th><a exec:href="href(view_stations,
+                                     page=pagecolumn('nickname'))">Nickname</a></th>
+              <exec:if condition="is_admin">
+                <th>Actions</th>
+              </exec:if>
+            </tr>
+          </thead>
+          <tbody>
+            <tea:for-each tea:bind="station" tea:from="arguments['stations']">
+              <tr>
+                <td><exec:text>station.id</exec:text></td>
+                <td><exec:text>station.enigma_id or ''</exec:text></td>
+                <td><exec:text>station.priyom_id or ''</exec:text></td>
+                <td><exec:text>station.nickname or ''</exec:text></td>
+                <exec:if condition="is_admin">
+                  <td>
+                    <form method="POST" class="action-column ym-form">
+                      <a exec:href="href(edit_station, station_id=station.id)"
+                         class="ym-button ym-primary">Edit</a>
+                      <input type="submit" class="ym-button ym-danger"
+                             exec:name="'delete:{}'.format(station.id)"
+                             value="Delete" />
+                    </form>
+                    </td>
+                </exec:if>
+              </tr>
+            </tea:for-each>
+          </tbody>
+        </table>
+      </div></div>
+    </main>
+  </body>
+</html>

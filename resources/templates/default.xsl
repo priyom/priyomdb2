@@ -56,14 +56,8 @@
           <xsl:text> – </xsl:text>
           <xsl:text>Priyom Database Backend</xsl:text>
         </title>
-        <link rel="stylesheet" href="css/core/base.min.css" type="text/css" />
-        <link rel="stylesheet" href="css/screen/typography.css" type="text/css" />
-        <link rel="stylesheet" href="css/navigation/hlist.css" type="text/css" />
-        <link rel="stylesheet" href="css/screen/screen-FULLPAGE-layout.css" type="text/css" />
-        <link rel="stylesheet" href="css/forms/gray-theme.css" type="text/css" />
-        <link rel="stylesheet" href="css/style.css" type="text/css" />
-
         <meta name="viewport" content="width=320, initial-scale=1, user-scalable=no" />
+        <xsl:apply-templates select="h:head/h:link" />
       </head>
       <body>
         <header>
