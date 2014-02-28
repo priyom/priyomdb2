@@ -8,7 +8,7 @@ from . import admin_user
 
 @teapot.file_from_directory(
     "/css/",
-    "/var/www/docroot/horazont/projects/priyomdb2/mocks/css/",
+    "/var/www/docroot/horazont/projects/priyomdb2/resources/css/",
     "f",
     filterfunc=lambda x: x.endswith(".css"))
 @router.route(methods={teapot.request.Method.GET})

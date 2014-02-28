@@ -1,0 +1,144 @@
+body > nav h3 {
+    font-size: 100%;
+    color: #DDDDDD;
+    display: block;
+}
+
+.ym-hlist ul {
+    display: block;
+    float: none;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+}
+
+.ym-hlist ul li {
+    display: inline-block;
+    float: none;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+col.id {
+    width: 4em;
+}
+
+col.enigma_id, col.priyom_id {
+    width: 10em;
+}
+
+col.actions {
+    width: 15em;
+}
+
+td.tx-content {
+    font-family: monospace;
+}
+
+.icon-user:before {
+    content: '\263A';
+}
+
+.icon-station:before {
+    content: '\2622';
+}
+
+.parsing-tree td {
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.parsing-tree input, .parsing-tree textarea, .parsing-tree select {
+    width: 100%;
+}
+
+.parsing-tree col.parsing-tree-key {
+    width: 20em;
+}
+
+.parsing-tree .ym-fbox-wrap.ym-grid {
+    width: 100%;
+}
+
+.action-column.ym-form {
+    border: none;
+    box-shadow: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.action-column.ym-form .ym-button {
+    width: auto;
+}
+
+/* .parsinga-tree input { */
+/*     display: inline-block; */
+/*     width: auto; */
+/* } */
+
+/* .parsing-tree label { */
+/*     display: inline-block; */
+/*     width: auto; */
+/* } */
+
+@media screen and ( max-width: 760px ) {
+
+    .linearize-level-1,
+    .linearize-level-1 > [class*="ym-g"] {
+        display: block;
+        float: none;
+        padding: 0;
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .linearize-level-1 > [class*="ym-g"] > [class*="ym-gbox"] {
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+    }
+
+}
+
+@media screen and (max-width: 960px ) {
+
+
+    .linearize-level-2,
+    .linearize-level-2 > [class*="ym-g"] {
+        display: block;
+        float: none;
+        padding: 0;
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .linearize-level-2 > [class*="ym-g"] > [class*="ym-gbox"] {
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+    }
+
+
+}
+
+@media screen and (max-width: 960px ) {
+
+
+    .linearize-level-3,
+    .linearize-level-3 > [class*="ym-g"] {
+        display: block;
+        float: none;
+        padding: 0;
+        margin: 0;
+        width: 100% !important;
+    }
+
+    .linearize-level-3 > [class*="ym-g"] > [class*="ym-gbox"] {
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+    }
+
+
+}
