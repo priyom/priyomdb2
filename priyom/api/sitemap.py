@@ -140,12 +140,12 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             childelem = etree.SubElement(elem, self.xmlns.entry)
             self._build_xml_sitemap(template, childelem, child)
 
-    def _xml_sitemap(self, template, elem, filename, offset):
+    def _xml_sitemap(self, template, elem, context, offset):
         root = etree.Element(self.xmlns.entry)
         self._build_xml_sitemap(template, root, self._sitemap)
-        return template.default_subtree(root, filename, offset)
+        return template.default_subtree(root, context, offset)
 
-    def handle_sitemap(self, template, elem, filename, offset):
+    def handle_sitemap(self, template, elem, context, offset):
         try:
             name = elem.attrib[self.xmlns.name]
             outputfmt = elem.attrib.get(self.xmlns.format, "xml")
@@ -163,4 +163,4 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             raise ValueError("Unknown tea:sitemap output format: {}".format(
                 err))
 
-        return fmt_handler(template, elem, filename, offset)
+        return fmt_handler(template, elem, context, offset)

@@ -1,10 +1,12 @@
 import collections
 
 import teapot
+import teapot.forms
 import teapot.response
 import teapot.request
 
 import priyom.model
+import priyom.logic
 
 from .shared import *
 from .auth import *
@@ -76,90 +78,6 @@ def view_formats(request: teapot.request.Request):
         "edit_format": edit_format
     }, {}
 
-def _linearize_parsing_tree(node, level=0, index=0):
-    yield (level, node, index)
-    index += 1
-    for child in node.children:
-        index = yield from _linearize_parsing_tree(child, level+1, index)
-    return index
-
-def _reconstruct_node(postdata, index):
-
-    def attr(name):
-        return postdata.pop("node[{}].{}".format(index, name)).pop()
-
-    def boolattr(name):
-        try:
-            postdata.pop("node[{}].{}".format(index, name))
-            return True
-        except KeyError:
-            return False
-
-    node = TFN_tuple(
-        id=attr("id"),
-        order=index,
-        duplicity=attr("duplicity"),
-        saved=boolattr("saved"),
-        count=attr("count"),
-        content_match=attr("content_match"),
-        key=attr("key"),
-        join=boolattr("join"),
-        comment=attr("comment"),
-        children=[],
-        level=int(attr("level")))
-    return node
-
-def _unlinearize_parsing_subtree(postdata, parent, index, by_index=[]):
-    try:
-        node = _reconstruct_node(postdata, index)
-    except KeyError:
-        return None, index
-    while node:
-        if parent.level == node.level-1:
-            parent.children.append(node)
-            by_index.append(node)
-        else:
-            return node, index
-
-        node, index = _unlinearize_parsing_subtree(
-            postdata, node, index+1,
-            by_index)
-    return None, index
-
-def _unlinearize_parsing_tree(postdata):
-    root_node = _reconstruct_node(postdata, 0)
-    by_index = [root_node]
-    _unlinearize_parsing_subtree(postdata, root_node, 1, by_index)
-    return root_node, by_index
-
-def find_node_parent(parent, node):
-    for child in parent.children:
-        if child is node:
-            return parent
-        result = find_node_parent(child, node)
-        if result is not None:
-            return result
-
-def try_conversion_to_db_objects(node, index):
-    try:
-        tfn = priyom.model.TransmissionFormatNode()
-        tfn.duplicity = node.duplicity
-        if tfn.duplicity == priyom.model.TransmissionFormatNode.DUPLICITY_FIXED:
-            tfn.count = int(node.count)
-        tfn.order = index
-        tfn.content_match = node.content_match
-        tfn.key = node.key
-        tfn.comment = node.comment
-        tfn.join = bool(node.join)
-        tfn.saved = bool(node.saved)
-    except ValueError as err:
-        raise ValueError("could not convert node", node) from err
-    child_nodes = list(
-        try_conversion_to_db_objects(node, index)
-        for index, node in enumerate(node.children))
-    tfn.children.extend(child_nodes)
-    return tfn
-
 @require_capability("admin")
 @teapot.queryarg("id", "format_id", int, default=None)
 @router.route("/formats/edit", methods={teapot.request.Method.GET}, order=0)
@@ -173,14 +91,15 @@ def edit_format(request: teapot.request.Request, format_id=None):
     else:
         format = request.dbsession.query(priyom.model.TransmissionFormat).get(
             format_id)
-    root_node = format.root_node
+
+    editee = priyom.logic.TransmissionFormatEditee.from_actual_format(format)
 
     yield teapot.response.Response(None)
     yield {
-        "id": str(format.id),
-        "display_name": format.display_name,
-        "description": format.description,
-        "parsing_tree": _linearize_parsing_tree(root_node)
+        "id": editee.id,
+        "display_name": editee.display_name,
+        "description": editee.description,
+        "parsing_tree": editee.linearize_for_view()
     }, {}
 
 @require_capability("admin")
@@ -275,13 +194,101 @@ def edit_format_POST(request: teapot.request.Request):
     yield teapot.response.Response(None)
     yield template_args, {}
 
+class StationForm(teapot.forms.Form):
+    def __init__(self, from_station=None, **kwargs):
+        super().__init__(**kwargs)
+        if from_station is not None:
+            self.id = from_station.id
+            self.enigma_id = from_station.enigma_id
+            self.priyom_id = from_station.priyom_id
+            self.nickname = from_station.nickname or ""
+            self.description = from_station.description or ""
+            self.status = from_station.status or ""
+            self.location = from_station.location or ""
+
+    @teapot.forms.field
+    def id(self, value):
+        if not value:
+            return None
+        return int(value)
+
+    @teapot.forms.field
+    def enigma_id(self, value):
+        if not value:
+            return ""
+        return str(value)
+
+    @teapot.forms.field
+    def priyom_id(self, value):
+        if not value:
+            return ""
+        return str(value)
+
+    @teapot.forms.field
+    def nickname(self, value):
+        return str(value)
+
+    @teapot.forms.field
+    def description(self, value):
+        return str(value)
+
+    @teapot.forms.field
+    def status(self, value):
+        return str(value)
+
+    @teapot.forms.field
+    def location(self, value):
+        return str(value)
+
+@require_capability("admin")
 @router.route("/station/{station_id:d}/edit", methods={
     teapot.request.Method.GET})
 @xsltea_site.with_template("station_form.xml")
 def edit_station(station_id, request: teapot.request.Request):
     station = request.dbsession.query(priyom.model.Station).get(station_id)
+    form = StationForm(from_station=station)
     yield teapot.response.Response(None)
 
     yield {
-        "station": station
+        "form": form
     }, {}
+
+@require_capability("admin")
+@router.route("/station/{station_id:d}/edit", methods={
+    teapot.request.Method.POST})
+@xsltea_site.with_template("station_form.xml")
+def edit_station_POST(station_id, request: teapot.request.Request):
+    dbsession = request.dbsession
+    station = dbsession.query(priyom.model.Station).get(station_id)
+    form = StationForm(post_data=request.post_data)
+
+    if station_id != form.id:
+        form.errors[StationForm.id] = "Invalid ID"
+
+    if not form.errors:
+        station.enigma_id = form.enigma_id
+        station.priyom_id = form.priyom_id
+        station.nickname = form.nickname
+        station.description = form.description
+        station.status = form.status
+        station.location = form.location
+        dbsession.commit()
+
+        raise teapot.make_redirect_response(
+            request,
+            edit_station,
+            station_id=form.id)
+
+    else:
+        yield teapot.response.Response(None)
+        yield {
+            "form": form
+        }, {}
+
+@require_capability("admin")
+@router.route("/station/{station_id:d}/delete", methods={
+    teapot.request.Method.GET})
+@xsltea_site.with_template("station_delete.xml")
+def delete_station(station_id, request: teapot.request.Request):
+    yield teapot.response.Response(None)
+    yield {}, {}

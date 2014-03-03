@@ -2,7 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>PriyomAPI login</title>
     <tea:include tea:source="stylesheets.xml"
@@ -17,22 +18,23 @@
       <div class="ym-grid">
         <div class="ym-gl ym-g33" style="margin-left: 33%; margin-right: 33%"><div class="ym-gbox">
           <h2>Login</h2>
-          <form name="login" method="POST" class="ym-form">
+          <form name="login" method="POST" class="ym-form"
+                form:form="arguments['form']">
             <div class="ym-fbox">
               <label for="name">User name</label>
-              <input type="text" name="name" id="name" placeholder="e.g. franknord" />
+              <input type="text" id="name" placeholder="e.g. franknord"
+                     form:field="loginname" />
+              <form:for-each-error form:field="loginname">
+                <p class="error">
+                  <exec:text>error</exec:text>
+                </p>
+              </form:for-each-error>
             </div>
             <div class="ym-fbox">
               <label for="password">Password: </label>
-              <input type="password" name="password" id="password" />
+              <input type="password" id="password"
+                     form:field="password" />
             </div>
-            <exec:if condition="'error' in arguments">
-              <div class="ym-fbox">
-                <p class="box error">
-                  <exec:text>arguments['error']</exec:text>
-                </p>
-              </div>
-            </exec:if>
             <div class="ym-fbox-footer">
               <input type="submit" name="submit" class="ym-button ym-primary" value="Login"/>
             </div>

@@ -43,11 +43,12 @@ def view_stations(page):
             station.modified
             for station in stations))
 
-    from .admin_user import edit_station
+    from .admin_user import edit_station, delete_station
 
     yield {
         "stations": stations,
         "view_stations": view_stations,
         "edit_station": edit_station,
+        "delete_station": delete_station,
         "page": page
     }, {}

@@ -27,7 +27,7 @@ col.enigma_id, col.priyom_id {
 }
 
 col.actions {
-    width: 15em;
+    width: auto;
 }
 
 td.tx-content {
@@ -70,6 +70,19 @@ td.tx-content {
 
 .action-column.ym-form .ym-button {
     width: auto;
+}
+
+input.error, textarea.error, select.error {
+    box-shadow: 0 0 3px #f00;
+}
+
+col.order-by {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+th div.order-indicator {
+    float: right;
+    width: 1.5em;
 }
 
 /* .parsinga-tree input { */

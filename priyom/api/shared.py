@@ -12,7 +12,7 @@ import xsltea
 
 import priyom.model
 
-from . import sitemap
+from . import sitemap, sortable_table
 
 __all__ = [
     "xsltea_site",
@@ -39,7 +39,14 @@ _transform_loader = xsltea.TransformLoader(source)
 
 _xsltea_loader = xsltea.Pipeline()
 _xsltea_loader.loader = xsltea.XMLTemplateLoader(source)
-_xsltea_loader.loader.add_processor(xsltea.ForeachProcessor(allow_unsafe=True))
+_xsltea_loader.loader.add_processor(xsltea.ForeachProcessor(
+    safety_level=xsltea.SafetyLevel.unsafe))
+_xsltea_loader.loader.add_processor(xsltea.FormProcessor(
+    errorclass="error",
+    safety_level=xsltea.SafetyLevel.unsafe))
+_xsltea_loader.loader.add_processor(sortable_table.SortableTableProcessor(
+    active_column_class="order-by",
+    order_indicator_class="order-indicator"))
 _xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
 _xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(

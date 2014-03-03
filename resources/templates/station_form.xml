@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Edit format</title>
     <tea:include tea:source="stylesheets.xml"
@@ -11,7 +12,7 @@
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <exec:code>station = arguments['station']</exec:code>
+    <exec:code>form = arguments['form']</exec:code>
     <nav>
       <sitemap:insert sitemap:name="user" />
       <exec:if condition="request.auth.user.has_capability('moderator')">
@@ -24,33 +25,28 @@
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit station</h2>
-        <form class="ym-form" method="POST" name="format">
-          <input type="hidden" name="id" exec:value="station.id" />
+        <form class="ym-form" method="POST" name="format" form:form="form">
+          <input type="hidden" form:field="id" />
           <h6 class="ym-fbox-heading">Station properties</h6>
           <div class="ym-fbox">
             <label for="enigma-id">Enigma Identifier</label>
             <input type="text" id="enigma-id"
-                   name="enigma_id"
                    placeholder="e.g. S28"
-                   exec:value="station.enigma_id"/>
+                   form:field="enigma_id"/>
           </div>
           <div class="ym-fbox">
             <label for="priyom-id">Priyom Identifier</label>
             <input type="text" id="priyom-id"
-                   name="priyom_id"
-                   placeholder="e.g. S28"
-                   exec:value="station.priyom_id"/>
+                   form:field="priyom_id"/>
           </div>
           <div class="ym-fbox">
             <label for="nickname">Nickname</label>
             <input type="text" id="nickname"
-                   name="nickname"
-                   placeholder="e.g. S28"
-                   exec:value="station.nickname"/>
+                   form:field="nickname"/>
           </div>
           <div class="ym-fbox">
             <label for="description">Description</label>
-            <textarea name="description" id="description"><exec:text>station.description or ''</exec:text></textarea>
+            <textarea id="description" form:field="description"/>
           </div>
           <div class="ym-fbox-footer ym-fbox-button">
             <input type="submit"
