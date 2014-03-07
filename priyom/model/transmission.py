@@ -348,6 +348,13 @@ class TransmissionContents(base.Base):
     transmission = relationship(Transmission, backref=backref("contents"))
     alphabet = relationship(misc.Alphabet)
 
+    format_id = Column(Integer, ForeignKey(TransmissionFormat.id), nullable=True)
+
+    encoding = Column(Unicode(63), nullable=False)
+    contents = Column(Binary, nullable=True)
+
+    format = relationship(TransmissionFormat)
+
     def __init__(self, mime, is_transcribed=False,
             is_transcoded=False, transmission=None, alphabet=None,
             attribution=None):
@@ -357,51 +364,6 @@ class TransmissionContents(base.Base):
         self.is_transcoded = is_transcoded
         self.alphabet = alphabet
         self.attribution = attribution
-
-class TransmissionRawContents(TransmissionContents):
-    __tablename__ = "transmission_raw_contents"
-    __mapper_args__ = {"polymorphic_identity": "raw_contents"}
-
-    id = Column(Integer, ForeignKey(TransmissionContents.id), primary_key=True)
-    encoding = Column(Unicode(63), nullable=False)
-    contents = Column(Binary, nullable=True)
-
-class TransmissionStructuredContents(TransmissionContents):
-    __tablename__ = "transmission_structured_contents"
-    __mapper_args__ = {"polymorphic_identity": "structured_contents"}
-
-    id = Column(Integer, ForeignKey(TransmissionContents.id), primary_key=True)
-    format_id = Column(Integer, ForeignKey(TransmissionFormat.id), nullable=False)
-
-    format = relationship(TransmissionFormat)
-
-    def __init__(self, mime, fmt, **kwargs):
-        super(TransmissionStructuredContents, self).__init__(mime, **kwargs)
-        self.format = fmt
-
-    def unparse_struct(self):
-        """
-        Convert this message into a *struct* as required by
-        :cls:`TransmissionFormat.unparse` recursively and return that structure.
-        """
-        result = {}
-        for node in filter(lambda x: x.parent is None, self.nodes):
-            _, child_list = result.setdefault(node.format_node.key, (node.format_node, []))
-            child_list.append(node.unparse_struct())
-        return result
-
-    def unparse(self):
-        """
-        Return a string representation of this message.
-        """
-        return self.format.unparse(self.unparse_struct())
-
-    def __unicode__(self):
-        return self.unparse()
-
-    def __str__(self):
-        return unicode(self).encode("utf-8")
-
 
 class TransmissionContentNode(base.Base):
     __tablename__ = "transmission_content_nodes"

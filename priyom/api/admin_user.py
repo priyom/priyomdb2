@@ -8,24 +8,10 @@ import teapot.request
 import priyom.model
 import priyom.logic
 
+import sqlalchemy.exc
+
 from .shared import *
 from .auth import *
-
-TFN_tuple = collections.namedtuple(
-    "TFN_tuple",
-    [
-        "id",
-        "order",
-        "duplicity",
-        "saved",
-        "count",
-        "content_match",
-        "key",
-        "join",
-        "comment",
-        "children",
-        "level"
-    ])
 
 def mdzhb_format():
     TF, TFN = priyom.model.TransmissionFormat, priyom.model.TransmissionFormatNode
@@ -63,10 +49,10 @@ def mdzhb_format():
         messagewrap,
         comment="S28 style message"
     )
-    return TF("", tree), callwrap, call, messagewrap, codeword, numbers
+    return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
 
 @require_capability("admin")
-@router.route("/formats", order=0)
+@router.route("/format", order=0)
 @xsltea_site.with_template("view_formats.xml")
 def view_formats(request: teapot.request.Request):
     formats = list(request.dbsession.query(priyom.model.TransmissionFormat))
@@ -79,117 +65,76 @@ def view_formats(request: teapot.request.Request):
     }, {}
 
 @require_capability("admin")
-@teapot.queryarg("id", "format_id", int, default=None)
-@router.route("/formats/edit", methods={teapot.request.Method.GET}, order=0)
+@router.route("/format/{format_id:d}/edit",
+              methods={teapot.request.Method.GET}, order=0)
 @xsltea_site.with_template("format_form.xml")
-def edit_format(request: teapot.request.Request, format_id=None):
-    if format_id is None:
-        # format = mdzhb_format()[0]
-        format = priyom.model.TransmissionFormat(
-            "",
-            priyom.model.TransmissionFormatNode())
+def edit_format(request: teapot.request.Request, format_id=0):
+    if format_id == 0:
+        format = mdzhb_format()[0]
     else:
         format = request.dbsession.query(priyom.model.TransmissionFormat).get(
             format_id)
 
-    editee = priyom.logic.TransmissionFormatEditee.from_actual_format(format)
+    form = priyom.logic.TransmissionFormatForm.initialize_from_database(
+        format)
 
     yield teapot.response.Response(None)
     yield {
-        "id": editee.id,
-        "display_name": editee.display_name,
-        "description": editee.description,
-        "parsing_tree": editee.linearize_for_view()
+        "form": form
     }, {}
 
 @require_capability("admin")
-@router.route("/formats/edit", methods={teapot.request.Method.POST})
+@router.route("/format/{format_id:d}/edit",
+              methods={teapot.request.Method.POST})
 @xsltea_site.with_template("format_form.xml")
-def edit_format_POST(request: teapot.request.Request):
-    postdata = request.post_data
+def edit_format_POST(request: teapot.request.Request, format_id=0):
+    post_data = request.post_data
     dbsession = request.dbsession
 
-    root_node, by_index = _unlinearize_parsing_tree(postdata)
+    form = priyom.logic.TransmissionFormatForm(
+        post_data=post_data)
 
-    try:
-        action = next(iter(filter(lambda x: x.startswith("action:"), postdata.keys())))
-    except StopIteration:
-        action = "action:update"
-
-    template_args = {}
-
-    format_id = postdata["id"].pop()
-    if not format_id or format_id == "None":
-        format_id = None
-    else:
-        format_id = int(format_id)
-
-    format_display_name = postdata["display_name"].pop()
-    format_description = postdata["description"].pop()
-
-    if action.startswith("action:node["):
-        _, data = action.split("[", 1)
-        node_index, action = data.split("]", 1)
-        action = action[1:]
-
+    target, action = form.find_action(post_data)
+    if action == "update":
+        pass
+    elif hasattr(target, "parent") and target.parent:
         if action == "add_child":
-            node = by_index[int(node_index)]
-            node.children.append(
-                TFN_tuple(*([""]*(len(node)-1) + [node.level+1])))
-        elif action == "delete":
-            node = by_index[int(node_index)]
-            parent = find_node_parent(root_node, node)
-            if parent is not None:
-                parent.children.remove(node)
+            target.children.append(priyom.logic.TransmissionFormatRow())
         elif action == "move_up":
-            node = by_index[int(node_index)]
-            parent = find_node_parent(root_node, node)
-            if parent is not None:
-                idx = parent.children.index(node)
-                if idx >= 1:
-                    parent.children[idx] = parent.children[idx-1]
-                    parent.children[idx-1] = node
+            i = target.index
+            l = target.parent
+            if i >= 1:
+                l.pop(i)
+                l.insert(i-1, target)
         elif action == "move_down":
-            node = by_index[int(node_index)]
-            parent = find_node_parent(root_node, node)
-            if parent is not None:
-                idx = parent.children.index(node)
-                if idx < len(parent.children)-1:
-                    parent.children[idx] = parent.children[idx+1]
-                    parent.children[idx+1] = node
-    elif action == "action:save_to_db":
+            i = target.index
+            l = target.parent
+            if i < len(l):
+                l.pop(i)
+                l.insert(i+1, target)
+        elif action == "delete":
+            del target.parent[target.index]
+    elif action == "save_to_db" and not form.errors:
+        # FIXME: validate existing transmissions of this format before
+        # continuing!
+
         try:
-            tfn = try_conversion_to_db_objects(root_node, 0)
-        except ValueError as err:
-            _, node = err.args
-            index = by_index.index(node)
-            template_args["node_error_index"] = index
-            template_args["node_error_message"] = str(err.__context__)
-
-        if format_id is not None:
-            format = dbsession.query(priyom.model.TransmissionFormat).get(
-                format_id)
-            format.display_name = format_display_name
-            if format.root_node is not None:
-                dbsession.delete(format.root_node)
-            format.root_node = tfn
-        else:
-            format = priyom.model.TransmissionFormat(
-                format_display_name, tfn)
+            format = form.to_database_object(
+                destination=dbsession.query(priyom.model.TransmissionFormat).get(
+                    format_id))
             dbsession.add(format)
-        format.description = format_description
-        dbsession.commit()
+            dbsession.commit()
+        except sqlalchemy.exc.IntegrityError:
+            dbsession.rollback()
+        else:
+            raise teapot.make_redirect_response(
+                request,
+                edit_format,
+                format_id=format.id)
 
-        raise teapot.make_redirect_response(
-            request, edit_format, format_id=format.id)
-
-
-    template_args.update({
-        "id": format_id,
-        "display_name": format_display_name,
-        "description": format_description,
-        "parsing_tree": _linearize_parsing_tree(root_node)
-    })
+    template_args = {
+        "form": form
+    }
 
     yield teapot.response.Response(None)
     yield template_args, {}
@@ -254,8 +199,8 @@ def edit_station(station_id, request: teapot.request.Request):
     }, {}
 
 @require_capability("admin")
-@router.route("/station/{station_id:d}/edit", methods={
-    teapot.request.Method.POST})
+@router.route("/station/{station_id:d}/edit",
+              methods={teapot.request.Method.POST})
 @xsltea_site.with_template("station_form.xml")
 def edit_station_POST(station_id, request: teapot.request.Request):
     dbsession = request.dbsession

@@ -25,7 +25,7 @@
         <h2>Transmission formats</h2>
         <div style="margin-bottom: 1.5em;"><strong>Activities:</strong>
         <a class="ym-button ym-success ym-add"
-           exec:href="href(arguments['add_format'])">Add new format</a>
+           exec:href="href(arguments['add_format'], format_id=0)">Add new format</a>
         </div>
         <table>
           <colgroup>

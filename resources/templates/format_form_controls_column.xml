@@ -1,24 +1,14 @@
 <?xml version="1.0"?>
 <td xmlns="http://www.w3.org/1999/xhtml"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-    xmlns:tea="https://xmlns.zombofant.net/xsltea/processors">
-  <exec:if condition="'node_error_index' in arguments and arguments['node_error_index'] == index">
-    <div class="box error">
-      <p>
-        <strong>Error: </strong>
-        <span>
-          <exec:text>arguments["node_error_message"]</exec:text>
-        </span>
-      </p>
-    </div>
-  </exec:if>
+    xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+    xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <div class="ym-fbox">
     <div class="ym-fbox-wrap ym-grid linearize-level-3">
       <div class="ym-gl ym-g33"><div class="ym-gbox">
         <div class="ym-fbox">
-          <label exec:for="'node[{}].duplicity'.format(index)">Duplicity</label>
-          <select exec:name="'node[{}].duplicity'.format(index)"
-                  exec:id="'node[{}].duplicity'.format(index)">
+          <label form:for-field="duplicity">Duplicity</label>
+          <select form:field="duplicity">
             <tea:for-each tea:bind="value, name"
                           tea:from="(
                                     ('1', 'one'),
@@ -32,12 +22,10 @@
           </select>
         </div>
         <div class="ym-fbox">
-          <label exec:id="'node[{}].count'.format(index)"
+          <label form:for-field="count"
                  tooltip="This is unused if duplicity is anything but a custom, fixed amount.">Count</label>
           <input type="number"
-                 exec:name="'node[{}].count'.format(index)"
-                 exec:id="'node[{}].count'.format(index)"
-                 exec:value="node.count" />
+                 form:field="count"/>
         </div>
       </div></div>
       <div class="ym-gl ym-g33"><div class="ym-gbox">
@@ -46,52 +34,46 @@
           <div class="ym-fbox-wrap">
             <div class="ym-fbox-check">
               <input type="checkbox"
-                     exec:id="'node[{}].saved'.format(index)"
-                     exec:name="'node[{}].saved'.format(index)"
-                     exec:checked="'' if node.saved else None" />
-              <label exec:for="'node[{}].saved'.format(index)">Save contents to db</label>
+                     form:field="saved" />
+              <label form:for-field="saved">Save contents to db</label>
             </div>
             <div class="ym-fbox-check">
               <input type="checkbox"
-                     exec:id="'node[{}].join'.format(index)"
-                     exec:name="'node[{}].join'.format(index)"
-                     exec:checked="'' if node.join else None" />
-              <label exec:for="'node[{}].joir'.format(index)">Join children</label>
+                     form:field="join" />
+              <label form:for-field="join">Join children</label>
             </div>
           </div>
         </div>
         <div class="ym-fbox">
-          <label exec:for="'node[{}].content_match'.format(index)">Join / Match expression</label>
+          <label form:for-field="content_match">Join / Match expression</label>
           <input type="text"
-                 exec:id="'node[{}].content_match'.format(index)"
-                 exec:name="'node[{}].content_match'.format(index)"
-                 exec:value="node.content_match" />
+                 form:field="content_match" />
         </div>
       </div></div>
       <div class="ym-gl ym-g33"><div class="ym-gbox">
         <div class="ym-fbox">
           <input type="submit"
                  class="ym-button ym-success"
-                 exec:name="'action:node[{}].add_child'.format(index)"
+                 form:action="add_child"
                  value="Add child" />
         </div>
         <exec:if condition="level > 0">
           <div class="ym-fbox">
             <input type="submit"
                    class="ym-button"
-                   exec:name="'action:node[{}].move_up'.format(index)"
+                   form:action="move_up"
                    value="Move up"
                    style="width: 47%; margin-right: 6%;" />
             <input type="submit"
                    class="ym-button"
-                   exec:name="'action:node[{}].move_down'.format(index)"
+                   form:action="move_down"
                    value="Move down"
                    style="width: 47%; margin-right: 0;" />
           </div>
           <div class="ym-fbox">
             <input type="submit"
                    class="ym-button ym-danger"
-                   exec:name="'action:node[{}].delete'.format(index)"
+                   form:action="delete"
                    value="Delete" />
           </div>
         </exec:if>

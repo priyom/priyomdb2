@@ -49,6 +49,7 @@ _xsltea_loader.loader.add_processor(sortable_table.SortableTableProcessor(
     order_indicator_class="order-indicator"))
 _xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
 _xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
+_xsltea_loader.loader.add_processor(xsltea.FunctionProcessor())
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "anonymous", anonymous_sitemap
 ))
