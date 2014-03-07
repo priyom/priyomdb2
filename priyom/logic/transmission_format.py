@@ -11,6 +11,8 @@ import weakref
 
 import priyom.model
 
+import teapot.forms
+
 __all__ = [
     "TransmissionFormatForm",
     "TransmissionFormatRow"]

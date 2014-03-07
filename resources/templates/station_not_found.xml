@@ -3,22 +3,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
-    <title>Radio Dash</title>
+    <title>Station not found</title>
     <tea:include tea:source="stylesheets.xml"
                  tea:xpath="h:link"
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
+    <exec:code>station_id = arguments['station_id']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Welcome, anonymous!</h2>
-        <p>Sorry, currently there is no content for unauthenticated
-        users. Please log in, if you have credentials. If you don’t, please join
-        our <a href="irc://irc.freenode.net/#priyom">IRC</a> so that
-        we get to know you. Eventually, you’ll get access.</p>
+        <h2>View station</h2>
+        <p class="box error">
+          <strong>Station not found: </strong>
+          A station with the ID <exec:text>station_id</exec:text> does not
+          exist.
+        </p>
       </div></div>
     </main>
   </body>

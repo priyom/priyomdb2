@@ -11,15 +11,7 @@
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <nav>
-      <sitemap:insert sitemap:name="user" />
-      <exec:if condition="request.auth.user.has_capability('moderator')">
-        <sitemap:insert sitemap:name="moderator" />
-      </exec:if>
-      <exec:if condition="request.auth.user.has_capability('admin')">
-        <sitemap:insert sitemap:name="admin" />
-      </exec:if>
-    </nav>
+    <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Radio dash</h2>

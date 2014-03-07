@@ -9,6 +9,7 @@ import teapot.request
 import priyom.model
 
 from .shared import *
+from .pagination import *
 
 class LoginForm(teapot.forms.Form):
     @teapot.forms.field
@@ -90,3 +91,51 @@ def login_POST(request: teapot.request.Request):
     response.cookies["api_session_key"]["httponly"] = True
 
     yield response
+
+@paginate(priyom.model.Station,
+          25,
+          ("enigma_id", "asc"),
+          "page")
+@router.route("/station", methods={teapot.request.Method.GET})
+@xsltea_site.with_template("view_stations.xml")
+def view_stations(request:teapot.request.Request, page):
+    stations = list(page)
+
+    yield teapot.response.Response(
+        None,
+        last_modified=max(
+            station.modified
+            for station in stations))
+
+    from .admin_user import edit_station, delete_station
+
+    yield {
+        "stations": stations,
+        "view_stations": view_stations,
+        "view_station": edit_station if request.auth else view_station,
+        "delete_station": delete_station if request.auth else None,
+        "page": page
+    }, {}
+
+@router.route("/station/{station_id:d}",
+              methods={teapot.request.Method.GET})
+@xsltea_site.with_variable_template()
+def view_station(request: teapot.request.Request, station_id):
+    station = request.dbsession.query(priyom.model.Station).get(station_id)
+
+    yield ("station_view.xml" if station else "station_not_found.xml")
+
+    yield teapot.response.Response(
+        None,
+        response_code=200 if station else 404,
+        last_modified=station.modified if station else None)
+
+    if station:
+        yield {
+            "station": station
+        }, {}
+
+    else:
+        yield {
+            "station_id": station_id
+        }, {}

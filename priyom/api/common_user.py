@@ -27,28 +27,3 @@ def logout(request: teapot.request.Request):
     response.cookies["api_session_key"] = ""
     response.cookies["api_session_key"]["Expires"] = 1
     return response
-
-@paginate(priyom.model.Station,
-          25,
-          ("enigma_id", "asc"),
-          "page")
-@router.route("/station", methods={teapot.request.Method.GET})
-@xsltea_site.with_template("view_stations.xml")
-def view_stations(page):
-    stations = list(page)
-
-    yield teapot.response.Response(
-        None,
-        last_modified=max(
-            station.modified
-            for station in stations))
-
-    from .admin_user import edit_station, delete_station
-
-    yield {
-        "stations": stations,
-        "view_stations": view_stations,
-        "edit_station": edit_station,
-        "delete_station": delete_station,
-        "page": page
-    }, {}

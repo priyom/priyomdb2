@@ -85,6 +85,98 @@ th div.order-indicator {
     width: 1.5em;
 }
 
+ul.pagination {
+    display: block;
+    text-align: right;
+}
+
+ul.pagination > li {
+    display: inline-block;
+    list-style-type: none;
+    width: 2em;
+    text-align: center;
+    margin: 0;
+}
+
+ul.pagination > li.wide {
+    width: 4em;
+}
+
+ul.pagination > li > a,
+ul.pagination > li > div.fakebutton {
+    display: block;
+    /* steal the button theme from yaml here */
+    white-space: nowrap;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #eeeeee), color-stop(100%, #cccccc));
+    background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -moz-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: -ms-linear-gradient(top, #eeeeee, #cccccc);
+    background-image: linear-gradient(to bottom, #eeeeee,#cccccc);
+    background-color: #eeeeee;
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, startColorstr='#FFEEEEEE', endColorstr='#FFCCCCCC');
+    zoom: 1;
+    border: 1px solid #777;
+    -webkit-box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.8) inset, 0 1px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.8) inset, 0 1px 0 rgba(0, 0, 0, 0.15);
+    color: #333 !important;
+    font: normal 1em/2em Arial, Helvetica;
+    overflow: visible;
+    /* removes extra side spacing in IE */
+    text-decoration: none !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    margin-right: -1px;
+}
+
+ul.pagination > li > div.fakebutton {
+    cursor: default;
+}
+
+ul.pagination > li > a {
+    cursor: pointer;
+}
+
+ul.pagination > li > a:hover {
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fafafa), color-stop(100%, #dddddd));
+    background-image: -webkit-linear-gradient(top, #fafafa, #dddddd);
+    background-image: -moz-linear-gradient(top, #fafafa, #dddddd);
+    background-image: -ms-linear-gradient(top, #fafafa, #dddddd);
+    background-image: linear-gradient(to bottom, #fafafa,#dddddd);
+    background-color: #fafafa;
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, startColorstr='#FFFAFAFA', endColorstr='#FFDDDDDD');
+    zoom: 1;
+    color: black;
+}
+
+ul.pagination > li > a:active,
+ul.pagination > li.current > a {
+    background: transparent;
+    -webkit-box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.2);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #cccccc), color-stop(100%, #bbbbbb));
+    background-image: -webkit-linear-gradient(top, #cccccc, #bbbbbb);
+    background-image: -moz-linear-gradient(top, #cccccc, #bbbbbb);
+    background-image: -ms-linear-gradient(top, #cccccc, #bbbbbb);
+    background-image: linear-gradient(to bottom, #cccccc,#bbbbbb);
+    background-color: #cccccc;
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, startColorstr='#FFCCCCCC', endColorstr='#FFBBBBBB');
+    zoom: 1;
+}
+
+ul.pagination > li:first-child > a,
+ul.pagination > li:first-child > div.fakebutton
+{
+    border-top-left-radius: .2em;
+    border-bottom-left-radius: .2em;
+}
+
+ul.pagination > li:last-child > a,
+ul.pagination > li:last-child > div.fakebutton
+{
+    border-top-right-radius: .2em;
+    border-bottom-right-radius: .2em;
+    margin-right: 0;
+}
+
 /* .parsinga-tree input { */
 /*     display: inline-block; */
 /*     width: auto; */
@@ -112,6 +204,9 @@ th div.order-indicator {
         margin: 0;
     }
 
+    ul.pagination {
+        text-align: center;
+    }
 }
 
 @media screen and (max-width: 960px ) {

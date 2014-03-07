@@ -134,7 +134,7 @@ class Page:
         return type(self)(
             self._base_query,
             self._objcls,
-            self.page,
+            page,
             self.items_per_page,
             *self.order_by)
 

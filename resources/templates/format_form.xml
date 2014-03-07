@@ -40,15 +40,7 @@
         </tea:call>
       </tea:for-each>
     </tea:def>
-    <nav>
-      <sitemap:insert sitemap:name="user" />
-      <exec:if condition="request.auth.user.has_capability('moderator')">
-        <sitemap:insert sitemap:name="moderator" />
-      </exec:if>
-      <exec:if condition="request.auth.user.has_capability('admin')">
-        <sitemap:insert sitemap:name="admin" />
-      </exec:if>
-    </nav>
+    <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit transmission format</h2>

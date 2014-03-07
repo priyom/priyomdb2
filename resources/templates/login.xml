@@ -11,9 +11,7 @@
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <nav>
-      <sitemap:insert sitemap:name="anonymous" />
-    </nav>
+    <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-grid">
         <div class="ym-gl ym-g33" style="margin-left: 33%; margin-right: 33%"><div class="ym-gbox">

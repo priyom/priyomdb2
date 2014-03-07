@@ -14,21 +14,17 @@
   <body>
     <exec:code>view_stations = arguments['view_stations']</exec:code>
     <exec:code>page = arguments['page']</exec:code>
-    <exec:code>edit_station = arguments['edit_station']</exec:code>
+    <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>delete_station = arguments['delete_station']</exec:code>
     <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
-    <nav>
-      <sitemap:insert sitemap:name="user" />
-      <exec:if condition="request.auth.user.has_capability('moderator')">
-        <sitemap:insert sitemap:name="moderator" />
-      </exec:if>
-      <exec:if condition="request.auth.user.has_capability('admin')">
-        <sitemap:insert sitemap:name="admin" />
-      </exec:if>
-    </nav>
+    <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Stations</h2>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_stations</tea:pass>
+        </tea:call>
         <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_stations">
           <colgroup>
             <col class="id" name="id" />
@@ -54,9 +50,12 @@
                 <td><exec:text>station.priyom_id or ''</exec:text></td>
                 <td><exec:text>station.nickname or ''</exec:text></td>
                 <td>
+                  <a exec:href="href(view_station, station_id=station.id)"
+                     exec:class="'ym-button ym-primary'+
+                                 (' ym-edit' if request.auth else '')">
+                    <exec:text>'Edit' if request.auth else 'View'</exec:text>
+                  </a>
                   <exec:if condition="is_admin">
-                    <a exec:href="href(edit_station, station_id=station.id)"
-                       class="ym-button ym-primary ym-edit">Edit</a>
                     <a exec:href="href(delete_station, station_id=station.id)"
                        class="ym-button ym-danger ym-delete">Delete</a>
                   </exec:if>
@@ -65,6 +64,10 @@
             </tea:for-each>
           </tbody>
         </priyom:sortable-table>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_stations</tea:pass>
+        </tea:call>
       </div></div>
     </main>
   </body>

@@ -22,6 +22,9 @@ anonymous_sitemap.new(
     anonymous_user.anonhome,
     label="Home")
 anonymous_sitemap.new(
+    anonymous_user.view_stations,
+    label="View stations")
+anonymous_sitemap.new(
     anonymous_user.login,
     label="Log in")
 
@@ -30,7 +33,7 @@ user_sitemap.new(
     common_user.dash,
     label="Dash")
 user_sitemap.new(
-    common_user.view_stations,
+    anonymous_user.view_stations,
     label="View stations")
 user_sitemap.new(
     common_user.logout,

@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<nav xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+  <exec:if condition="request.auth">
+    <sitemap:insert sitemap:name="user" />
+    <exec:if condition="request.auth.user.has_capability('moderator')">
+      <sitemap:insert sitemap:name="moderator" />
+    </exec:if>
+    <exec:if condition="request.auth.user.has_capability('admin')">
+      <sitemap:insert sitemap:name="admin" />
+    </exec:if>
+  </exec:if>
+  <exec:if condition="not request.auth">
+    <sitemap:insert sitemap:name="anonymous" />
+  </exec:if>
+</nav>
