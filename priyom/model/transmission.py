@@ -295,28 +295,6 @@ class TransmissionFormat(base.TopLevel):
         else:
             self._build_tree_nodes(items, contents, parent)
 
-    def parse(self, message):
-        """
-        Parse *message* and return a :cls:`TransmissionStructuredContents`
-        instance which contains the keys from the parser tree associated with
-        this format.
-
-        Raises ValueError if the message cannot be parsed by this format.
-        """
-        result = self.root_node.parse(message)
-        contents = TransmissionStructuredContents("text/plain", self)
-        self._build_tree(result, contents, None)
-        return contents
-
-    def unparse(self, struct):
-        """
-        Unparse a previously parsed message. *struct* must be a structure as
-        returned by :meth:`TransmissionFormatNode.parse`.
-
-        Return the joined string containing the message represented by *struct*.
-        """
-        return "".join(self.root_node.unparse(struct))
-
     def __str__(self):
         return self.display_name.encode("utf-8")
 
@@ -364,47 +342,6 @@ class TransmissionContents(base.Base):
         self.is_transcoded = is_transcoded
         self.alphabet = alphabet
         self.attribution = attribution
-
-class TransmissionContentNode(base.Base):
-    __tablename__ = "transmission_content_nodes"
-
-    id = Column(Integer, primary_key=True)
-    content_id = Column(Integer, ForeignKey(TransmissionStructuredContents.id), nullable=False)
-    parent_id = Column(Integer, ForeignKey(__tablename__ + ".id"), nullable=True)
-    format_node_id = Column(Integer, ForeignKey(TransmissionFormatNode.id), nullable=False)
-    order = Column(Integer, nullable=False)
-    segment = Column(Binary, nullable=False)
-
-    children = relationship(
-        "TransmissionContentNode",
-        backref=backref("parent", remote_side=[id])
-    )
-    format_node = relationship(TransmissionFormatNode)
-    contents = relationship(TransmissionStructuredContents, backref=backref("nodes", order_by=order))
-
-    def __init__(self, structured_contents, format_node, order, segment,
-            parent=None, **kwargs):
-        super(TransmissionContentNode, self).__init__(**kwargs)
-        self.contents = structured_contents
-        self.format_node = format_node
-        self.order = order
-        self.segment = segment
-        self.parent = parent
-
-    def unparse_struct(self):
-        """
-        Return an element of the values list in the structure required by
-        :cls:`TransmissionFormat.unparse`. This is not of much use if called
-        directly but is used by :cls:`TransmissionStructuredContents.unparse`.
-        """
-        if len(self.children) > 0:
-            result = {}
-            for child in self.children:
-                _, child_list = result.setdefault(child.format_node.key, (child.format_node, []))
-                child_list.append(child.unparse_struct())
-            return result
-        else:
-            return self.segment
 
 class TransmissionAttachment(attachment.Attachment):
     __tablename__ = "transmission_attachments"
