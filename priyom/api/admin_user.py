@@ -12,6 +12,7 @@ import sqlalchemy.exc
 
 from .shared import *
 from .auth import *
+from .pagination import *
 
 def mdzhb_format():
     TF, TFN = priyom.model.TransmissionFormat, priyom.model.TransmissionFormatNode
@@ -52,16 +53,22 @@ def mdzhb_format():
     return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
 
 @require_capability("admin")
+@paginate(priyom.model.TransmissionFormat,
+          25,
+          ("display_name", "asc"),
+          "page")
 @router.route("/format", order=0)
 @xsltea_site.with_template("view_formats.xml")
-def view_formats(request: teapot.request.Request):
-    formats = list(request.dbsession.query(priyom.model.TransmissionFormat))
+def view_formats(request: teapot.request.Request, page):
+    formats = list(page)
 
     yield teapot.response.Response(None)
     yield {
         "formats": formats,
+        "view_formats": view_formats,
         "add_format": edit_format,
-        "edit_format": edit_format
+        "edit_format": edit_format,
+        "page": page,
     }, {}
 
 @require_capability("admin")
