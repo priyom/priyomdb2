@@ -35,13 +35,15 @@ class Event(TopLevel):
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime)
     event_class_id = Column(Integer, ForeignKey(EventClass.id))
+    approved = Column(Boolean, default=False, nullable=False)
 
     station = relationship(Station,
                            backref=backref("events"),
                            order_by=start_time)
     event_class = relationship(EventClass)
+    frequencies = relationship("EventFrequency",
+                               order_by="EventFrequency.frequency")
 
-    approved = Column(Boolean, default=False, nullable=False)
 
 class EventFrequency(Base):
     __tablename__ = 'event_frequencies'
