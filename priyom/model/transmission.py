@@ -7,12 +7,24 @@ import re
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref, validates
 
-from . import base as base
-from . import misc
-from . import broadcast
-from . import attachment
+from .base import Base, TopLevel
+from .event import Event
+from .attachment import Attachment
 
-class TransmissionFormatNode(base.Base):
+class Alphabet(Base):
+    __tablename__ = 'alphabets'
+    __table_args__ = (
+        UniqueConstraint('display_name'),
+    )
+
+    id = Column(Integer, primary_key=True)
+    display_name = Column(String(63), nullable=False)
+
+    def __init__(self, display_name):
+        super(Alphabet, self).__init__()
+        self.display_name = display_name
+
+class TransmissionFormatNode(Base):
     __tablename__ = "transmission_format_nodes"
 
     DUPLICITY_ONE = "1"
@@ -246,7 +258,7 @@ class TransmissionFormatNode(base.Base):
             for item in self.propagate_unparse(struct):
                 yield item
 
-class TransmissionFormat(base.TopLevel):
+class TransmissionFormat(TopLevel):
     __tablename__ = "transmission_formats"
 
     id = Column(Integer, primary_key=True)
@@ -302,17 +314,17 @@ class TransmissionFormat(base.TopLevel):
         return self.display_name
 
 
-class Transmission(base.TopLevel):
+class Transmission(TopLevel):
     __tablename__ = "transmissions"
 
     id = Column(Integer, primary_key=True)
-    broadcast_id = Column(Integer, ForeignKey(broadcast.Broadcast.id))
+    event_id = Column(Integer, ForeignKey(Event.id))
     timestamp = Column(DateTime, nullable=False)
     duration = Column(Integer, nullable=False)
 
-    broadcast = relationship(broadcast.Broadcast, backref=backref("transmissions", order_by=timestamp))
+    event = relationship(Event, backref=backref("transmissions", order_by=timestamp))
 
-class TransmissionContents(base.Base):
+class TransmissionContents(Base):
     __tablename__ = "transmission_contents"
 
     id = Column(Integer, primary_key=True)
@@ -320,11 +332,11 @@ class TransmissionContents(base.Base):
     mime = Column(Unicode(127), nullable=False)
     is_transcribed = Column(Boolean, nullable=False)
     is_transcoded = Column(Boolean, nullable=False)
-    alphabet_id = Column(Integer, ForeignKey(misc.Alphabet.id))
+    alphabet_id = Column(Integer, ForeignKey(Alphabet.id))
     attribution = Column(Unicode(255), nullable=True)
 
     transmission = relationship(Transmission, backref=backref("contents"))
-    alphabet = relationship(misc.Alphabet)
+    alphabet = relationship(Alphabet)
 
     format_id = Column(Integer, ForeignKey(TransmissionFormat.id), nullable=True)
 
@@ -343,11 +355,11 @@ class TransmissionContents(base.Base):
         self.alphabet = alphabet
         self.attribution = attribution
 
-class TransmissionAttachment(attachment.Attachment):
+class TransmissionAttachment(Attachment):
     __tablename__ = "transmission_attachments"
     __mapper_args__ = {"polymorphic_identity": "transmission_attachment"}
 
-    attachment_id = Column(Integer, ForeignKey(attachment.Attachment.id), primary_key=True)
+    attachment_id = Column(Integer, ForeignKey(Attachment.id), primary_key=True)
     transmission_id = Column(Integer, ForeignKey(Transmission.id), nullable=False)
     relation = Column(Enum(
         "recording",

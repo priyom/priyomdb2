@@ -1,8 +1,7 @@
 from .base import Base
-from .misc import Modulation, Alphabet
 from .attachment import Attachment
 from .station import Station
-from .broadcast import Broadcast, BroadcastFrequency
+from .event import Modulation, EventClass, Event, EventFrequency
 from .transmission import\
     Transmission, TransmissionContents, \
     TransmissionAttachment, \
