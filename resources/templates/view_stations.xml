@@ -28,14 +28,16 @@
         <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_stations">
           <colgroup>
             <col class="id" name="id" />
+            <col class="modified" name="modified" />
             <col class="enigma_id" name="enigma_id" />
-            <col class="priyom_id" name="priyom_id"/>
+            <col class="priyom_id" name="priyom_id" />
             <col name="nickname" />
             <col class="actions" style="width: 20em;" />
           </colgroup>
           <thead>
             <tr>
               <th>#</th>
+              <th>Modified</th>
               <th>Enigma ID</th>
               <th>Priyom ID</th>
               <th>Nickname</th>
@@ -46,6 +48,7 @@
             <tea:for-each tea:bind="station" tea:from="arguments['stations']">
               <tr>
                 <td><exec:text>station.id</exec:text></td>
+                <td><exec:text>station.modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
                 <td><exec:text>station.enigma_id or ''</exec:text></td>
                 <td><exec:text>station.priyom_id or ''</exec:text></td>
                 <td><exec:text>station.nickname or ''</exec:text></td>
