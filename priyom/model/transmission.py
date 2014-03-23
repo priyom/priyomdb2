@@ -337,6 +337,11 @@ class TransmissionContents(Base):
     alphabet_id = Column(Integer, ForeignKey(Alphabet.id))
     attribution = Column(Unicode(255), nullable=True)
 
+    parent_contents_id = Column(Integer,
+                                ForeignKey("transmission_contents.id"),
+                                nullable=True)
+    parent_contents = relationship("TransmissionContents")
+
     transmission = relationship(Transmission, backref=backref("contents"))
     alphabet = relationship(Alphabet)
 
