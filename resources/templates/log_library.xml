@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<library
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+    xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+    xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <tea:def tea:name="shadow_pages">
+    <tea:arg name="pageidx" mode="lazy" default="pageidx" />
+    <tea:arg name="pages" mode="lazy" default="pages" />
+    <input type="hidden" name="currpage" exec:value="pageidx" />
+    <exec:if condition="pageidx != 0">
+      <exec:code>default_form = pages[0]</exec:code>
+      <input type="hidden"
+             form:field="station_id" />
+      <input type="hidden"
+             form:field="timestamp"
+             form:mode="datetime" />
+    </exec:if>
+    <exec:if condition="pageidx != 1">
+      <exec:code>default_form = pages[1]</exec:code>
+      <input type="hidden"
+             form:field="broadcast_source" />
+      <input type="hidden"
+             form:field="broadcast_id" />
+      <exec:code>rows = pages[1].frequencies</exec:code>
+      <tea:for-each tea:bind="row" tea:from="rows">
+        <input type="hidden"
+               form:form="row"
+               form:field="frequency" />
+        <input type="hidden"
+               form:form="row"
+               form:field="modulation_id" />
+      </tea:for-each>
+    </exec:if>
+    <exec:if condition="pageidx != 2">
+      <exec:code>default_form = pages[2]</exec:code>
+      <exec:code>rows = pages[2].contents</exec:code>
+      <tea:for-each tea:bind="row" tea:from="rows">
+        <input type="hidden"
+               form:form="row"
+               form:field="format_id" />
+        <input type="hidden"
+               form:form="row"
+               form:field="alphabet_id" />
+        <input type="hidden"
+               form:form="row"
+               form:field="contents" />
+        <input type="hidden"
+               form:form="row"
+               form:field="attribution" />
+        <exec:code>transcripts = row.transcripts</exec:code>
+        <tea:for-each tea:bind="subrow" tea:from="transcripts">
+          <input type="hidden"
+                 form:form="subrow"
+                 form:field="alphabet_id" />
+          <input type="hidden"
+                 form:form="subrow"
+                 form:field="contents" />
+          <input type="hidden"
+                 form:form="subrow"
+                 form:field="attribution" />
+        </tea:for-each>
+      </tea:for-each>
+    </exec:if>
+  </tea:def>
+  <tea:def tea:name="footer">
+    <tea:arg name="pageidx" mode="lazy" default="pageidx" />
+    <tea:arg name="pages" mode="lazy" default="pages" />
+    <div class="ym-fbox-footer ym-fbox-button">
+      <exec:if condition="pageidx > 0">
+        <button type="submit"
+                class="ym-button ym-previous"
+                name="backward">Previous</button>
+      </exec:if>
+      <exec:if condition="pageidx &lt; len(pages)-1">
+        <button type="submit"
+                class="ym-button ym-next ym-primary"
+                name="forward">Next</button>
+      </exec:if>
+      <exec:if condition="pageidx == len(pages)-1">
+        <button type="submit"
+                class="ym-button ym-save ym-success"
+                name="save">Save</button>
+      </exec:if>
+    </div>
+  </tea:def>
+</library>

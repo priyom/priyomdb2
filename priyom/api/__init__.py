@@ -5,6 +5,7 @@ from .shared import *
 from . import common_user
 from . import anonymous_user
 from . import admin_user
+from . import log
 
 @teapot.file_from_directory(
     "/css/",
@@ -35,6 +36,9 @@ user_sitemap.new(
 user_sitemap.new(
     anonymous_user.view_stations,
     label="View stations")
+user_sitemap.new(
+    log.log,
+    label="Log")
 user_sitemap.new(
     common_user.logout,
     label="Log out")

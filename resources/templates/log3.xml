@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Log transmission</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>pages = arguments['pages']</exec:code>
+    <exec:code>pageidx = arguments['pageidx']</exec:code>
+    <exec:code>page = pages[pageidx]</exec:code>
+    <exec:code>formats = arguments['formats']</exec:code>
+    <exec:code>alphabets = arguments['alphabets']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <tea:def tea:name="transcriptdata">
+      <tea:arg name="row" mode="lazy" default="row" />
+      <tea:arg name="alphabets" mode="lazy" default="alphabets" />
+      <div class="ym-fbox" form:form="row">
+        <label form:for-field="alphabet_id">Alphabet</label>
+        <select form:field="alphabet_id">
+          <tea:for-each tea:bind="alphabet" tea:from="alphabets">
+            <option exec:value="alphabet.id"
+                    exec:selected="'selected' if row.alphabet_id == alphabet.id else None">
+              <exec:text>alphabet.display_name</exec:text>
+            </option>
+          </tea:for-each>
+        </select>
+      </div>
+      <div class="ym-fbox" form:form="row">
+        <label form:for-field="contents">Contents</label>
+        <textarea form:field="contents"
+                  rows="10"
+                  class="transmission"/>
+      </div>
+    </tea:def>
+    <tea:def tea:name="transcriptmetadata">
+      <tea:arg name="row" mode="lazy" default="row" />
+      <div class="ym-fbox" form:form="row">
+        <label form:for-field="attribution">Attribution</label>
+        <textarea form:field="attribution" />
+      </div>
+    </tea:def>
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Log transmission</h2>
+        <form class="ym-form" method="POST" name="log" form:form="page">
+          <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+          <table>
+            <colgroup>
+              <col width="66%" />
+              <col width="33%" />
+            </colgroup>
+            <thead>
+              <th>Contents</th>
+              <th>Actions and Metadata</th>
+            </thead>
+            <tbody>
+              <exec:code>rows = page.contents</exec:code>
+              <tea:for-each tea:bind="row" tea:from="rows">
+                <tr form:form="row">
+                  <td>
+                    <div class="ym-fbox">
+                      <label form:for-field="format_id">Format</label>
+                      <select form:field="format_id">
+                        <tea:for-each tea:bind="format" tea:from="formats">
+                          <option exec:value="format.id"
+                                  exec:selected="'selected' if row.format_id == format.id else None">
+                            <exec:text>format.display_name</exec:text>
+                          </option>
+                        </tea:for-each>
+                      </select>
+                    </div>
+                    <tea:call tea:name="transcriptdata" />
+                  </td>
+                  <td>
+                    <h6 class="ym-fbox-heading">Metadata</h6>
+                    <tea:call tea:name="transcriptmetadata" />
+                    <h6 class="ym-fbox-heading">Actions</h6>
+                    <div class="ym-fbox ym-fbox-button">
+                      <button type="submit"
+                              form:action="add_transcript"
+                              class="ym-button ym-add">Add transcript</button>
+                    </div>
+                    <div class="ym-fbox ym-fbox-button">
+                      <button type="submit"
+                              form:action="delete"
+                              class="ym-button ym-delete ym-warning">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+                <exec:code>transcripts = row.transcripts</exec:code>
+                <tea:for-each tea:bind="subrow" tea:from="transcripts">
+                  <tr form:form="subrow">
+                    <td>
+                      <h6 class="ym-fbox-heading">Transcript</h6>
+                      <tea:call tea:name="transcriptdata">
+                        <tea:pass name="row">subrow</tea:pass>
+                      </tea:call>
+                    </td>
+                    <td>
+                      <h6 class="ym-fbox-heading">Transcript metadata</h6>
+                      <tea:call tea:name="transcriptmetadata">
+                        <tea:pass name="row">subrow</tea:pass>
+                      </tea:call>
+                      <h6 class="ym-fbox-heading">Transcript actions</h6>
+                      <div class="ym-fbox ym-fbox-button">
+                        <button type="submit"
+                                form:action="delete_transcript"
+                                class="ym-button ym-delete ym-warning">Delete transcript</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tea:for-each>
+              </tea:for-each>
+              <tr>
+                <td />
+                <td>
+                  <div class="ym-fbox">
+                    <button type="submit"
+                            form:action="add"
+                            class="ym-button ym-add">Add another transmission</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <tea:call tea:src="log_library.xml" tea:name="footer" />
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>

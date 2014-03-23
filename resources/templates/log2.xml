@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Log transmission</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>pages = arguments['pages']</exec:code>
+    <exec:code>pageidx = arguments['pageidx']</exec:code>
+    <exec:code>page = pages[pageidx]</exec:code>
+    <exec:code>events = list(arguments['events'])</exec:code>
+    <exec:code>modulations = list(arguments['modulations'])</exec:code>
+    <exec:code>frequencies = arguments['frequencies']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Log transmission</h2>
+        <form class="ym-form" method="POST" name="log" form:form="page">
+          <h6 class="ym-fbox-heading">Broadcast information</h6>
+          <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+          <fieldset>
+            <legend class="ym-fbox-check">
+              <input type="radio"
+                     form:field="broadcast_source"
+                     form:id="broadcast_source_new"
+                     value="'new'" />
+              <label for="broadcast_source_new">Create new broadcast</label>
+            </legend>
+            <div class="ym-fbox">
+              <p>For a new transmission event, you have to fill in the
+              frequencies which were used during the transmission.</p>
+            </div>
+            <table>
+              <colgroup>
+                <col />
+                <col />
+                <col class="actions" style="width: 15em" />
+              </colgroup>
+              <thead>
+                <th>Frequency</th>
+                <th>Modulation and Mode</th>
+                <th>Actions</th>
+              </thead>
+              <tbody>
+                <exec:code>rows = page.frequencies</exec:code>
+                <tea:for-each tea:bind="row" tea:from="rows">
+                  <tr form:form="row">
+                    <td>
+                      <div class="ym-fbox">
+                        <input type="text"
+                               form:field="frequency" />
+                      </div>
+                    </td>
+                    <td>
+                      <div class="ym-fbox">
+                        <select form:field="modulation_id">
+                          <tea:for-each tea:bind="modulation"
+                                        tea:from="modulations">
+                            <option exec:value="modulation.id"
+                                    exec:selected="'selected' if modulation.id == row.modulation_id else None">
+                              <exec:text>modulation</exec:text>
+                            </option>
+                          </tea:for-each>
+                        </select>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="ym-fbox">
+                        <button type="submit"
+                                form:action="delete"
+                                class="ym-button ym-delete ym-warning">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tea:for-each>
+                <tr>
+                  <td colspan="3">
+                    <div class="ym-fbox">
+                      <label form:for-field="existing_broadcast_frequency_id">
+                        Add another frequency
+                      </label>
+                      <select form:field="existing_broadcast_frequency_id">
+                        <option value="0">Select known frequency or hit add to
+                        create a new one</option>
+                        <tea:for-each tea:bind="event_frequency"
+                                      tea:from="frequencies">
+                          <option exec:value="event_frequency.id">
+                            <exec:text>event_frequency</exec:text>
+                          </option>
+                        </tea:for-each>
+                      </select>
+                    </div>
+                    <div class="ym-fbox">
+                      <button type="submit"
+                              form:action="add"
+                              class="ym-button ym-add">Add new</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <form:if-has-error form:field="frequencies">
+              <ul class="box error">
+                <form:for-each-error form:field="frequencies">
+                  <li><exec:text>error.err</exec:text></li>
+                </form:for-each-error>
+              </ul>
+            </form:if-has-error>
+          </fieldset>
+          <fieldset>
+            <legend class="ym-fbox-check">
+              <input type="radio"
+                     form:field="broadcast_source"
+                     form:id="broadcast_source_existing"
+                     value="'existing'" />
+              <label for="broadcast_source_existing">Append to existing broadcast</label>
+            </legend>
+            <exec:if condition="not events">
+              <p class="box info">
+                <strong>Note: </strong>No related events were found for this
+                station at the given time. If you meant to append to an existing
+                event, go back and double-check the time and station.
+              </p>
+            </exec:if>
+            <exec:if condition="events">
+              <div class="ym-fbox">
+                <select form:field="broadcast_id">
+                  <tea:for-each tea:bind="event" tea:from="events">
+                    <option exec:value="event.id">
+                      <exec:text>event</exec:text>
+                    </option>
+                  </tea:for-each>
+                </select>
+              </div>
+            </exec:if>
+          </fieldset>
+          <tea:call tea:src="log_library.xml" tea:name="footer" />
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>

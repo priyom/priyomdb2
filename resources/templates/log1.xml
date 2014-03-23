@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Log transmission</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>pages = arguments['pages']</exec:code>
+    <exec:code>pageidx = arguments['pageidx']</exec:code>
+    <exec:code>page = pages[pageidx]</exec:code>
+    <exec:code>stations = arguments['stations']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Log transmission</h2>
+        <form class="ym-form" method="POST" name="log" form:form="page">
+          <h6 class="ym-fbox-heading">Station selection</h6>
+          <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+          <div class="ym-fbox">
+            <label form:for="station_id">Station</label>
+            <select form:field="station_id">
+              <tea:for-each tea:bind="station" tea:from="stations">
+                <option exec:value="station.id"
+                        exec:selected="'selected' if page.station_id == station.id else None">
+                  <exec:if condition="station.enigma_id">
+                    <exec:text>station.enigma_id</exec:text>
+                    <exec:if condition="station.priyom_id">
+                      <exec:text>' / '+station.priyom_id</exec:text>
+                    </exec:if>
+                  </exec:if>
+                  <exec:if condition="not station.enigma_id">
+                    <exec:if condition="station.priyom_id">
+                      <exec:text>station.priyom_id</exec:text>
+                    </exec:if>
+                    <exec:if condition="not station.priyom_id">
+                      <exec:text>'#'+str(station.id)</exec:text>
+                    </exec:if>
+                  </exec:if>
+                  <exec:if condition="station.nickname">
+                    <exec:text>' ({})'.format(station.nickname)</exec:text>
+                  </exec:if>
+                </option>
+              </tea:for-each>
+            </select>
+          </div>
+          <div class="ym-fbox">
+            <label form:for="timestamp">Timestamp</label>
+            <input type="datetime"
+                   form:field="timestamp" />
+          </div>
+          <div class="ym-fbox">
+            <p>Timestamp formats:</p>
+            <ul>
+              <li>YYYY-MM-DDThh:mmZ</li>
+              <li>YYYY-MM-DDThh:mm:ssZ</li>
+              <li>YYYY-MM-DDThh:mm:ss.nnnnnnZ (with ns being fractional seconds)</li>
+            </ul>
+            <p>All formats with Z are also supported without.</p>
+          </div>
+          <tea:call tea:src="log_library.xml" tea:name="footer" />
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>
