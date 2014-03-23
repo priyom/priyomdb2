@@ -188,7 +188,9 @@ class TransmissionFormatNode(Base):
         or a dictionary mapping keys to tuples like the one above. The
         dictionary has exactly one entry for each keyed child.
         """
-        return self.parse_subtree(message)[1][0]
+        items = self.parse_subtree(message)[1]
+        if not items:
+            raise ValueError("Failed to parse")
 
     def build_inner_regex(self, keyed=True):
         if self.content_match is None or self.join:
