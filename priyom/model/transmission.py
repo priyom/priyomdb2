@@ -18,10 +18,12 @@ class Alphabet(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    display_name = Column(String(63), nullable=False)
+    short_name = Column(Unicode(10), nullable=False)
+    display_name = Column(Unicode(127), nullable=False)
 
-    def __init__(self, display_name):
+    def __init__(self, short_name, display_name):
         super(Alphabet, self).__init__()
+        self.short_name = short_name
         self.display_name = display_name
 
 class TransmissionFormatNode(Base):

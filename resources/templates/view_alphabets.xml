@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>View stations</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>view_alphabets = arguments['view_alphabets']</exec:code>
+    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>form = arguments['form']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Alphabets</h2>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_alphabets</tea:pass>
+        </tea:call>
+        <form form:form="form" method="POST">
+          <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_alphabets">
+            <colgroup>
+              <col class="id" name="id" />
+              <col class="short_name" name="short_name" />
+              <col class="display_name" name="display_name" />
+              <col class="actions" style="width: 20em;" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Short</th>
+                <th>Display Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tea:for-each tea:bind="alphabet" tea:from="arguments['alphabets']">
+                <tr>
+                  <td><exec:text>alphabet.id</exec:text></td>
+                  <td><exec:text>alphabet.short_name or ''</exec:text></td>
+                  <td><exec:text>alphabet.display_name or ''</exec:text></td>
+                </tr>
+              </tea:for-each>
+              <tr class="ym-form">
+                <td>New</td>
+                <td>
+                  <div class="ym-fbox">
+                    <input type="text"
+                           form:field="short_name" />
+                  </div>
+                </td>
+                <td>
+                  <div class="ym-fbox">
+                    <input type="text"
+                           form:field="display_name" />
+                  </div>
+                </td>
+                <td>
+                  <div class="ym-fbox">
+                    <button type="submit"
+                            class="ym-button ym-add ym-success">Add</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </priyom:sortable-table>
+        </form>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_alphabets</tea:pass>
+        </tea:call>
+      </div></div>
+    </main>
+  </body>
+</html>

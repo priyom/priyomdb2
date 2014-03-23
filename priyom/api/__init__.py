@@ -7,6 +7,7 @@ from . import anonymous_user
 from . import log
 from . import stations
 from . import formats
+from . import alphabets
 
 @teapot.file_from_directory(
     "/css/",
@@ -45,7 +46,10 @@ user_sitemap.new(
     label="Log out")
 
 admin_sitemap.label = "Admin activities"
-sm_formats = admin_sitemap.new(
+admin_sitemap.new(
+    alphabets.view_alphabets,
+    label="Alphabets")
+admin_sitemap.new(
     formats.view_formats,
     label="Transmission formats")
 
