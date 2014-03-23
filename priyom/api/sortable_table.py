@@ -76,8 +76,6 @@ if _a.order_by[0].name == _b:
         attr_precode, attr_elemcode, attrdict, attr_postcode = \
             template.compose_attrdict(elem, context)
 
-        print(name, elem.text)
-
         elemcode = compile("""\
 elem = makeelement(_elem_tag, attrib=_attrdict)
 elem.tail = _elem_tail
