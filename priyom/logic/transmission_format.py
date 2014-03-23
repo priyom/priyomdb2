@@ -135,5 +135,5 @@ class TransmissionFormatForm(TransmissionFormatRow):
         else:
             destination.display_name = self.display_name
             destination.root_node = tree
-            distination.description = self.description
+            destination.description = self.description
         return destination

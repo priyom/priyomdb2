@@ -1,3 +1,5 @@
+import teapot
+
 import priyom.model
 
 from .auth import *

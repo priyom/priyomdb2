@@ -2,6 +2,9 @@ import functools
 
 import teapot.routing.selectors
 
+__all__ = [
+    "paginate"]
+
 class paginate(teapot.routing.selectors.Selector):
     @staticmethod
     def _default_queryfunc(objcls, dbsession):
