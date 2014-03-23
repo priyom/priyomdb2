@@ -1,11 +1,32 @@
 # encoding=utf8
 from __future__ import unicode_literals, print_function, absolute_import
 
+import math
+
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref
 
 from .base import Base, TopLevel
 from .station import Station
+
+def pretty_print_frequency(freq):
+    if freq == 0:
+        order_of_magnitude = 0
+    else:
+        order_of_magnitude = int(math.log10(freq))
+    prefix = int(order_of_magnitude / 3)
+    if prefix > 3:
+        prefix = 3
+    def lossless(x, prefix):
+        divisor = 10**((prefix-1)*3)
+        y = int(x / divisor) * divisor
+        return x == y
+    while not lossless(freq, prefix) and prefix > 0:
+        prefix -= 1
+    prefix_char = ["", "k", "M", "G"][prefix]
+    return "{:.3f} {}Hz".format(
+        freq / 10**(prefix*3),
+        prefix_char)
 
 class Modulation(Base):
     __tablename__ = 'modulations'
@@ -20,12 +41,18 @@ class Modulation(Base):
         super(Modulation, self).__init__()
         self.display_name = display_name
 
+    def __str__(self):
+        return self.display_name
+
 class EventClass(TopLevel):
     __tablename__ = 'event_classes'
 
     id = Column(Integer, primary_key=True)
     display_name = Column(String(127), nullable=False)
     one_shot = Column(Boolean, default=True, nullable=False)
+
+    def __str__(self):
+        return self.display_name
 
 class Event(TopLevel):
     __tablename__ = 'events'
@@ -44,6 +71,17 @@ class Event(TopLevel):
     frequencies = relationship("EventFrequency",
                                order_by="EventFrequency.frequency")
 
+    def __str__(self):
+        if self.event_class is None:
+            return "Transmission event (Station {!s}) at {}".format(
+                self.station if self.station else "??",
+                self.start_time)
+        else:
+            return "{!s} event (Station {!s}) at {}".format(
+                self.event_class,
+                self.station if self.station else "??",
+                self.start_time)
+
 
 class EventFrequency(Base):
     __tablename__ = 'event_frequencies'
@@ -54,3 +92,8 @@ class EventFrequency(Base):
     modulation_id = Column(Integer, ForeignKey(Modulation.id), nullable=False)
 
     modulation = relationship(Modulation)
+
+    def __str__(self):
+        return "{} ({})".format(
+            pretty_print_frequency(self.frequency),
+            self.modulation)
