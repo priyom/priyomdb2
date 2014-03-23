@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Edit Modulations and Modes</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>view_modulations = arguments['view_modulations']</exec:code>
+    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>form = arguments['form']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>Modulations and Modes</h2>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_modulations</tea:pass>
+        </tea:call>
+        <form form:form="form" method="POST">
+          <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_modulations">
+            <colgroup>
+              <col class="id" name="id" />
+              <col class="display_name" name="display_name" />
+              <col class="actions" style="width: 20em;" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Display Name</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tea:for-each tea:bind="modulation" tea:from="arguments['modulations']">
+                <tr>
+                  <td><exec:text>modulation.id</exec:text></td>
+                  <td><exec:text>modulation.display_name or ''</exec:text></td>
+                </tr>
+              </tea:for-each>
+              <tr class="ym-form">
+                <td>New</td>
+                <td>
+                  <div class="ym-fbox">
+                    <input type="text"
+                           form:field="display_name" />
+                  </div>
+                </td>
+                <td>
+                  <div class="ym-fbox">
+                    <button type="submit"
+                            class="ym-button ym-add ym-success">Add</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </priyom:sortable-table>
+        </form>
+        <tea:call tea:src="library.xml" tea:name="pagination">
+          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="view">view_modulations</tea:pass>
+        </tea:call>
+      </div></div>
+    </main>
+  </body>
+</html>
