@@ -4,8 +4,9 @@ from .shared import *
 
 from . import common_user
 from . import anonymous_user
-from . import admin_user
 from . import log
+from . import stations
+from . import formats
 
 @teapot.file_from_directory(
     "/css/",
@@ -23,7 +24,7 @@ anonymous_sitemap.new(
     anonymous_user.anonhome,
     label="Home")
 anonymous_sitemap.new(
-    anonymous_user.view_stations,
+    stations.view_stations,
     label="View stations")
 anonymous_sitemap.new(
     anonymous_user.login,
@@ -34,7 +35,7 @@ user_sitemap.new(
     common_user.dash,
     label="Dash")
 user_sitemap.new(
-    anonymous_user.view_stations,
+    stations.view_stations,
     label="View stations")
 user_sitemap.new(
     log.log,
@@ -45,7 +46,7 @@ user_sitemap.new(
 
 admin_sitemap.label = "Admin activities"
 sm_formats = admin_sitemap.new(
-    admin_user.view_formats,
+    formats.view_formats,
     label="Transmission formats")
 
 moderator_sitemap.label = "Moderator activities"

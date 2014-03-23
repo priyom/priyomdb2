@@ -1,17 +1,8 @@
-import collections
-
-import teapot
-import teapot.forms
-import teapot.response
-import teapot.request
-
-import priyom.model
 import priyom.logic
+import priyom.model
 
-import sqlalchemy.exc
-
-from .shared import *
 from .auth import *
+from .shared import *
 from .pagination import *
 
 def mdzhb_format():
@@ -122,6 +113,9 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
         elif action == "delete":
             del target.parent[target.index]
     elif action == "save_to_db" and not form.errors:
+        # for now, we just disallow changing of TX formats for formats which are
+        # bound to transmissions
+
         # FIXME: validate existing transmissions of this format before
         # continuing!
 
@@ -145,102 +139,3 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
 
     yield teapot.response.Response(None)
     yield template_args, {}
-
-class StationForm(teapot.forms.Form):
-    def __init__(self, from_station=None, **kwargs):
-        super().__init__(**kwargs)
-        if from_station is not None:
-            self.id = from_station.id
-            self.enigma_id = from_station.enigma_id
-            self.priyom_id = from_station.priyom_id
-            self.nickname = from_station.nickname or ""
-            self.description = from_station.description or ""
-            self.status = from_station.status or ""
-            self.location = from_station.location or ""
-
-    @teapot.forms.field
-    def id(self, value):
-        if not value:
-            return None
-        return int(value)
-
-    @teapot.forms.field
-    def enigma_id(self, value):
-        if not value:
-            return ""
-        return str(value)
-
-    @teapot.forms.field
-    def priyom_id(self, value):
-        if not value:
-            return ""
-        return str(value)
-
-    @teapot.forms.field
-    def nickname(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def description(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def status(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def location(self, value):
-        return str(value)
-
-@require_capability("admin")
-@router.route("/station/{station_id:d}/edit", methods={
-    teapot.request.Method.GET})
-@xsltea_site.with_template("station_form.xml")
-def edit_station(station_id, request: teapot.request.Request):
-    station = request.dbsession.query(priyom.model.Station).get(station_id)
-    form = StationForm(from_station=station)
-    yield teapot.response.Response(None)
-
-    yield {
-        "form": form
-    }, {}
-
-@require_capability("admin")
-@router.route("/station/{station_id:d}/edit",
-              methods={teapot.request.Method.POST})
-@xsltea_site.with_template("station_form.xml")
-def edit_station_POST(station_id, request: teapot.request.Request):
-    dbsession = request.dbsession
-    station = dbsession.query(priyom.model.Station).get(station_id)
-    form = StationForm(post_data=request.post_data)
-
-    if station_id != form.id:
-        form.errors[StationForm.id] = "Invalid ID"
-
-    if not form.errors:
-        station.enigma_id = form.enigma_id
-        station.priyom_id = form.priyom_id
-        station.nickname = form.nickname
-        station.description = form.description
-        station.status = form.status
-        station.location = form.location
-        dbsession.commit()
-
-        raise teapot.make_redirect_response(
-            request,
-            edit_station,
-            station_id=form.id)
-
-    else:
-        yield teapot.response.Response(None)
-        yield {
-            "form": form
-        }, {}
-
-@require_capability("admin")
-@router.route("/station/{station_id:d}/delete", methods={
-    teapot.request.Method.GET})
-@xsltea_site.with_template("station_delete.xml")
-def delete_station(station_id, request: teapot.request.Request):
-    yield teapot.response.Response(None)
-    yield {}, {}
