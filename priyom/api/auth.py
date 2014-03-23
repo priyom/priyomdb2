@@ -40,17 +40,18 @@ class require_login(teapot.routing.selectors.Selector):
         return True
 
 class require_capability(require_login):
-    def __init__(self, capability, **kwargs):
+    def __init__(self, *capabilities, **kwargs):
         super().__init__(**kwargs)
-        self._capability = capability
+        self._capabilities = capabilities
 
     def select(self, request):
         if not super().select(request):
             return False
         request = request.original_request
-        logger.debug("require_capability: %s", self._capability)
+        logger.debug("require_capability: %s", self._capabilities)
 
-        if not request.auth.user.has_capability(self._capability):
+        if not any(request.auth.user.has_capability(cap)
+                   for cap in self._capabilities):
             self._raise_missing_auth_error(request)
 
         return True
