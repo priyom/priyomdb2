@@ -18,6 +18,10 @@ body > nav h3 {
     margin-bottom: 0.25em;
 }
 
+.ym-previous:before {
+    content: '←';
+}
+
 col.id {
     width: 4em;
 }
@@ -83,6 +87,10 @@ col.order-by {
 th div.order-indicator {
     float: right;
     width: 1.5em;
+}
+
+textarea.transmission {
+    font-family: mono;
 }
 
 ul.pagination {
