@@ -193,6 +193,7 @@ class TransmissionFormatNode(Base):
         items = self.parse_subtree(message)[1]
         if not items:
             raise ValueError("Failed to parse")
+        return items[0]
 
     def build_inner_regex(self, keyed=True):
         if self.content_match is None or self.join:
