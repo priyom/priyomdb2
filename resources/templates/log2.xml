@@ -115,22 +115,22 @@
               </ul>
             </form:if-has-error>
           </fieldset>
-          <fieldset>
-            <legend class="ym-fbox-check">
-              <input type="radio"
-                     form:field="broadcast_source"
-                     form:id="broadcast_source_existing"
-                     value="'existing'" />
-              <label for="broadcast_source_existing">Append to existing broadcast</label>
-            </legend>
-            <exec:if condition="not events">
-              <p class="box info">
-                <strong>Note: </strong>No related events were found for this
-                station at the given time. If you meant to append to an existing
-                event, go back and double-check the time and station.
-              </p>
-            </exec:if>
-            <exec:if condition="events">
+          <exec:if condition="not events">
+            <p class="box info">
+              <strong>Note: </strong>No related events were found for this
+              station at the given time. If you meant to append to an existing
+              event, go back and double-check the time and station.
+            </p>
+          </exec:if>
+          <exec:if condition="events">
+            <fieldset>
+              <legend class="ym-fbox-check">
+                <input type="radio"
+                       form:field="broadcast_source"
+                       form:id="broadcast_source_existing"
+                       value="'existing'" />
+                <label for="broadcast_source_existing">Append to existing broadcast</label>
+              </legend>
               <div class="ym-fbox">
                 <select form:field="broadcast_id">
                   <tea:for-each tea:bind="event" tea:from="events">
@@ -140,8 +140,8 @@
                   </tea:for-each>
                 </select>
               </div>
-            </exec:if>
-          </fieldset>
+            </fieldset>
+          </exec:if>
           <tea:call tea:src="log_library.xml" tea:name="footer" />
         </form>
       </div></div>

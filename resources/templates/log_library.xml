@@ -78,9 +78,10 @@
                 name="forward">Next</button>
       </exec:if>
       <exec:if condition="pageidx == len(pages)-1">
+        <exec:code>default_form = pages[pageidx]</exec:code>
         <button type="submit"
-                class="ym-button ym-save ym-success"
-                name="save">Save</button>
+                form:action="save"
+                class="ym-button ym-save ym-success">Save</button>
       </exec:if>
     </div>
   </tea:def>

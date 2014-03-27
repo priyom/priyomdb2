@@ -190,25 +190,23 @@ class ContentsRow(teapot.forms.Row):
     def attribution(self):
         return ""
 
+    def _get_format(self, request):
+        return self.parent.instance._get_format(request)
+
     def postvalidate(self, request):
+        super().postvalidate(request)
         dbsession = request.dbsession
-        fmt = dbsession.query(
-            priyom.model.TransmissionFormat
-        ).get(self.format_id)
-        if fmt is None:
-            teapot.forms.ValidationError("Not a valid transmission format",
-                                         ContentsRow.format_id,
-                                         self).register()
-            return
+        fmt = self._get_format(request)
+        if fmt is not None:
+            try:
+                fmt.root_node.parse(self.contents)
+            except ValueError:
+                teapot.forms.ValidationError("Message does not match format",
+                                             ContentsRow.contents,
+                                             self).register()
 
-        try:
-            fmt.root_node.parse(self.contents)
-        except ValueError:
-            teapot.forms.ValidationError("Message does not match format",
-                                         ContentsRow.contents,
-                                         self).register()
-
-        if not dbsession.query(priyom.model.Alphabet).get(self.alphabet_id):
+        alphabet = dbsession.query(priyom.model.Alphabet).get(self.alphabet_id)
+        if not alphabet:
             teapot.forms.ValidationError("Not a valid alphabet",
                                          ContentsRow.alphabet_id,
                                          self).register()
@@ -222,21 +220,41 @@ class TopLevelContentsRow(ContentsRow):
     def format_id(self):
         return 0
 
+    def _get_format(self, request):
+        dbsession = request.dbsession
+        fmt = dbsession.query(
+            priyom.model.TransmissionFormat
+        ).get(self.format_id)
+        return fmt
+
+    def postvalidate(self, request):
+        fmt = self._get_format(request)
+        if fmt is None:
+            teapot.forms.ValidationError("Not a valid transmission format",
+                                         TopLevelContentsRow.format_id,
+                                         self).register()
+
+        super().postvalidate(request)
+
     transcripts = teapot.forms.rows(ContentsRow)
 
 class LogPage3_Contents(teapot.forms.Form):
     contents = teapot.forms.rows(TopLevelContentsRow)
 
-@require_capability("log", "admin", "log_moderated", "moderator")
+@require_login()
 @router.route("/action/log", methods={teapot.request.Method.GET})
 @xsltea_site.with_template("log1.xml")
 def log(request: teapot.request.Request):
     dbsession = request.dbsession
 
+    contents = LogPage3_Contents()
+    contents.contents.append(
+        TopLevelContentsRow())
+
     pages = [
         LogPage1_Station(),
         LogPage2_Broadcast(),
-        LogPage3_Contents()
+        contents
     ]
 
     yield teapot.response.Response(None)
@@ -247,7 +265,7 @@ def log(request: teapot.request.Request):
                                 ).order_by(priyom.model.Station.enigma_id.asc())
     }, {}
 
-@require_capability("log", "admin", "log_moderated", "moderator")
+@require_login()
 @router.route("/action/log", methods={teapot.request.Method.POST})
 @xsltea_site.with_variable_template()
 def log_POST(request: teapot.request.Request):
@@ -279,7 +297,6 @@ def log_POST(request: teapot.request.Request):
     template = "log{}.xml".format(currpage+1)
 
     yield template
-    yield teapot.response.Response(None)
 
     template_args = {
         "pages": pages,
@@ -379,5 +396,48 @@ def log_POST(request: teapot.request.Request):
             del target.parent[target.index]
         elif action == "delete":
             del target.parent[target.index]
+        elif action == "save" and not any(page.errors for page in pages):
+            if pages[1].broadcast_source == "new":
+                event = priyom.model.Event()
+                event.station_id = pages[0].station_id
+                event.start_time = pages[0].timestamp
+                event.end_time = pages[0].timestamp
+                event.approved = any(
+                    request.auth.user.has_capability(cap)
+                    for cap in ("unmoderated", "moderator", "admin"))
+                event.submitter = request.auth.user
+                for row in pages[1].frequencies:
+                    frequency = priyom.model.EventFrequency()
+                    frequency.frequency = row.frequency
+                    frequency.modulation_id = row.modulation_id
+                    event.frequencies.append(frequency)
+            else:
+                event = dbsession.query(priyom.model.Broadcast).get(
+                    pages[1].broadcast_id)
 
+            for contentrow in pages[2].contents:
+                content = priyom.model.TransmissionContents(
+                    "text/plain")
+                content.attribution = contentrow.attribution
+                content.alphabet_id = contentrow.alphabet_id
+                content.encoding = "utf8"
+                content.contents = contentrow.contents.encode(content.encoding)
+                for transcriptrow in contentrow.transcripts:
+                    transcribed = priyom.model.TransmissionContents(content.mime)
+                    transcribed.is_transcribed = True
+                    transcribed.attribution = transcriptrow.attribution
+                    transcribed.alphabet_id = transcriptrow.alphabet_id
+                    transcribed.encoding = content.encoding
+                    transcribed.contents = transcriptrow.contents.encode(
+                        transcribed.encoding)
+                event.contents.append(content)
+
+            dbsession.add(event)
+            dbsession.commit()
+            from .common_user import dash
+            raise teapot.make_redirect_response(
+                request,
+                dash)
+
+    yield teapot.response.Response(None)
     yield template_args, {}
