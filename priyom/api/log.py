@@ -154,7 +154,7 @@ class LogPage2_Broadcast(teapot.forms.Form):
         super().postvalidate(request)
         dbsession = request.dbsession
         if self.broadcast_source == "existing":
-            if not dbsession.query(priyom.model.Broadcast).get(self.broadcast_id):
+            if not dbsession.query(priyom.model.Event).get(self.broadcast_id):
                 teapot.forms.ValidationError("Not a valid broadcast",
                                              LogPage2_Broadcast.broadcast_id,
                                              self).register()
