@@ -29,3 +29,13 @@ class Station(base.TopLevel):
         super(Station, self).__init__()
         self.enigma_id = enigma_id or ""
         self.priyom_id = priyom_id or ""
+
+    def __str__(self):
+        nickname = " ({})".format(self.nickname) if self.nickname else ""
+        if self.enigma_id:
+            pid = " / {}".format(self.priyom_id) if self.priyom_id else ""
+            return "{}{}{}".format(self.enigma_id, pid, nickname)
+        else:
+            pid = "{}".format(self.priyom_id) if self.priyom_id else \
+                  "No ID assigned (#{})".format(self.id)
+            return "{}{}".format(pid, nickname)
