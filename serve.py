@@ -3,6 +3,7 @@
 if __name__ == "__main__":
     import argparse
     import logging
+    import sys
 
     import tornado.wsgi
     import tornado.httpserver
@@ -23,6 +24,7 @@ if __name__ == "__main__":
         default=0)
 
     args = parser.parse_args()
+    sys.argv[:] = []
 
     logging.basicConfig(level=logging.ERROR, format='%(levelname)-8s %(message)s')
     if args.verbosity >= 3:
