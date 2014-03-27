@@ -70,7 +70,10 @@ def login_POST(request: teapot.request.Request):
         if error:
             if error_msg is None:
                 error_msg = "Unknown user name or invalid password"
-            form.errors[LoginForm.loginname] = error_msg
+            teapot.forms.ValidationError(
+                error_msg,
+                LoginForm.loginname,
+                form).register()
 
     if form.errors:
         del form.password
