@@ -55,7 +55,7 @@ class LogPage1_Station(teapot.forms.Form):
 
     @timestamp.default
     def timestamp(self):
-        return datetime.utcnow()
+        return datetime.utcnow().replace(microsecond=0, second=0)
 
     def postvalidate(self, request):
         super().postvalidate(request)
