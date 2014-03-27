@@ -11,12 +11,35 @@ from .pagination import *
 @router.route("/", methods={teapot.request.Method.GET})
 @xsltea_site.with_template("dash.xml")
 def dash(request: teapot.request.Request):
+    dbsession = request.dbsession
     yield teapot.response.Response(None)
     transform_args = {
         "version": "devel"
     }
     template_args = dict(transform_args)
-    template_args["auth"] = request.auth
+    template_args["recents"] = dbsession.query(
+        priyom.model.Event
+    ).order_by(
+        priyom.model.Event.created.desc()
+    ).limit(10)
+    if request.auth.user.has_capability("moderator"):
+        template_args["unapproved"] = dbsession.query(
+            priyom.model.Event
+        ).filter(
+            priyom.model.Event.approved == False
+        ).order_by(
+            priyom.model.Event.created.asc()
+        ).limit(10)
+    else:
+        template_args["unapproved"] = None
+    template_args["mine"] = dbsession.query(
+        priyom.model.Event
+    ).filter(
+        priyom.model.Event.submitter_id == request.auth.user.id
+    ).order_by(
+        priyom.model.Event.created.desc()
+    ).limit(10)
+
     yield (template_args, transform_args)
 
 @require_login()

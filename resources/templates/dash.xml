@@ -11,6 +11,9 @@
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
+    <exec:code>recents = arguments['recents']</exec:code>
+    <exec:code>unapproved = arguments['unapproved']</exec:code>
+    <exec:code>unapproved = arguments['unapproved']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
@@ -34,12 +37,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1234</td>
-                  <td>Vassilis</td>
-                  <td>S28</td>
-                  <td>2014-02-22T13:00Z</td>
-                </tr>
+                <tea:for-each tea:bind="event" tea:from="recents">
+                  <tr>
+                    <td><exec:text>event.id</exec:text></td>
+                    <td>
+                      <exec:if condition="event.submitter">
+                        <exec:text>event.submitter</exec:text>
+                      </exec:if>
+                      <exec:if condition="not event.submitter">system generated</exec:if>
+                    </td>
+                    <td><exec:text>event.station</exec:text></td>
+                    <td><exec:text>event.start_time</exec:text></td>
+                  </tr>
+                </tea:for-each>
               </tbody>
             </table>
           </div></div>
@@ -61,12 +71,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1234</td>
-                  <td>Vassilis</td>
-                  <td>S28</td>
-                  <td>2014-02-22T13:00Z</td>
-                </tr>
+                <tea:for-each tea:bind="event" tea:from="recents">
+                  <tr>
+                    <td><exec:text>event.id</exec:text></td>
+                    <td>
+                      <exec:if condition="event.submitter">
+                        <exec:text>event.submitter</exec:text>
+                      </exec:if>
+                      <exec:if condition="not event.submitter">system generated</exec:if>
+                    </td>
+                    <td><exec:text>event.station</exec:text></td>
+                    <td><exec:text>event.start_time</exec:text></td>
+                  </tr>
+                </tea:for-each>
               </tbody>
             </table>
           </div></div>
@@ -94,7 +111,7 @@
           <div class="ym-gr ym-g50"><div class="ym-gbox">
             <h4><a class="ym-button icon-user">Create user</a></h4>
             <p>Create a new user in the database.</p>
-          </div></div>x
+          </div></div>
         </div>
         <div>
           <h3>My logs</h3>
