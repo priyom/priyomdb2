@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship, backref
 
 from .base import Base, TopLevel
 from .station import Station
+from .user import User
 
 def pretty_print_frequency(freq):
     if freq == 0:
@@ -62,6 +63,7 @@ class Event(TopLevel):
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime)
     event_class_id = Column(Integer, ForeignKey(EventClass.id))
+    submitter_id = Column(Integer, ForeignKey(User.id))
     approved = Column(Boolean, default=False, nullable=False)
 
     station = relationship(Station,
@@ -70,6 +72,8 @@ class Event(TopLevel):
     event_class = relationship(EventClass)
     frequencies = relationship("EventFrequency",
                                order_by="EventFrequency.frequency")
+    submitter = relationship(User,
+                             backref=backref("submitted_events"))
 
     def __str__(self):
         if self.event_class is None:
