@@ -319,21 +319,11 @@ class TransmissionFormat(TopLevel):
         return self.display_name
 
 
-class Transmission(TopLevel):
-    __tablename__ = "transmissions"
-
-    id = Column(Integer, primary_key=True)
-    event_id = Column(Integer, ForeignKey(Event.id))
-    timestamp = Column(DateTime, nullable=False)
-    duration = Column(Integer, nullable=False)
-
-    event = relationship(Event, backref=backref("transmissions", order_by=timestamp))
-
 class TransmissionContents(Base):
     __tablename__ = "transmission_contents"
 
     id = Column(Integer, primary_key=True)
-    transmission_id = Column(Integer, ForeignKey(Transmission.id), nullable=False)
+    event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
     mime = Column(Unicode(127), nullable=False)
     is_transcribed = Column(Boolean, nullable=False)
     is_transcoded = Column(Boolean, nullable=False)
@@ -345,7 +335,7 @@ class TransmissionContents(Base):
                                 nullable=True)
     parent_contents = relationship("TransmissionContents")
 
-    transmission = relationship(Transmission, backref=backref("contents"))
+    event = relationship(Event, backref=backref("contents"))
     alphabet = relationship(Alphabet)
 
     format_id = Column(Integer, ForeignKey(TransmissionFormat.id), nullable=True)
@@ -365,15 +355,15 @@ class TransmissionContents(Base):
         self.alphabet = alphabet
         self.attribution = attribution
 
-class TransmissionAttachment(Attachment):
+class EventAttachment(Attachment):
     __tablename__ = "transmission_attachments"
     __mapper_args__ = {"polymorphic_identity": "transmission_attachment"}
 
     attachment_id = Column(Integer, ForeignKey(Attachment.id), primary_key=True)
-    transmission_id = Column(Integer, ForeignKey(Transmission.id), nullable=False)
+    event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
     relation = Column(Enum(
         "recording",
         "waterfall"
     ))
 
-    transmission = relationship(Transmission, backref=backref("attachments"))
+    event = relationship(Event, backref=backref("attachments"))
