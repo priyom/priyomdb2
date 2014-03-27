@@ -60,4 +60,4 @@ admin_sitemap.new(
 moderator_sitemap.label = "Moderator activities"
 
 from . import initializer
-initializer.create_test_data(Session())
+initializer.create_base_data(Session())

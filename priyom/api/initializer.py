@@ -12,19 +12,7 @@ def get_capability(dbsession, key):
         dbsession.add(cap)
     return cap
 
-def create_test_data(dbsession):
-    try:
-        station = dbsession.query(priyom.model.Station).filter(
-            priyom.model.Station.enigma_id == "S28").one()
-    except sqlalchemy.orm.exc.NoResultFound as err:
-        station = priyom.model.Station("S28", None)
-        dbsession.add(station)
-    station.nickname = "The Buzzer"
-    station.description = "Buzz buzz buzz"
-    station.status = "active"
-    station.location = "Right behind ... YOU!"
-    dbsession.commit()
-
+def create_base_data(dbsession):
     try:
         admin_user = dbsession.query(priyom.model.User).filter(
             priyom.model.User.loginname == "root").one()
