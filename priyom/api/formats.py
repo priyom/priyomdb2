@@ -1,3 +1,4 @@
+import logging
 import sqlalchemy.exc
 
 import teapot
@@ -141,8 +142,9 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
                     format_id))
             dbsession.add(format)
             dbsession.commit()
-        except sqlalchemy.exc.IntegrityError:
+        except sqlalchemy.exc.IntegrityError as err:
             dbsession.rollback()
+            logging.error(err)
         else:
             raise teapot.make_redirect_response(
                 request,
