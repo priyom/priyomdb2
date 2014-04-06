@@ -41,10 +41,10 @@ user_sitemap.new(
     label="View stations")
 user_sitemap.new(
     log.log,
-    label="Log")
+    label="Log TX")
 user_sitemap.new(
     common_user.logout,
-    label="Log out")
+    label="Sign out")
 
 admin_sitemap.label = "Admin activities"
 admin_sitemap.new(
