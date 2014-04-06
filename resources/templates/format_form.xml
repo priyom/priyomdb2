@@ -44,6 +44,13 @@
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit transmission format</h2>
+        <exec:if condition="arguments['has_users']">
+          <p class="box warning">
+            <strong>Warning:</strong>
+            This format has users. This implies that you cannot modify it. You
+            can, however, save a copy of the format.
+          </p>
+        </exec:if>
         <form class="ym-form" method="POST" name="format" form:form="form">
           <h6 class="ym-fbox-heading">General properties</h6>
           <div class="ym-fbox">
@@ -56,11 +63,11 @@
             <label for="description">Description</label>
             <textarea id="description" form:field="description" />
           </div>
+          <p class="ym-fbox-footer warning"><strong>Warning:</strong> Until you click “Save to database” below, <em>no</em> changes are made to the entries in the database. Leaving the page without saving will make you lose all your changes!</p>
           <div class="ym-fbox-footer ym-fbox-button">
-            <input type="submit"
-                   form:action="update"
-                   value="Update"
-                   class="ym-primary" />
+            <button type="submit"
+                    form:action="update"
+                    class="ym-button ym-reload">Update / Check for errors</button>
           </div>
           <h6 class="ym-fbox-heading">Parsing tree</h6>
           <table class="ym-fbox parsing-tree">
@@ -80,13 +87,16 @@
             </tbody>
           </table>
           <div class="ym-fbox-footer ym-fbox-button">
-            <input type="submit"
-                   form:action="save_to_db"
-                   value="Save to database"
-                   class="ym-warning" />
+            <exec:if condition="not arguments['has_users']">
+              <button type="submit"
+                      form:action="save_to_db"
+                      class="ym-button ym-primary ym-save">Save to database</button>
+            </exec:if>
+            <button type="submit"
+                   form:action="save_copy"
+                   class="ym-button ym-add">Save as copy</button>
           </div>
         </form>
-        <p class="box warning"><strong>Warning:</strong> Until you click “Save to database” <em>no</em> changes are made to the entries in the database. Leaving the page without saving will make you lose all your changes!</p>
       </div></div>
     </main>
   </body>

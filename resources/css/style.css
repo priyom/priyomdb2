@@ -22,6 +22,18 @@ body > nav h3 {
     content: '←';
 }
 
+.ym-reload:before {
+    content: '⟳';
+}
+
+.ym-up:before {
+    content: '↑';
+}
+
+.ym-down:before {
+    content: '↓';
+}
+
 col.id {
     width: 4em;
 }

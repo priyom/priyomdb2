@@ -52,29 +52,23 @@
       </div></div>
       <div class="ym-gl ym-g33"><div class="ym-gbox">
         <div class="ym-fbox">
-          <input type="submit"
-                 class="ym-button ym-success"
-                 form:action="add_child"
-                 value="Add child" />
+          <button type="submit"
+                  class="ym-button ym-success ym-add"
+                  form:action="add_child">Add child</button>
         </div>
         <exec:if condition="level > 0">
           <div class="ym-fbox">
-            <input type="submit"
-                   class="ym-button"
-                   form:action="move_up"
-                   value="Move up"
-                   style="width: 47%; margin-right: 6%;" />
-            <input type="submit"
-                   class="ym-button"
-                   form:action="move_down"
-                   value="Move down"
-                   style="width: 47%; margin-right: 0;" />
+            <button type="submit"
+                    class="ym-button ym-up"
+                    form:action="move_up">Move up</button>
+            <button type="submit"
+                   class="ym-button ym-down"
+                   form:action="move_down">Move down</button>
           </div>
           <div class="ym-fbox">
-            <input type="submit"
-                   class="ym-button ym-danger"
-                   form:action="delete"
-                   value="Delete" />
+            <button type="submit"
+                    class="ym-button ym-danger ym-delete"
+                    form:action="delete">Delete</button>
           </div>
         </exec:if>
       </div></div>

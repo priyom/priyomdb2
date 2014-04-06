@@ -95,7 +95,8 @@ def edit_format(request: teapot.request.Request, format_id=0):
 
     yield teapot.response.Response(None)
     yield {
-        "form": form
+        "form": form,
+        "has_users": format.get_has_users()
     }, {}
 
 @require_capability("admin")
@@ -110,12 +111,13 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
         post_data=post_data)
 
     target, action = form.find_action(post_data)
+
     if action == "update":
         pass
+    elif action == "add_child":
+        target.children.append(priyom.logic.TransmissionFormatRow())
     elif hasattr(target, "parent") and target.parent:
-        if action == "add_child":
-            target.children.append(priyom.logic.TransmissionFormatRow())
-        elif action == "move_up":
+        if action == "move_up":
             i = target.index
             l = target.parent
             if i >= 1:
@@ -129,17 +131,17 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
                 l.insert(i+1, target)
         elif action == "delete":
             del target.parent[target.index]
-    elif action == "save_to_db" and not form.errors:
-        # for now, we just disallow changing of TX formats for formats which are
-        # bound to transmissions
-
-        # FIXME: validate existing transmissions of this format before
-        # continuing!
+    elif not form.errors and action in {"save_to_db", "save_copy"}:
+        if action == "save_to_db":
+            format = dbsession.query(priyom.model.TransmissionFormat).get(
+                format_id)
+            if format and format.get_has_users():
+                raise ValueError("It is not allowed to modify a format with users")
+        else:
+            format = None
 
         try:
-            format = form.to_database_object(
-                destination=dbsession.query(priyom.model.TransmissionFormat).get(
-                    format_id))
+            format = form.to_database_object(destination=format)
             dbsession.add(format)
             dbsession.commit()
         except sqlalchemy.exc.IntegrityError as err:
@@ -151,8 +153,12 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
                 edit_format,
                 format_id=format.id)
 
+    format = request.dbsession.query(priyom.model.TransmissionFormat).get(
+        format_id)
+
     template_args = {
-        "form": form
+        "form": form,
+        "has_users": False if format is None else format.get_has_users()
     }
 
     yield teapot.response.Response(None)
