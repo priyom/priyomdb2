@@ -9,7 +9,6 @@ import teapot.request
 import priyom.model
 
 from .shared import *
-from .pagination import *
 
 class LoginForm(teapot.forms.Form):
     @teapot.forms.field

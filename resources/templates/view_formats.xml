@@ -12,7 +12,7 @@
   </head>
   <body>
     <tea:include tea:source="nav.xml" />
-    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_formats = arguments['view_formats']</exec:code>
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
@@ -22,14 +22,15 @@
            exec:href="href(arguments['add_format'], format_id=0)">Add new format</a>
         </div>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_formats</tea:pass>
         </tea:call>
-        <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_formats">
+        <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_formats">
           <colgroup>
             <col class="id" name="id" />
             <col class="modified" name="modified" />
-            <col name="display_name" />
+            <col class="display_name" name="display_name" />
+            <col name="user_count" />
             <col class="actions" style="width: 20em"/>
           </colgroup>
           <thead>
@@ -37,17 +38,19 @@
               <th>#</th>
               <th>Modified</th>
               <th>Display name</th>
+              <th>User count</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tea:for-each tea:bind="format" tea:from="page">
+            <tea:for-each tea:bind="id, modified, display_name, user_count" tea:from="arguments['formats']">
               <tr>
-                <td><exec:text>format.id</exec:text></td>
-                <td><exec:text>format.modified.strftime("%Y-%m-%dT%H:%MZ")</exec:text></td>
-                <td><exec:text>format.display_name</exec:text></td>
+                <td><exec:text>id</exec:text></td>
+                <td><exec:text>modified.strftime("%Y-%m-%dT%H:%MZ")</exec:text></td>
+                <td><exec:text>display_name</exec:text></td>
+                <td><exec:text>user_count or 0</exec:text></td>
                 <td>
-                  <a exec:href="href(arguments['edit_format'], format_id=format.id)"
+                  <a exec:href="href(arguments['edit_format'], format_id=id)"
                      class="ym-button ym-edit ym-primary">Edit</a>
                 </td>
               </tr>
@@ -55,7 +58,7 @@
           </tbody>
         </priyom:sortable-table>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_formats</tea:pass>
         </tea:call>
       </div></div>

@@ -46,7 +46,7 @@ class SortableTableProcessor(xsltea.processor.TemplateProcessor):
 
         if self.active_column_class:
             classmod_ast = compile("""\
-if _a.order_by[0].name == _b:
+if _a.get_orderby_field() == _b:
     elem.set("class", _c + elem.get("class", ""))""",
                                    context.filename,
                                    "exec",
@@ -80,11 +80,11 @@ if _a.order_by[0].name == _b:
 elem = makeelement(_elem_tag, attrib=_attrdict)
 elem.tail = _elem_tail
 elem_a = etree.SubElement(elem, _xhtml_a)
-if _page.order_by[0].name == _name:
+if _page.get_orderby_field() == _name:
     elem_a.set(
         "href",
-        href(_viewobj, page=_page.with_order_by_direction(
-            "asc" if _page.order_by[1] == "desc" else "desc")))
+        href(_viewobj, view=_page.with_orderby(
+            new_direction="asc" if _page.get_orderby_dir() == "desc" else "desc")))
     elem_div = etree.SubElement(
         elem_a,
         _xhtml_div,
@@ -92,12 +92,12 @@ if _page.order_by[0].name == _name:
             "class": _order_indicator_class
         })
     elem_div.tail = _elem_text
-    elem_div.text = "▲" if _page.order_by[1] == "asc" else "▼"
+    elem_div.text = "▲" if _page.get_orderby_dir() == "asc" else "▼"
 else:
     elem_a.text = _elem_text
     elem_a.set(
         "href",
-        href(_viewobj, page=_page.with_order_by_field(_name)))
+        href(_viewobj, view=_page.with_orderby(new_fieldname=_name)))
 append_children(elem_a, _childfun())
 yield elem""",
                            context.filename,

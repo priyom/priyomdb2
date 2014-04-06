@@ -3,30 +3,29 @@ import teapot
 import priyom.model
 
 from .auth import *
-from .pagination import *
+from .dbview import *
 from .shared import *
 
-@paginate(priyom.model.Station,
-          25,
-          ("enigma_id", "asc"),
-          "page")
+@dbview(priyom.model.Station,
+        [
+            ("id", priyom.model.Station.id, None),
+            ("modified", priyom.model.Station.modified, None),
+            ("enigma_id", priyom.model.Station.enigma_id, None),
+            ("priyom_id", priyom.model.Station.priyom_id, None),
+            ("nickname", priyom.model.Station.nickname, None),
+        ],
+        itemsperpage=25,
+        default_orderfield="enigma_id")
 @router.route("/station", methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_stations.xml")
-def view_stations(request:teapot.request.Request, page):
-    stations = list(page)
-
-    yield teapot.response.Response(
-        None,
-        last_modified=max(
-            station.modified
-            for station in stations))
+def view_stations(request: teapot.request.Request, view):
+    yield teapot.response.Response(None)
 
     yield {
-        "stations": stations,
         "view_stations": view_stations,
         "view_station": edit_station if request.auth else view_station,
         "delete_station": delete_station if request.auth else None,
-        "page": page
+        "view": view
     }, {}
 
 @router.route("/station/{station_id:d}",

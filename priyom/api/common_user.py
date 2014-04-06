@@ -5,7 +5,6 @@ import priyom.model
 
 from .shared import *
 from .auth import *
-from .pagination import *
 
 @require_login()
 @router.route("/", methods={teapot.request.Method.GET})

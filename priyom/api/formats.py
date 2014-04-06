@@ -5,9 +5,11 @@ import teapot
 import priyom.logic
 import priyom.model
 
+from sqlalchemy import func
+
 from .auth import *
+from .dbview import *
 from .shared import *
-from .pagination import *
 
 def mdzhb_format():
     TF, TFN = priyom.model.TransmissionFormat, priyom.model.TransmissionFormatNode
@@ -48,14 +50,24 @@ def mdzhb_format():
     return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
 
 @require_capability("admin")
-@paginate(priyom.model.TransmissionFormat,
-          25,
-          ("display_name", "asc"),
-          "page")
+@dbview(priyom.model.TransmissionFormat,
+        [
+            ("id", priyom.model.TransmissionFormat.id, None),
+            ("modified", priyom.model.TransmissionFormat.modified, None),
+            ("display_name", priyom.model.TransmissionFormat.display_name, None),
+            ("user_count",
+             subquery(priyom.model.TransmissionContents,
+                      func.count('*').label("user_count")
+                  ).group_by(
+                      priyom.model.TransmissionContents.format_id
+                  ),
+             int)
+        ],
+        default_orderfield="display_name")
 @router.route("/format", order=0)
 @xsltea_site.with_template("view_formats.xml")
-def view_formats(request: teapot.request.Request, page):
-    formats = list(page)
+def view_formats(request: teapot.request.Request, view):
+    formats = list(view)
 
     yield teapot.response.Response(None)
     yield {
@@ -63,7 +75,7 @@ def view_formats(request: teapot.request.Request, page):
         "view_formats": view_formats,
         "add_format": edit_format,
         "edit_format": edit_format,
-        "page": page,
+        "view": view,
     }, {}
 
 @require_capability("admin")

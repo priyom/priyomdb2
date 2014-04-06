@@ -1,10 +1,12 @@
+from sqlalchemy import func
+
 import teapot.request
 
 import priyom.model
 
 from .auth import *
+from .dbview import *
 from .shared import *
-from .pagination import *
 
 class AlphabetForm(teapot.forms.Form):
     @teapot.forms.field
@@ -20,29 +22,47 @@ class AlphabetForm(teapot.forms.Form):
         return value
 
 @require_capability("admin")
-@paginate(priyom.model.Alphabet,
-          25,
-          ("display_name", "asc"),
-          "page")
+@dbview(priyom.model.Alphabet,
+        [
+            ("id", priyom.model.Alphabet.id, None),
+            ("short_name", priyom.model.Alphabet.short_name, None),
+            ("display_name", priyom.model.Alphabet.display_name, None),
+            ("user_count", subquery(
+                priyom.model.TransmissionContents,
+                func.count('*').label('user_count')
+            ).group_by(
+                priyom.model.TransmissionContents.alphabet_id), int)
+        ],
+        itemsperpage=25,
+        default_orderfield="display_name")
 @router.route("/alphabet", order=0, methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_alphabets.xml")
-def view_alphabets(request: teapot.request.Request, page):
-    alphabets = list(page)
+def view_alphabets(request: teapot.request.Request, view):
+    alphabets = list(view)
 
     yield teapot.response.Response(None)
 
     yield {
         "alphabets": alphabets,
-        "page": page,
+        "view": view,
         "view_alphabets": view_alphabets,
         "form": AlphabetForm()
     }, {}
 
 @require_capability("admin")
-@paginate(priyom.model.Alphabet,
-          25,
-          ("display_name", "asc"),
-          "page")
+@dbview(priyom.model.Alphabet,
+        [
+            ("id", priyom.model.Alphabet.id, None),
+            ("short_name", priyom.model.Alphabet.short_name, None),
+            ("display_name", priyom.model.Alphabet.display_name, None),
+            ("user_count", subquery(
+                priyom.model.TransmissionContents,
+                func.count('*').label('user_count')
+            ).group_by(
+                priyom.model.TransmissionContents.alphabet_id), int)
+        ],
+        itemsperpage=25,
+        default_orderfield="display_name")
 @router.route("/alphabet", order=0, methods={teapot.request.Method.POST})
 @xsltea_site.with_template("view_alphabets.xml")
 def view_alphabets_POST(request: teapot.request.Request, page):

@@ -13,7 +13,7 @@
   </head>
   <body>
     <exec:code>view_stations = arguments['view_stations']</exec:code>
-    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>delete_station = arguments['delete_station']</exec:code>
     <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
@@ -21,11 +21,17 @@
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Stations</h2>
+        <exec:if condition="view.f">
+          <tea:call tea:src="library.xml" tea:name="filters">
+            <tea:pass name="page">view</tea:pass>
+            <tea:pass name="view">view_stations</tea:pass>
+          </tea:call>
+        </exec:if>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_stations</tea:pass>
         </tea:call>
-        <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_stations">
+        <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_stations">
           <colgroup>
             <col class="id" name="id" />
             <col class="modified" name="modified" />
@@ -45,21 +51,22 @@
             </tr>
           </thead>
           <tbody>
-            <tea:for-each tea:bind="station" tea:from="arguments['stations']">
+            <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname"
+                          tea:from="view">
               <tr>
-                <td><exec:text>station.id</exec:text></td>
-                <td><exec:text>station.modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
-                <td><exec:text>station.enigma_id or ''</exec:text></td>
-                <td><exec:text>station.priyom_id or ''</exec:text></td>
-                <td><exec:text>station.nickname or ''</exec:text></td>
+                <td><exec:text>id</exec:text></td>
+                <td><exec:text>modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
+                <td><exec:text>enigma_id or ''</exec:text></td>
+                <td><exec:text>priyom_id or ''</exec:text></td>
+                <td><exec:text>nickname or ''</exec:text></td>
                 <td>
-                  <a exec:href="href(view_station, station_id=station.id)"
+                  <a exec:href="href(view_station, station_id=id)"
                      exec:class="'ym-button ym-primary'+
                                  (' ym-edit' if request.auth else '')">
                     <exec:text>'Edit' if request.auth else 'View'</exec:text>
                   </a>
                   <exec:if condition="is_admin">
-                    <a exec:href="href(delete_station, station_id=station.id)"
+                    <a exec:href="href(delete_station, station_id=id)"
                        class="ym-button ym-danger ym-delete">Delete</a>
                   </exec:if>
                 </td>
@@ -68,7 +75,7 @@
           </tbody>
         </priyom:sortable-table>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_stations</tea:pass>
         </tea:call>
       </div></div>

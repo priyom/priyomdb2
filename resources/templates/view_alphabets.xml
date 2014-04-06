@@ -14,38 +14,41 @@
   </head>
   <body>
     <exec:code>view_alphabets = arguments['view_alphabets']</exec:code>
-    <exec:code>page = arguments['page']</exec:code>
+    <exec:code>view = arguments['view']</exec:code>
     <exec:code>form = arguments['form']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Alphabets</h2>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_alphabets</tea:pass>
         </tea:call>
         <form form:form="form" method="POST">
-          <priyom:sortable-table priyom:pageobj="page" priyom:viewobj="view_alphabets">
+          <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_alphabets">
             <colgroup>
               <col class="id" name="id" />
               <col class="short_name" name="short_name" />
               <col class="display_name" name="display_name" />
+              <col name="user_count" />
               <col class="actions" style="width: 20em;" />
             </colgroup>
             <thead>
               <tr>
                 <th>#</th>
                 <th>Short</th>
-                <th>Display Name</th>
+                <th>Display name</th>
+                <th>User count</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              <tea:for-each tea:bind="alphabet" tea:from="arguments['alphabets']">
+              <tea:for-each tea:bind="id, short_name, display_name, user_count" tea:from="arguments['alphabets']">
                 <tr>
-                  <td><exec:text>alphabet.id</exec:text></td>
-                  <td><exec:text>alphabet.short_name or ''</exec:text></td>
-                  <td><exec:text>alphabet.display_name or ''</exec:text></td>
+                  <td><exec:text>id</exec:text></td>
+                  <td><exec:text>short_name or ''</exec:text></td>
+                  <td><exec:text>display_name or ''</exec:text></td>
+                  <td><exec:text>user_count or 0</exec:text></td>
                 </tr>
               </tea:for-each>
               <tr class="ym-form">
@@ -73,7 +76,7 @@
           </priyom:sortable-table>
         </form>
         <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">page</tea:pass>
+          <tea:pass name="page">view</tea:pass>
           <tea:pass name="view">view_alphabets</tea:pass>
         </tea:call>
       </div></div>
