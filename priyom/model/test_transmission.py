@@ -36,7 +36,6 @@ class TransmissionFormatNode(unittest.TestCase):
 
     def test_faulty_init(self):
         TFN = model.TransmissionFormatNode
-        self.assertRaises(TypeError, TFN, "foo", "bar")
         self.assertRaises(ValueError, TFN, "foo)")  # invalid regex
 
     def test_regex_leaf(self):

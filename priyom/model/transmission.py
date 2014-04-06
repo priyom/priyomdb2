@@ -5,7 +5,7 @@ import operator
 import re
 
 from sqlalchemy import *
-from sqlalchemy.orm import relationship, backref, validates
+from sqlalchemy.orm import relationship, backref, validates, Session
 
 from .base import Base, TopLevel
 from .event import Event
@@ -52,7 +52,10 @@ class TransmissionFormatNode(Base):
     }
 
     id = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey("transmission_format_nodes.id"))
+    parent_id = Column(Integer,
+                       ForeignKey(
+                           "transmission_format_nodes.id",
+                           ondelete="CASCADE"))
     order = Column(Integer)
     duplicity = Column(Enum(
         DUPLICITY_ONE,
@@ -69,7 +72,11 @@ class TransmissionFormatNode(Base):
 
     children = relationship(
         "TransmissionFormatNode",
-        backref=backref("parent", remote_side=[id])
+        backref=backref(
+            "parent",
+            remote_side=[id]),
+        single_parent=True,
+        cascade="all, delete-orphan"
     )
 
     def __init__(self, *args, **kwargs):
@@ -150,8 +157,9 @@ class TransmissionFormatNode(Base):
             raise ValueError("Supplied content_match is not a valid regular expression: {0!r}", content_match)
         return content_match
 
-    def parse_subtree(self, message):
-        regex = re.compile(self.build_inner_regex())
+    def parse_subtree(self, message, root=False):
+        pattern = self.build_inner_regex(root=root)
+        regex = re.compile(pattern)
         results = []
         for match in regex.finditer(message):
             groupdict = match.groupdict()
@@ -190,16 +198,19 @@ class TransmissionFormatNode(Base):
         or a dictionary mapping keys to tuples like the one above. The
         dictionary has exactly one entry for each keyed child.
         """
-        items = self.parse_subtree(message)[1]
+        items = self.parse_subtree(message, root=True)[1]
         if not items:
             raise ValueError("Failed to parse")
         return items[0]
 
-    def build_inner_regex(self, keyed=True):
+    def build_inner_regex(self, keyed=True, root=False):
         if self.content_match is None or self.join:
-            match = "".join(child.build_regex(keyed=keyed) for child in self.children)
+            match = "".join(child.build_regex(keyed=keyed)
+                            for child in self.children)
         else:
             match = self.content_match
+        if root:
+            match = "^{}$".format(match)
         return match
 
     def build_regex(self, keyed=True):
@@ -252,16 +263,14 @@ class TransmissionFormatNode(Base):
                 iterator = iter(self.unparse_children(values))
                 yield next(iterator)
                 for item in iterator:
-                    yield self.join_separator or self.content_match
+                    yield self.content_match
                     yield item
             else:
-                for item in self.unparse_children(values):
-                    yield item
+                yield from self.unparse_children(values)
         elif self.content_match is not None:
             yield self.content_match
         else:
-            for item in self.propagate_unparse(struct):
-                yield item
+            yield from self.propagate_unparse(struct)
 
 class TransmissionFormat(TopLevel):
     __tablename__ = "transmission_formats"
@@ -269,9 +278,13 @@ class TransmissionFormat(TopLevel):
     id = Column(Integer, primary_key=True)
     display_name = Column(Unicode(127), nullable=False)
     description = Column(Text, nullable=False)
-    root_node_id = Column(Integer, ForeignKey(TransmissionFormatNode.id), nullable=False)
+    root_node_id = Column(Integer,
+                          ForeignKey(TransmissionFormatNode.id),
+                          nullable=False)
 
-    root_node = relationship(TransmissionFormatNode)
+    root_node = relationship(TransmissionFormatNode,
+                             cascade="all, delete-orphan",
+                             single_parent=True)
 
     def __init__(self, display_name, root_node, description="", **kwargs):
         super(TransmissionFormat, self).__init__(**kwargs)
@@ -335,17 +348,26 @@ class TransmissionFormat(TopLevel):
         return "".join(self.root_node.unparse(struct))
 
     def __str__(self):
-        return self.display_name.encode("utf-8")
-
-    def __unicode__(self):
         return self.display_name
+
+    def get_has_users(self):
+        session = Session.object_session(self)
+        if not session:
+            return False
+        if self.id is None:
+            return False
+        return session.query(TransmissionStructuredContents.id).filter(
+            TransmissionStructuredContents.format_id == self.id).count() > 0
 
 
 class TransmissionContents(Base):
     __tablename__ = "transmission_contents"
 
     id = Column(Integer, primary_key=True)
-    event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
+    event_id = Column(Integer,
+                      ForeignKey(Event.id,
+                                 ondelete="CASCADE"),
+                      nullable=False)
     mime = Column(Unicode(127), nullable=False)
     is_transcribed = Column(Boolean, nullable=False)
     is_transcoded = Column(Boolean, nullable=False)
@@ -354,10 +376,12 @@ class TransmissionContents(Base):
     subtype = Column(Unicode(50), nullable=False)
 
     parent_contents_id = Column(Integer,
-                                ForeignKey("transmission_contents.id"),
+                                ForeignKey("transmission_contents.id",
+                                           ondelete="CASCADE"),
                                 nullable=True)
     parent_contents = relationship("TransmissionContents",
-                                   backref=backref("children"),
+                                   backref=backref("children",
+                                                   passive_deletes=True),
                                    foreign_keys=[parent_contents_id],
                                    remote_side=[id])
 
@@ -383,16 +407,30 @@ class TransmissionRawContents(TransmissionContents):
     __tablename__ = "transmission_raw_contents"
     __mapper_args__ = {"polymorphic_identity": "raw_contents"}
 
-    id = Column(Integer, ForeignKey(TransmissionContents.id), primary_key=True)
+    id = Column(Integer,
+                ForeignKey(TransmissionContents.id,
+                           ondelete="CASCADE"),
+                primary_key=True)
     encoding = Column(Unicode(63), nullable=False)
     contents = Column(Binary, nullable=True)
+
+    def __str__(self):
+        if self.encoding != "binary":
+            return self.contents.decode(self.encoding)
+        return "binary blob"
 
 class TransmissionStructuredContents(TransmissionContents):
     __tablename__ = "transmission_structured_contents"
     __mapper_args__ = {"polymorphic_identity": "structured_contents"}
 
-    id = Column(Integer, ForeignKey(TransmissionContents.id), primary_key=True)
-    format_id = Column(Integer, ForeignKey(TransmissionFormat.id), nullable=False)
+    id = Column(Integer,
+                ForeignKey(TransmissionContents.id,
+                           ondelete="CASCADE"),
+                primary_key=True)
+    format_id = Column(Integer,
+                       ForeignKey(TransmissionFormat.id,
+                                  ondelete="CASCADE"),
+                       nullable=False)
 
     format = relationship(TransmissionFormat)
 
@@ -407,7 +445,8 @@ class TransmissionStructuredContents(TransmissionContents):
         """
         result = {}
         for node in filter(lambda x: x.parent is None, self.nodes):
-            _, child_list = result.setdefault(node.format_node.key, (node.format_node, []))
+            _, child_list = result.setdefault(
+                node.format_node.key, (node.format_node, []))
             child_list.append(node.unparse_struct())
         return result
 
@@ -417,12 +456,8 @@ class TransmissionStructuredContents(TransmissionContents):
         """
         return self.format.unparse(self.unparse_struct())
 
-    def __unicode__(self):
-        return self.unparse()
-
     def __str__(self):
-
-        return unicode(self).encode("utf-8")
+        return self.unparse()
 
 
 class TransmissionContentNode(Base):
@@ -430,16 +465,19 @@ class TransmissionContentNode(Base):
 
     id = Column(Integer, primary_key=True)
     content_id = Column(Integer,
-                        ForeignKey(TransmissionStructuredContents.id),
+                        ForeignKey(TransmissionStructuredContents.id,
+                                   ondelete="CASCADE"),
                         nullable=False)
     parent_id = Column(Integer,
-                       ForeignKey(__tablename__ + ".id"),
+                       ForeignKey(__tablename__ + ".id",
+                                  ondelete="CASCADE"),
                        nullable=True)
     format_node_id = Column(Integer,
-                            ForeignKey(TransmissionFormatNode.id),
+                            ForeignKey(TransmissionFormatNode.id,
+                                       ondelete="CASCADE"),
                             nullable=False)
     order = Column(Integer, nullable=False)
-    segment = Column(Unicode)
+    segment = Column(Unicode(127))
 
     children = relationship(
         "TransmissionContentNode",
@@ -467,7 +505,8 @@ class TransmissionContentNode(Base):
         if len(self.children) > 0:
             result = {}
             for child in self.children:
-                _, child_list = result.setdefault(child.format_node.key, (child.format_node, []))
+                _, child_list = result.setdefault(
+                    child.format_node.key, (child.format_node, []))
                 child_list.append(child.unparse_struct())
             return result
         else:
@@ -478,7 +517,10 @@ class EventAttachment(Attachment):
     __mapper_args__ = {"polymorphic_identity": "transmission_attachment"}
 
     attachment_id = Column(Integer, ForeignKey(Attachment.id), primary_key=True)
-    event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
+    event_id = Column(Integer,
+                      ForeignKey(Event.id,
+                                 ondelete="CASCADE"),
+                      nullable=False)
     relation = Column(Enum(
         "recording",
         "waterfall"
