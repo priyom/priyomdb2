@@ -56,10 +56,10 @@ def mdzhb_format():
             ("modified", priyom.model.TransmissionFormat.modified, None),
             ("display_name", priyom.model.TransmissionFormat.display_name, None),
             ("user_count",
-             subquery(priyom.model.TransmissionContents,
+             subquery(priyom.model.TransmissionStructuredContents,
                       func.count('*').label("user_count")
-                  ).group_by(
-                      priyom.model.TransmissionContents.format_id
+                  ).with_labels().group_by(
+                      priyom.model.TransmissionStructuredContents.format_id
                   ),
              int)
         ],

@@ -190,13 +190,13 @@ class ContentsRow(teapot.forms.Row):
     def attribution(self):
         return ""
 
-    def _get_format(self, request):
-        return self.parent.instance._get_format(request)
+    def get_format(self, request):
+        return self.parent.instance.get_format(request)
 
     def postvalidate(self, request):
         super().postvalidate(request)
         dbsession = request.dbsession
-        fmt = self._get_format(request)
+        fmt = self.get_format(request)
         if fmt is not None:
             try:
                 fmt.root_node.parse(self.contents)
@@ -214,13 +214,15 @@ class ContentsRow(teapot.forms.Row):
 class TopLevelContentsRow(ContentsRow):
     @teapot.forms.field
     def format_id(self, value):
+        if value == 'None':
+            return None
         return int(value)
 
     @format_id.default
     def format_id(self):
         return 0
 
-    def _get_format(self, request):
+    def get_format(self, request):
         dbsession = request.dbsession
         fmt = dbsession.query(
             priyom.model.TransmissionFormat
@@ -228,7 +230,7 @@ class TopLevelContentsRow(ContentsRow):
         return fmt
 
     def postvalidate(self, request):
-        fmt = self._get_format(request)
+        fmt = self.get_format(request)
         if fmt is None:
             teapot.forms.ValidationError("Not a valid transmission format",
                                          TopLevelContentsRow.format_id,
@@ -416,20 +418,17 @@ def log_POST(request: teapot.request.Request):
                     pages[1].broadcast_id)
 
             for contentrow in pages[2].contents:
-                content = priyom.model.TransmissionContents(
-                    "text/plain")
+                fmt = contentrow.get_format(request)
+                content = fmt.parse(contentrow.contents)
                 content.attribution = contentrow.attribution
                 content.alphabet_id = contentrow.alphabet_id
-                content.encoding = "utf8"
-                content.contents = contentrow.contents.encode(content.encoding)
                 for transcriptrow in contentrow.transcripts:
-                    transcribed = priyom.model.TransmissionContents(content.mime)
+                    transcribed = fmt.parse(transcriptrow.contents)
                     transcribed.is_transcribed = True
                     transcribed.attribution = transcriptrow.attribution
                     transcribed.alphabet_id = transcriptrow.alphabet_id
-                    transcribed.encoding = content.encoding
-                    transcribed.contents = transcriptrow.contents.encode(
-                        transcribed.encoding)
+                    transcribed.parent_contents = content
+                    event.contents.append(transcribed)
                 event.contents.append(content)
 
             dbsession.add(event)
