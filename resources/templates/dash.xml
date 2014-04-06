@@ -13,7 +13,7 @@
   <body>
     <exec:code>recents = arguments['recents']</exec:code>
     <exec:code>unapproved = arguments['unapproved']</exec:code>
-    <exec:code>unapproved = arguments['unapproved']</exec:code>
+    <exec:code>mine = arguments['mine']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
@@ -37,7 +37,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tea:for-each tea:bind="event" tea:from="recents">
+                <tea:for-each tea:bind="event" tea:from="unapproved">
                   <tr>
                     <td><exec:text>event.id</exec:text></td>
                     <td>
@@ -131,12 +131,21 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>412</td>
-                <td>S28</td>
-                <td>2014-02-10T12:00Z</td>
-                <td class="tx-content">12 345 FOOBAR 10 20 30 40</td>
-              </tr>
+              <tea:for-each tea:bind="event" tea:from="mine">
+                <tr>
+                  <td><exec:text>event.id</exec:text></td>
+                  <td><exec:text>event.station</exec:text></td>
+                  <td><exec:text>event.modified</exec:text></td>
+                  <td class="tx-content">
+                    <exec:code>rows = event.contents</exec:code>
+                    <tea:for-each tea:bind="row" tea:from="rows">
+                      <exec:if condition="row.parent_contents is None">
+                        <div><exec:text>row</exec:text></div>
+                      </exec:if>
+                    </tea:for-each>
+                  </td>
+                </tr>
+              </tea:for-each>
             </tbody>
           </table>
         </div>
