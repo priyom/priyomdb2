@@ -158,6 +158,9 @@ class User(Base):
         self.password_verifier = create_password_verifier(
             plaintext, iterations, salt, "sha256")
 
+    def __str__(self):
+        return self.loginname
+
 class UserSession(Base):
     __tablename__ = "user_sessions"
 
