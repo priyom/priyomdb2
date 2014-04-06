@@ -52,6 +52,11 @@
         <h2>Log transmission</h2>
         <form class="ym-form" method="POST" name="log" form:form="page">
           <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+          <div class="ym-fbox-footer ym-fbox-button">
+            <button type="submit"
+                    class="ym-button ym-reload"
+                    >Validate contents without submitting</button>
+          </div>
           <table>
             <colgroup>
               <col width="66%" />

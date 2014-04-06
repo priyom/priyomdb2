@@ -26,6 +26,11 @@
         <form class="ym-form" method="POST" name="log" form:form="page">
           <h6 class="ym-fbox-heading">Broadcast information</h6>
           <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+          <div class="ym-fbox-footer ym-fbox-button">
+            <button type="submit"
+                    class="ym-button ym-reload"
+                    >Validate contents without submitting</button>
+          </div>
           <fieldset>
             <legend class="ym-fbox-check">
               <input type="radio"
