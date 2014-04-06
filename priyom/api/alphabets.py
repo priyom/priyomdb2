@@ -65,7 +65,7 @@ def view_alphabets(request: teapot.request.Request, view):
         default_orderfield="display_name")
 @router.route("/alphabet", order=0, methods={teapot.request.Method.POST})
 @xsltea_site.with_template("view_alphabets.xml")
-def view_alphabets_POST(request: teapot.request.Request, page):
+def view_alphabets_POST(request: teapot.request.Request, view):
     form = AlphabetForm(request=request)
     if not form.errors:
         dbsession = request.dbsession
@@ -77,7 +77,7 @@ def view_alphabets_POST(request: teapot.request.Request, page):
         raise teapot.make_redirect_response(
             request,
             view_alphabets,
-            page=page)
+            view=view)
 
     alphabets = list(page)
     yield teapot.response.Response(None)

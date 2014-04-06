@@ -48,7 +48,8 @@ def view_modulations(request: teapot.request.Request, view):
             ("id", priyom.model.Modulation.id, None),
             ("display_name", priyom.model.Modulation.display_name, None),
             ("user_count",
-             subquery(priyom.model.EventFrequency, func.count('*')
+             subquery(priyom.model.EventFrequency,
+                      func.count('*').label("user_count")
                   ).group_by(
                       priyom.model.EventFrequency.modulation_id),
              int)
@@ -68,6 +69,13 @@ def view_modulations_POST(request: teapot.request.Request, view):
         raise teapot.make_redirect_response(
             request,
             view_modulations,
-            page=page)
+            view=view)
 
-    return view_modulations(request, view)
+    yield teapot.response.Response(None)
+
+    yield {
+        "modulations": modulations,
+        "view": view,
+        "view_modulations": view_modulations,
+        "form": form
+    }, {}
