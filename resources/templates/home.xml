@@ -13,13 +13,11 @@
   <body>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Welcome, anonymous!</h2>
-        <p>Sorry, currently there is no content for unauthenticated
-        users. Please log in, if you have credentials. If you don’t, please join
-        our <a href="irc://irc.freenode.net/#priyom">IRC</a> so that
-        we get to know you. Eventually, you’ll get access.</p>
-      </div></div>
+      <h2>Welcome, anonymous!</h2>
+      <p>Sorry, currently there is no content for unauthenticated
+      users. Please log in, if you have credentials. If you don’t, please join
+      our <a href="irc://irc.freenode.net/#priyom">IRC</a> so that
+      we get to know you. Eventually, you’ll get access.</p>
     </main>
   </body>
 </html>

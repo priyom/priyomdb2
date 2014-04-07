@@ -15,53 +15,66 @@
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_formats = arguments['view_formats']</exec:code>
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Transmission formats</h2>
-        <div style="margin-bottom: 1.5em;"><strong>Activities:</strong>
-        <a class="ym-button ym-success ym-add"
-           exec:href="href(arguments['add_format'], format_id=0)">Add new format</a>
+      <h2>Transmission formats</h2>
+      <aside class="sidebar"><div class="sbox">
+        <div class="ym-grid linearize-sidebar">
+          <div class="ym-g50 ym-gl"><div class="ym-gbox">
+            <h3>Activities</h3>
+            <ul class="navlist">
+              <li><a exec:href="href(arguments['add_format'], format_id=0)" class="ym-button ym-success ym-add">New format</a></li>
+            </ul>
+          </div></div>
+          <div class="ym-g50 ym-gr"><div class="ym-gbox">
+            <exec:if condition="view.f">
+              <h3>Filters</h3>
+              <tea:call tea:src="library.xml" tea:name="filters">
+                <tea:pass name="page">view</tea:pass>
+                <tea:pass name="view">view_formats</tea:pass>
+              </tea:call>
+            </exec:if>
+          </div></div>
         </div>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_formats</tea:pass>
-        </tea:call>
-        <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_formats">
-          <colgroup>
-            <col class="id" name="id" />
-            <col class="modified" name="modified" />
-            <col class="display_name" name="display_name" />
-            <col name="user_count" />
-            <col class="actions" style="width: 20em"/>
-          </colgroup>
-          <thead>
+      </div></aside>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_formats</tea:pass>
+      </tea:call>
+      <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_formats">
+        <colgroup>
+          <col class="id" name="id" />
+          <col class="modified" name="modified" />
+          <col class="display_name" name="display_name" />
+          <col name="user_count" />
+          <col class="actions" style="width: 20em"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Modified</th>
+            <th>Display name</th>
+            <th>User count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each tea:bind="id, modified, display_name, user_count" tea:from="arguments['formats']">
             <tr>
-              <th>#</th>
-              <th>Modified</th>
-              <th>Display name</th>
-              <th>User count</th>
-              <th>Actions</th>
+              <td><exec:text>id</exec:text></td>
+              <td><exec:text>modified</exec:text></td>
+              <td><exec:text>display_name</exec:text></td>
+              <td><exec:text>user_count or 0</exec:text></td>
+              <td>
+                <a exec:href="href(arguments['edit_format'], format_id=id)"
+                   class="ym-button ym-edit ym-primary">Edit</a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <tea:for-each tea:bind="id, modified, display_name, user_count" tea:from="arguments['formats']">
-              <tr>
-                <td><exec:text>id</exec:text></td>
-                <td><exec:text>modified.strftime("%Y-%m-%dT%H:%MZ")</exec:text></td>
-                <td><exec:text>display_name</exec:text></td>
-                <td><exec:text>user_count or 0</exec:text></td>
-                <td>
-                  <a exec:href="href(arguments['edit_format'], format_id=id)"
-                     class="ym-button ym-edit ym-primary">Edit</a>
-                </td>
-              </tr>
-            </tea:for-each>
-          </tbody>
-        </priyom:sortable-table>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_formats</tea:pass>
-        </tea:call>
-      </div></div>
+          </tea:for-each>
+        </tbody>
+      </priyom:sortable-table>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_formats</tea:pass>
+      </tea:call>
     </main>
   </body>
 </html>

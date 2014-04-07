@@ -93,7 +93,13 @@
             </div>
           </div></div>
         </nav>
-        <xsl:apply-templates select="h:body/h:main" />
+        <main>
+          <xsl:apply-templates select="h:body/h:main/@*" />
+          <div class="ym-wrapper"><div class="ym-wbox">
+            <xsl:apply-templates select="h:body/h:main/*" />
+            <div style="clear: both;" />
+          </div></div>
+        </main>
         <footer>
           <div class="ym-wrapper"><div class="ym-wbox">
             <p>A <a href="http://priyom.org">priyom.org</a> project • hacked together by Horrorcat • using <a href="http://yaml.de">yaml CSS framework</a></p>

@@ -16,140 +16,138 @@
     <exec:code>mine = arguments['mine']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Radio dash</h2>
-        <div class="ym-grid linearize-level-2">
-          <div class="ym-gl ym-g50"><div class="ym-gbox">
-            <h3>Log entry moderation queue</h3>
-            <table>
-              <colgroup>
-                <col class="id" />
-                <col />
-                <col />
-                <col />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Submitter</th>
-                  <th>Station</th>
-                  <th>Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tea:for-each tea:bind="event" tea:from="unapproved">
-                  <tr>
-                    <td><exec:text>event.id</exec:text></td>
-                    <td>
-                      <exec:if condition="event.submitter">
-                        <exec:text>event.submitter</exec:text>
-                      </exec:if>
-                      <exec:if condition="not event.submitter">system generated</exec:if>
-                    </td>
-                    <td><exec:text>event.station</exec:text></td>
-                    <td><exec:text>event.start_time</exec:text></td>
-                  </tr>
-                </tea:for-each>
-              </tbody>
-            </table>
-          </div></div>
-          <div class="ym-gr ym-g50"><div class="ym-gbox">
-            <h3>Recent entries</h3>
-            <table>
-              <colgroup>
-                <col class="id" />
-                <col />
-                <col />
-                <col />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Submitter</th>
-                  <th>Station</th>
-                  <th>Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tea:for-each tea:bind="event" tea:from="recents">
-                  <tr>
-                    <td><exec:text>event.id</exec:text></td>
-                    <td>
-                      <exec:if condition="event.submitter">
-                        <exec:text>event.submitter</exec:text>
-                      </exec:if>
-                      <exec:if condition="not event.submitter">system generated</exec:if>
-                    </td>
-                    <td><exec:text>event.station</exec:text></td>
-                    <td><exec:text>event.start_time</exec:text></td>
-                  </tr>
-                </tea:for-each>
-              </tbody>
-            </table>
-          </div></div>
-        </div>
-        <h3>Activities</h3>
-        <div class="ym-grid linearize-level-1">
-          <div class="ym-gl ym-g50"><div class="ym-gbox">
-            <h4><a class="ym-button ym-add">Log transmission</a></h4>
-            <p>Log a new transmission into the database system. If you do not
-            have unmoderated privilegues, your submission will need to await
-            moderator approval.</p>
-          </div></div>
-          <div class="ym-gr ym-g50"><div class="ym-gbox">
-            <h4><a class="ym-button ym-add">Log event</a></h4>
-            <p>Log a new event into the database system. If you do not
-            have unmoderated privilegues, your submission will need to await
-            moderator approval.</p>
-          </div></div>
-        </div>
-        <div class="ym-grid linearize-level-1">
-          <div class="ym-gl ym-g50"><div class="ym-gbox">
-            <h4><a class="ym-button icon-station">Create station</a></h4>
-            <p>Create a new station in the database.</p>
-          </div></div>
-          <div class="ym-gr ym-g50"><div class="ym-gbox">
-            <h4><a class="ym-button icon-user">Create user</a></h4>
-            <p>Create a new user in the database.</p>
-          </div></div>
-        </div>
-        <div>
-          <h3>My logs</h3>
+      <h2>Radio dash</h2>
+      <div class="ym-grid linearize-level-2">
+        <div class="ym-gl ym-g50"><div class="ym-gbox">
+          <h3>Log entry moderation queue</h3>
           <table>
             <colgroup>
               <col class="id" />
               <col />
               <col />
-              <col class="tx-content"/>
+              <col />
             </colgroup>
             <thead>
               <tr>
                 <th>#</th>
+                <th>Submitter</th>
                 <th>Station</th>
                 <th>Timestamp</th>
-                <th>Contents / Event</th>
               </tr>
             </thead>
             <tbody>
-              <tea:for-each tea:bind="event" tea:from="mine">
+              <tea:for-each tea:bind="event" tea:from="unapproved">
                 <tr>
                   <td><exec:text>event.id</exec:text></td>
-                  <td><exec:text>event.station</exec:text></td>
-                  <td><exec:text>event.modified</exec:text></td>
-                  <td class="tx-content">
-                    <exec:code>rows = event.contents</exec:code>
-                    <tea:for-each tea:bind="row" tea:from="rows">
-                      <exec:if condition="row.parent_contents is None">
-                        <div><exec:text>row</exec:text></div>
-                      </exec:if>
-                    </tea:for-each>
+                  <td>
+                    <exec:if condition="event.submitter">
+                      <exec:text>event.submitter</exec:text>
+                    </exec:if>
+                    <exec:if condition="not event.submitter">system generated</exec:if>
                   </td>
+                  <td><exec:text>event.station</exec:text></td>
+                  <td><exec:text>event.start_time</exec:text></td>
                 </tr>
               </tea:for-each>
             </tbody>
           </table>
-        </div>
-      </div></div>
+        </div></div>
+        <div class="ym-gr ym-g50"><div class="ym-gbox">
+          <h3>Recent entries</h3>
+          <table>
+            <colgroup>
+              <col class="id" />
+              <col />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Submitter</th>
+                <th>Station</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tea:for-each tea:bind="event" tea:from="recents">
+                <tr>
+                  <td><exec:text>event.id</exec:text></td>
+                  <td>
+                    <exec:if condition="event.submitter">
+                      <exec:text>event.submitter</exec:text>
+                    </exec:if>
+                    <exec:if condition="not event.submitter">system generated</exec:if>
+                  </td>
+                  <td><exec:text>event.station</exec:text></td>
+                  <td><exec:text>event.start_time</exec:text></td>
+                </tr>
+              </tea:for-each>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+      <h3>Activities</h3>
+      <div class="ym-grid linearize-level-1">
+        <div class="ym-gl ym-g50"><div class="ym-gbox">
+          <h4><a class="ym-button ym-add">Log transmission</a></h4>
+          <p>Log a new transmission into the database system. If you do not
+          have unmoderated privilegues, your submission will need to await
+          moderator approval.</p>
+        </div></div>
+        <div class="ym-gr ym-g50"><div class="ym-gbox">
+          <h4><a class="ym-button ym-add">Log event</a></h4>
+          <p>Log a new event into the database system. If you do not
+          have unmoderated privilegues, your submission will need to await
+          moderator approval.</p>
+        </div></div>
+      </div>
+      <div class="ym-grid linearize-level-1">
+        <div class="ym-gl ym-g50"><div class="ym-gbox">
+          <h4><a class="ym-button icon-station">Create station</a></h4>
+          <p>Create a new station in the database.</p>
+        </div></div>
+        <div class="ym-gr ym-g50"><div class="ym-gbox">
+          <h4><a class="ym-button icon-user">Create user</a></h4>
+          <p>Create a new user in the database.</p>
+        </div></div>
+      </div>
+      <div>
+        <h3>My logs</h3>
+        <table>
+          <colgroup>
+            <col class="id" />
+            <col />
+            <col />
+            <col class="tx-content"/>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Station</th>
+              <th>Timestamp</th>
+              <th>Contents / Event</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tea:for-each tea:bind="event" tea:from="mine">
+              <tr>
+                <td><exec:text>event.id</exec:text></td>
+                <td><exec:text>event.station</exec:text></td>
+                <td><exec:text>event.modified</exec:text></td>
+                <td class="tx-content">
+                  <exec:code>rows = event.contents</exec:code>
+                  <tea:for-each tea:bind="row" tea:from="rows">
+                    <exec:if condition="row.parent_contents is None">
+                      <div><exec:text>row</exec:text></div>
+                    </exec:if>
+                  </tea:for-each>
+                </td>
+              </tr>
+            </tea:for-each>
+          </tbody>
+        </table>
+      </div>
     </main>
   </body>
 </html>

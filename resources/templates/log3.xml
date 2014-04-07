@@ -48,97 +48,95 @@
       </div>
     </tea:def>
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Log transmission</h2>
-        <form class="ym-form" method="POST" name="log" form:form="page">
-          <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
-          <div class="ym-fbox-footer ym-fbox-button">
-            <button type="submit"
-                    class="ym-button ym-reload"
-                    >Validate contents without submitting</button>
-          </div>
-          <table>
-            <colgroup>
-              <col width="66%" />
-              <col width="33%" />
-            </colgroup>
-            <thead>
-              <th>Contents</th>
-              <th>Actions and Metadata</th>
-            </thead>
-            <tbody>
-              <exec:code>rows = page.contents</exec:code>
-              <tea:for-each tea:bind="row" tea:from="rows">
-                <tr form:form="row">
-                  <td>
-                    <div class="ym-fbox">
-                      <label form:for-field="format_id">Format</label>
-                      <select form:field="format_id">
-                        <tea:for-each tea:bind="format" tea:from="formats">
-                          <option exec:value="format.id"
-                                  exec:selected="'selected' if row.format_id == format.id else None">
-                            <exec:text>format.display_name</exec:text>
-                          </option>
-                        </tea:for-each>
-                      </select>
-                    </div>
-                    <tea:call tea:name="transcriptdata" />
-                  </td>
-                  <td>
-                    <h6 class="ym-fbox-heading">Metadata</h6>
-                    <tea:call tea:name="transcriptmetadata" />
-                    <h6 class="ym-fbox-heading">Actions</h6>
-                    <div class="ym-fbox ym-fbox-button">
-                      <button type="submit"
-                              form:action="add_transcript"
-                              class="ym-button ym-add">Add transcript</button>
-                    </div>
-                    <div class="ym-fbox ym-fbox-button">
-                      <button type="submit"
-                              form:action="delete"
-                              class="ym-button ym-delete ym-warning">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-                <exec:code>transcripts = row.transcripts</exec:code>
-                <tea:for-each tea:bind="subrow" tea:from="transcripts">
-                  <tr form:form="subrow">
-                    <td>
-                      <h6 class="ym-fbox-heading">Transcript</h6>
-                      <tea:call tea:name="transcriptdata">
-                        <tea:pass name="row">subrow</tea:pass>
-                      </tea:call>
-                    </td>
-                    <td>
-                      <h6 class="ym-fbox-heading">Transcript metadata</h6>
-                      <tea:call tea:name="transcriptmetadata">
-                        <tea:pass name="row">subrow</tea:pass>
-                      </tea:call>
-                      <h6 class="ym-fbox-heading">Transcript actions</h6>
-                      <div class="ym-fbox ym-fbox-button">
-                        <button type="submit"
-                                form:action="delete_transcript"
-                                class="ym-button ym-delete ym-warning">Delete transcript</button>
-                      </div>
-                    </td>
-                  </tr>
-                </tea:for-each>
-              </tea:for-each>
-              <tr>
-                <td />
+      <h2>Log transmission</h2>
+      <form class="ym-form" method="POST" name="log" form:form="page">
+        <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+        <div class="ym-fbox-footer ym-fbox-button">
+          <button type="submit"
+                  class="ym-button ym-reload"
+                  >Validate contents without submitting</button>
+        </div>
+        <table>
+          <colgroup>
+            <col width="66%" />
+            <col width="33%" />
+          </colgroup>
+          <thead>
+            <th>Contents</th>
+            <th>Actions and Metadata</th>
+          </thead>
+          <tbody>
+            <exec:code>rows = page.contents</exec:code>
+            <tea:for-each tea:bind="row" tea:from="rows">
+              <tr form:form="row">
                 <td>
                   <div class="ym-fbox">
+                    <label form:for-field="format_id">Format</label>
+                    <select form:field="format_id">
+                      <tea:for-each tea:bind="format" tea:from="formats">
+                        <option exec:value="format.id"
+                                exec:selected="'selected' if row.format_id == format.id else None">
+                          <exec:text>format.display_name</exec:text>
+                        </option>
+                      </tea:for-each>
+                    </select>
+                  </div>
+                  <tea:call tea:name="transcriptdata" />
+                </td>
+                <td>
+                  <h6 class="ym-fbox-heading">Metadata</h6>
+                  <tea:call tea:name="transcriptmetadata" />
+                  <h6 class="ym-fbox-heading">Actions</h6>
+                  <div class="ym-fbox ym-fbox-button">
                     <button type="submit"
-                            form:action="add"
-                            class="ym-button ym-add">Add another transmission</button>
+                            form:action="add_transcript"
+                            class="ym-button ym-add">Add transcript</button>
+                  </div>
+                  <div class="ym-fbox ym-fbox-button">
+                    <button type="submit"
+                            form:action="delete"
+                            class="ym-button ym-delete ym-warning">Delete</button>
                   </div>
                 </td>
               </tr>
-            </tbody>
-          </table>
-          <tea:call tea:src="log_library.xml" tea:name="footer" />
-        </form>
-      </div></div>
+              <exec:code>transcripts = row.transcripts</exec:code>
+              <tea:for-each tea:bind="subrow" tea:from="transcripts">
+                <tr form:form="subrow">
+                  <td>
+                    <h6 class="ym-fbox-heading">Transcript</h6>
+                    <tea:call tea:name="transcriptdata">
+                      <tea:pass name="row">subrow</tea:pass>
+                    </tea:call>
+                  </td>
+                  <td>
+                    <h6 class="ym-fbox-heading">Transcript metadata</h6>
+                    <tea:call tea:name="transcriptmetadata">
+                      <tea:pass name="row">subrow</tea:pass>
+                    </tea:call>
+                    <h6 class="ym-fbox-heading">Transcript actions</h6>
+                    <div class="ym-fbox ym-fbox-button">
+                      <button type="submit"
+                              form:action="delete_transcript"
+                              class="ym-button ym-delete ym-warning">Delete transcript</button>
+                    </div>
+                  </td>
+                </tr>
+              </tea:for-each>
+            </tea:for-each>
+            <tr>
+              <td />
+              <td>
+                <div class="ym-fbox">
+                  <button type="submit"
+                          form:action="add"
+                          class="ym-button ym-add">Add another transmission</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <tea:call tea:src="log_library.xml" tea:name="footer" />
+      </form>
     </main>
   </body>
 </html>

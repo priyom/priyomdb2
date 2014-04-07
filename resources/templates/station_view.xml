@@ -15,35 +15,33 @@
     <exec:code>station = arguments['station']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>View station</h2>
-        <h6 class="ym-fbox-heading">Station properties</h6>
-        <div class="ym-form">
-          <div class="ym-fbox">
-            <label for="enigma-id">Enigma Identifier</label>
-            <input type="text" id="enigma-id"
-                   readonly="readonly"
-                   exec:value="station.enigma_id or ''"/>
-          </div>
-          <div class="ym-fbox">
-            <label for="priyom-id">Priyom Identifier</label>
-            <input type="text" id="priyom-id"
-                   readonly="readonly"
-                   exec:value="station.priyom_id or ''"/>
-          </div>
-          <div class="ym-fbox">
-            <label for="nickname">Nickname</label>
-            <input type="text" id="nickname"
-                   exec:value="station.nickname or ''"/>
-          </div>
-          <div class="ym-fbox">
-            <label for="description">Description</label>
-            <textarea id="description">
-              <exec:text>station.description or ""</exec:text>
-            </textarea>
-          </div>
+      <h2>View station</h2>
+      <h6 class="ym-fbox-heading">Station properties</h6>
+      <div class="ym-form">
+        <div class="ym-fbox">
+          <label for="enigma-id">Enigma Identifier</label>
+          <input type="text" id="enigma-id"
+                 readonly="readonly"
+                 exec:value="station.enigma_id or ''"/>
         </div>
-      </div></div>
+        <div class="ym-fbox">
+          <label for="priyom-id">Priyom Identifier</label>
+          <input type="text" id="priyom-id"
+                 readonly="readonly"
+                 exec:value="station.priyom_id or ''"/>
+        </div>
+        <div class="ym-fbox">
+          <label for="nickname">Nickname</label>
+          <input type="text" id="nickname"
+                 exec:value="station.nickname or ''"/>
+        </div>
+        <div class="ym-fbox">
+          <label for="description">Description</label>
+          <textarea id="description">
+            <exec:text>station.description or ""</exec:text>
+          </textarea>
+        </div>
+      </div>
     </main>
   </body>
 </html>

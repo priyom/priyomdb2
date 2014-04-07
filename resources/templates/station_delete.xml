@@ -14,11 +14,9 @@
   <body>
     <tea:include src="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Delete station</h2>
-        <p>Deletion of stations is not supported yet. Ask Horrorcat if you
-        really, really need to delete a station.</p>
-      </div></div>
+      <h2>Delete station</h2>
+      <p>Deletion of stations is not supported yet. Ask Horrorcat if you
+      really, really need to delete a station.</p>
     </main>
   </body>
 </html>

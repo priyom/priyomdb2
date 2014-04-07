@@ -68,21 +68,18 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <tea:arg name="page" />
     <tea:arg name="view" />
     <exec:code>filters = page.f</exec:code>
-    <section class="box info">
-      <h3>filtered by</h3>
-      <ul>
-        <tea:for-each tea:bind="row" tea:from="filters">
-          <li>
-            <exec:text>row.f</exec:text>
-            <exec:text>' '</exec:text>
-            <exec:text>row.o</exec:text>
-            <exec:text>' '</exec:text>
-            <exec:text>repr(row.v)</exec:text>
-          </li>
-        </tea:for-each>
-      </ul>
-      <a class="ym-button ym-warning ym-delete"
-         exec:href="href(view, view=page.without_filters())">Clear all filters</a>
-    </section>
+    <ul>
+      <tea:for-each tea:bind="row" tea:from="filters">
+        <li>
+          <exec:text>row.f</exec:text>
+          <exec:text>' '</exec:text>
+          <exec:text>row.o</exec:text>
+          <exec:text>' '</exec:text>
+          <exec:text>repr(row.v)</exec:text>
+        </li>
+      </tea:for-each>
+    </ul>
+    <a class="ym-button ym-warning ym-delete"
+       exec:href="href(view, view=page.without_filters())">Clear all filters</a>
   </tea:def>
 </library>

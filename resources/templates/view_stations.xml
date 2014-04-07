@@ -19,66 +19,77 @@
     <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Stations</h2>
-        <exec:if condition="view.f">
-          <tea:call tea:src="library.xml" tea:name="filters">
-            <tea:pass name="page">view</tea:pass>
-            <tea:pass name="view">view_stations</tea:pass>
-          </tea:call>
-        </exec:if>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_stations</tea:pass>
-        </tea:call>
-        <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_stations">
-          <colgroup>
-            <col class="id" name="id" />
-            <col class="modified" name="modified" />
-            <col class="enigma_id" name="enigma_id" />
-            <col class="priyom_id" name="priyom_id" />
-            <col name="nickname" />
-            <col class="actions" style="width: 20em;" />
-          </colgroup>
-          <thead>
+      <h2>Stations</h2>
+      <aside class="sidebar"><div class="sbox">
+        <div class="ym-grid linearize-sidebar">
+          <div class="ym-g50 ym-gl"><div class="ym-gbox">
+            <h3>Activities</h3>
+            <ul class="navlist">
+              <li><a href="#" class="ym-button ym-success ym-add">New station</a></li>
+            </ul>
+          </div></div>
+          <div class="ym-g50 ym-gr"><div class="ym-gbox">
+            <exec:if condition="view.f">
+              <h3>Filters</h3>
+              <tea:call tea:src="library.xml" tea:name="filters">
+                <tea:pass name="page">view</tea:pass>
+                <tea:pass name="view">view_stations</tea:pass>
+              </tea:call>
+            </exec:if>
+          </div></div>
+        </div>
+      </div></aside>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_stations</tea:pass>
+      </tea:call>
+      <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_stations">
+        <colgroup>
+          <col class="id" name="id" />
+          <col class="modified" name="modified" />
+          <col class="enigma_id" name="enigma_id" />
+          <col class="priyom_id" name="priyom_id" />
+          <col name="nickname" />
+          <col class="actions" style="width: 20em;" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Modified</th>
+            <th>Enigma ID</th>
+            <th>Priyom ID</th>
+            <th>Nickname</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname"
+                        tea:from="view">
             <tr>
-              <th>#</th>
-              <th>Modified</th>
-              <th>Enigma ID</th>
-              <th>Priyom ID</th>
-              <th>Nickname</th>
-              <th>Actions</th>
+              <td><exec:text>id</exec:text></td>
+              <td><exec:text>modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
+              <td><exec:text>enigma_id or ''</exec:text></td>
+              <td><exec:text>priyom_id or ''</exec:text></td>
+              <td><exec:text>nickname or ''</exec:text></td>
+              <td>
+                <a exec:href="href(view_station, station_id=id)"
+                   exec:class="'ym-button ym-primary'+
+                               (' ym-edit' if request.auth else '')">
+                  <exec:text>'Edit' if request.auth else 'View'</exec:text>
+                </a>
+                <exec:if condition="is_admin">
+                  <a exec:href="href(delete_station, station_id=id)"
+                     class="ym-button ym-danger ym-delete">Delete</a>
+                </exec:if>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname"
-                          tea:from="view">
-              <tr>
-                <td><exec:text>id</exec:text></td>
-                <td><exec:text>modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
-                <td><exec:text>enigma_id or ''</exec:text></td>
-                <td><exec:text>priyom_id or ''</exec:text></td>
-                <td><exec:text>nickname or ''</exec:text></td>
-                <td>
-                  <a exec:href="href(view_station, station_id=id)"
-                     exec:class="'ym-button ym-primary'+
-                                 (' ym-edit' if request.auth else '')">
-                    <exec:text>'Edit' if request.auth else 'View'</exec:text>
-                  </a>
-                  <exec:if condition="is_admin">
-                    <a exec:href="href(delete_station, station_id=id)"
-                       class="ym-button ym-danger ym-delete">Delete</a>
-                  </exec:if>
-                </td>
-              </tr>
-            </tea:for-each>
-          </tbody>
-        </priyom:sortable-table>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_stations</tea:pass>
-        </tea:call>
-      </div></div>
+          </tea:for-each>
+        </tbody>
+      </priyom:sortable-table>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_stations</tea:pass>
+      </tea:call>
     </main>
   </body>
 </html>

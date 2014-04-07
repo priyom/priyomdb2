@@ -7,7 +7,7 @@
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
-    <title>View stations</title>
+    <title>Manage alphabets</title>
     <tea:include tea:source="stylesheets.xml"
                  tea:xpath="h:link"
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -18,68 +18,84 @@
     <exec:code>form = arguments['form']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Alphabets</h2>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_alphabets</tea:pass>
-        </tea:call>
-        <form form:form="form" method="POST">
-          <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_alphabets">
-            <colgroup>
-              <col class="id" name="id" />
-              <col class="short_name" name="short_name" />
-              <col class="display_name" name="display_name" />
-              <col name="user_count" />
-              <col class="actions" style="width: 20em;" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Short</th>
-                <th>Display name</th>
-                <th>User count</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tea:for-each tea:bind="id, short_name, display_name, user_count" tea:from="arguments['alphabets']">
-                <tr>
-                  <td><exec:text>id</exec:text></td>
-                  <td><exec:text>short_name or ''</exec:text></td>
-                  <td><exec:text>display_name or ''</exec:text></td>
-                  <td><exec:text>user_count or 0</exec:text></td>
-                </tr>
-              </tea:for-each>
-              <tr class="ym-form">
-                <td>New</td>
-                <td>
-                  <div class="ym-fbox">
-                    <input type="text"
-                           form:field="short_name" />
-                  </div>
-                </td>
-                <td>
-                  <div class="ym-fbox">
-                    <input type="text"
-                           form:field="display_name" />
-                  </div>
-                </td>
-                <td>
-                  <div class="ym-fbox">
-                    <button type="submit"
-                            class="ym-button ym-add ym-success">Add</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </priyom:sortable-table>
-        </form>
-        <tea:call tea:src="library.xml" tea:name="pagination">
-          <tea:pass name="page">view</tea:pass>
-          <tea:pass name="view">view_alphabets</tea:pass>
-        </tea:call>
-      </div></div>
+      <h2>Alphabets</h2>
+      <aside class="sidebar"><div class="sbox">
+        <div class="ym-grid linearize-sidebar">
+          <div class="ym-g50 ym-gl"><div class="ym-gbox">
+            <h3>Quick add</h3>
+            <form form:form="form" method="POST" class="ym-form">
+              <div class="ym-fbox">
+                <label form:for-field="display_name">Short name</label>
+                <input type="text"
+                       form:field="short_name" />
+              </div>
+              <div class="ym-fbox">
+                <label form:for-field="display_name">Display name</label>
+                <input type="text"
+                       form:field="display_name" />
+              </div>
+              <div class="ym-fbox-footer ym-fbox-button">
+                <button type="submit"
+                        class="ym-button ym-success ym-add"
+                        form:action="submit">New alphabet</button>
+              </div>
+            </form>
+          </div></div>
+          <div class="ym-g50 ym-gr"><div class="ym-gbox">
+            <exec:if condition="view.f">
+              <h3>Filters</h3>
+              <tea:call tea:src="library.xml" tea:name="filters">
+                <tea:pass name="page">view</tea:pass>
+                <tea:pass name="view">view_alphabets</tea:pass>
+              </tea:call>
+            </exec:if>
+          </div></div>
+        </div>
+      </div></aside>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_alphabets</tea:pass>
+      </tea:call>
+      <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_alphabets">
+        <colgroup>
+          <col class="id" name="id" />
+          <col class="short_name" name="short_name" />
+          <col class="display_name" name="display_name" />
+          <col name="user_count" />
+          <col class="actions" style="width: 20em;" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Short</th>
+            <th>Display name</th>
+            <th>User count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each tea:bind="id, short_name, display_name, user_count" tea:from="arguments['alphabets']">
+            <tr>
+              <td><exec:text>id</exec:text></td>
+              <td><exec:text>short_name or ''</exec:text></td>
+              <td><exec:text>display_name or ''</exec:text></td>
+              <td><exec:text>user_count or 0</exec:text></td>
+              <td>
+                <a href="#"
+                   class="ym-button ym-primary ym-edit">Edit</a>
+                <exec:if condition="not user_count">
+                  <a href="#"
+                     class="ym-button ym-danger ym-delete">Delete</a>
+                </exec:if>
+              </td>
+            </tr>
+          </tea:for-each>
+        </tbody>
+      </priyom:sortable-table>
+      <tea:call tea:src="library.xml" tea:name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="view">view_alphabets</tea:pass>
+      </tea:call>
     </main>
   </body>
 </html>
