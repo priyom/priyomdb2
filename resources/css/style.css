@@ -303,7 +303,12 @@ ul.pagination > li:last-child > div.fakebutton
 
 }
 
-@media screen and (max-width: 98em ) {
+/* max width is computed by taking the width of the center container, adding */
+/* two times the sidebar width and subtracting the 3em which are eaten by the*/
+/* padding of the center box. */
+/* then we have to use the baseline em size of 16px to make sure nothing evil*/
+/* happens */
+@media screen and (max-width: 99em ) {
 
     main .ym-wbox > aside.sidebar {
         float: none;
@@ -319,7 +324,7 @@ ul.pagination > li:last-child > div.fakebutton
 
 }
 
-@media screen and (min-width: 98em), screen and (max-width: 760px) {
+@media screen and (min-width: 99em), screen and (max-width: 760px) {
     .linearize-sidebar,
     .linearize-sidebar > [class*="ym-g"] {
         display: block;
