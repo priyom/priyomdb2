@@ -24,6 +24,9 @@
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <h3>Quick add</h3>
             <form form:form="form" method="POST" class="ym-form">
+              <tea:call tea:src="library.xml" tea:name="errors">
+                <tea:pass name="field">None</tea:pass>
+              </tea:call>
               <div class="ym-fbox">
                 <label form:for-field="display_name">Short name</label>
                 <input type="text"

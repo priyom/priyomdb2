@@ -82,4 +82,21 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <a class="ym-button ym-warning ym-delete"
        exec:href="href(view, view=page.without_filters())">Clear all filters</a>
   </tea:def>
+  <tea:def tea:name="errors">
+    <tea:arg name="form" mode="lazy" default="default_form" />
+    <tea:arg name="field" />
+    <exec:code>field = getattr(type(form), field) if field is not None and field != 'None' else None
+errors = form.errors.get(field, [])</exec:code>
+    <exec:if condition="errors">
+      <div class="ym-fbox">
+        <div class="form-errors">
+          <ul>
+            <tea:for-each tea:bind="error" tea:from="errors">
+              <li><exec:text>error.err</exec:text></li>
+            </tea:for-each>
+          </ul>
+        </div>
+      </div>
+    </exec:if>
+  </tea:def>
 </library>

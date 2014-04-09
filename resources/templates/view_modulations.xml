@@ -14,6 +14,8 @@
   </head>
   <body>
     <exec:code>view_modulations = arguments['view_modulations']</exec:code>
+    <exec:code>edit_modulation = arguments['edit_modulation']</exec:code>
+    <exec:code>delete_modulation = arguments['delete_modulation']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>form = arguments['form']</exec:code>
     <tea:include tea:source="nav.xml" />
@@ -23,7 +25,10 @@
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <h3>Quick add</h3>
-            <form form:form="form" method="POST" class="ym-form">
+            <form form:form="form"
+                  method="POST"
+                  class="ym-form"
+                  exec:action="href(edit_modulation, modulation_id=0)">
               <div class="ym-fbox">
                 <label form:for-field="display_name">Display name</label>
                 <input type="text"
@@ -51,41 +56,46 @@
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_modulations</tea:pass>
       </tea:call>
-      <form form:form="form" method="POST">
-        <priyom:sortable-table priyom:pageobj="view" priyom:viewobj="view_modulations">
-          <colgroup>
-            <col class="id" name="id" />
-            <col class="display_name" name="display_name" />
-            <col name="user_count" />
-            <col class="actions" style="width: 20em;" />
-          </colgroup>
-          <thead>
+      <priyom:sortable-table priyom:pageobj="view"
+                             priyom:viewobj="view_modulations">
+        <colgroup>
+          <col class="id" name="id" />
+          <col class="display_name" name="display_name" />
+          <col name="user_count" />
+          <col class="actions" style="width: 20em;" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Display name</th>
+            <th>User count</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each tea:bind="id, display_name, user_count"
+                        tea:from="arguments['modulations']">
             <tr>
-              <th>#</th>
-              <th>Display name</th>
-              <th>User count</th>
-              <th>Actions</th>
+              <td><exec:text>id</exec:text></td>
+              <td><exec:text>display_name or ''</exec:text></td>
+              <td><exec:text>user_count or 0</exec:text></td>
+              <td>
+                <a exec:href="href(edit_modulation, modulation_id=id)"
+                   class="ym-button ym-primary ym-edit">Edit</a>
+                <exec:if condition="not user_count">
+                  <form exec:action="href(delete_modulation, modulation_id=id)"
+                        method="POST"
+                        class="inline">
+                    <button type="submit"
+                            name="action:delete"
+                            class="ym-button ym-danger ym-delete ym-small">Delete</button>
+                  </form>
+                </exec:if>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <tea:for-each tea:bind="id, display_name, user_count" tea:from="arguments['modulations']">
-              <tr>
-                <td><exec:text>id</exec:text></td>
-                <td><exec:text>display_name or ''</exec:text></td>
-                <td><exec:text>user_count or 0</exec:text></td>
-                <td>
-                  <a href="#"
-                     class="ym-button ym-primary ym-edit">Edit</a>
-                  <exec:if condition="not user_count">
-                    <a href="#"
-                       class="ym-button ym-danger ym-delete">Delete</a>
-                  </exec:if>
-                </td>
-              </tr>
-            </tea:for-each>
-          </tbody>
-        </priyom:sortable-table>
-      </form>
+          </tea:for-each>
+        </tbody>
+      </priyom:sortable-table>
       <tea:call tea:src="library.xml" tea:name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_modulations</tea:pass>

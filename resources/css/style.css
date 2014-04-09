@@ -4,6 +4,10 @@ body > nav h3 {
     display: block;
 }
 
+form.inline {
+    display: inline;
+}
+
 .ym-hlist ul {
     display: block;
     float: none;
@@ -227,6 +231,16 @@ ul.pagination > li:last-child > div.fakebutton
     border-top-right-radius: .2em;
     border-bottom-right-radius: .2em;
     margin-right: 0;
+}
+
+.ym-fbox > .form-errors {
+    margin-left: -1em;
+    margin-right: -1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    background-color: rgba(187, 102, 102, 0.4);
 }
 
 /* .parsinga-tree input { */
