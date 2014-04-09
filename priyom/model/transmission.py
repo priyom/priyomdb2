@@ -14,6 +14,7 @@ from .attachment import Attachment
 class Alphabet(Base):
     __tablename__ = 'alphabets'
     __table_args__ = (
+        UniqueConstraint('short_name'),
         UniqueConstraint('display_name'),
     )
 
