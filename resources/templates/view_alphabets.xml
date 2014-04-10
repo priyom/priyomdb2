@@ -14,6 +14,8 @@
   </head>
   <body>
     <exec:code>view_alphabets = arguments['view_alphabets']</exec:code>
+    <exec:code>edit_alphabet = arguments['edit_alphabet']</exec:code>
+    <exec:code>delete_alphabet = arguments['delete_alphabet']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>form = arguments['form']</exec:code>
     <tea:include tea:source="nav.xml" />
@@ -23,10 +25,10 @@
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <h3>Quick add</h3>
-            <form form:form="form" method="POST" class="ym-form">
-              <tea:call tea:src="library.xml" tea:name="errors">
-                <tea:pass name="field">None</tea:pass>
-              </tea:call>
+            <form form:form="form"
+                  exec:action="href(edit_alphabet, alphabet_id=0)"
+                  method="POST"
+                  class="ym-form">
               <div class="ym-fbox">
                 <label form:for-field="display_name">Short name</label>
                 <input type="text"
@@ -84,11 +86,16 @@
               <td><exec:text>display_name or ''</exec:text></td>
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
-                <a href="#"
+                <a exec:href="href(edit_alphabet, alphabet_id=id)"
                    class="ym-button ym-primary ym-edit">Edit</a>
                 <exec:if condition="not user_count">
-                  <a href="#"
-                     class="ym-button ym-danger ym-delete">Delete</a>
+                  <form exec:action="href(delete_alphabet, alphabet_id=id)"
+                        method="POST"
+                        class="inline">
+                    <button type="submit"
+                            name="action:delete"
+                            class="ym-button ym-danger ym-delete ym-small">Delete</button>
+                  </form>
                 </exec:if>
               </td>
             </tr>

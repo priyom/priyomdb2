@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Delete alphabet</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>form = arguments['form']</exec:code>
+    <exec:code>alphabet_id = arguments['alphabet_id']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <exec:if condition="form.errors">
+        <h2>Deletion failed</h2>
+      </exec:if>
+      <exec:if condition="not form.errors">
+        <h2>Delete alphabet</h2>
+      </exec:if>
+      <form form:form="form" method="POST" class="ym-form">
+        <div class="ym-fbox">
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">None</tea:pass>
+          </tea:call>
+        </div>
+        <div class="ym-fbox-footer ym-fbox-button">
+          <button type="submit"
+                  form:action="delete"
+                  class="ym-button ym-danger ym-delete">Delete alphabet</button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
