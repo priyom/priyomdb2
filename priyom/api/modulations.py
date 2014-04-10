@@ -17,9 +17,6 @@ class ModulationForm(teapot.forms.Form):
             raise ValueError("Must not be empty")
         return value
 
-class DeleteForm(teapot.forms.Form):
-    pass
-
 @require_capability("admin")
 @dbview(priyom.model.Modulation,
         [
@@ -97,8 +94,7 @@ def edit_modulation_POST(request: teapot.request.Request, modulation_id=0):
         else:
             raise teapot.response.make_redirect_response(
                 request,
-                edit_modulation,
-                modulation_id=existing.id)
+                view_modulations)
 
     yield teapot.response.Response(None)
     yield {
@@ -114,7 +110,7 @@ def edit_modulation_POST(request: teapot.request.Request, modulation_id=0):
 @xsltea_site.with_template("modulation_delete.xml")
 def delete_modulation_POST(request: teapot.request.Request,
                            modulation_id=0):
-    form = DeleteForm()
+    form = teapot.forms.Form()
     if request.method == teapot.request.Method.POST:
         dbsession = request.dbsession
         existing = dbsession.query(
