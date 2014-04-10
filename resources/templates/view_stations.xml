@@ -72,7 +72,7 @@
                         tea:from="view">
             <tr>
               <td><exec:text>id</exec:text></td>
-              <td><exec:text>modified.strftime("%Y-%m-%dT%H:%M:%SZ")</exec:text></td>
+              <td><exec:text>modified</exec:text></td>
               <td><exec:text>enigma_id or ''</exec:text></td>
               <td><exec:text>priyom_id or ''</exec:text></td>
               <td><exec:text>nickname or ''</exec:text></td>
