@@ -27,6 +27,7 @@ if __name__ == "__main__":
     sys.argv[:] = []
 
     logging.basicConfig(level=logging.ERROR, format='%(levelname)-8s %(message)s')
+    # logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
     if args.verbosity >= 3:
         logging.getLogger().setLevel(logging.DEBUG)
     elif args.verbosity >= 2:

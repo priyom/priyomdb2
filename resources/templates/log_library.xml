@@ -29,7 +29,7 @@
                form:field="frequency" />
         <input type="hidden"
                form:form="row"
-               form:field="modulation_id" />
+               form:field="mode_id" />
       </tea:for-each>
     </exec:if>
     <exec:if condition="pageidx != 2">

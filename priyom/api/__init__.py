@@ -8,7 +8,7 @@ from . import log
 from . import stations
 from . import formats
 from . import alphabets
-from . import modulations
+from . import modes
 
 @teapot.file_from_directory(
     "/css/",
@@ -51,8 +51,8 @@ admin_sitemap.new(
     alphabets.view_alphabets,
     label="Alphabets")
 admin_sitemap.new(
-    modulations.view_modulations,
-    label="Modulations")
+    modes.view_modes,
+    label="Modes")
 admin_sitemap.new(
     formats.view_formats,
     label="Transmission formats")

@@ -29,8 +29,8 @@ def pretty_print_frequency(freq):
         freq / 10**(prefix*3),
         prefix_char)
 
-class Modulation(Base):
-    __tablename__ = 'modulations'
+class Mode(Base):
+    __tablename__ = 'modes'
     __table_args__ = (
         UniqueConstraint('display_name'),
     )
@@ -39,7 +39,7 @@ class Modulation(Base):
     display_name = Column(String(63), nullable=False)
 
     def __init__(self, display_name):
-        super(Modulation, self).__init__()
+        super(Mode, self).__init__()
         self.display_name = display_name
 
     def __str__(self):
@@ -93,11 +93,11 @@ class EventFrequency(Base):
     id = Column(Integer, primary_key=True)
     event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
     frequency = Column(BigInteger, nullable=False)
-    modulation_id = Column(Integer, ForeignKey(Modulation.id), nullable=False)
+    mode_id = Column(Integer, ForeignKey(Mode.id), nullable=False)
 
-    modulation = relationship(Modulation)
+    mode = relationship(Mode)
 
     def __str__(self):
         return "{} ({})".format(
             pretty_print_frequency(self.frequency),
-            self.modulation)
+            self.mode)

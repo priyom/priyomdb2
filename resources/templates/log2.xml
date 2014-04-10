@@ -17,7 +17,7 @@
     <exec:code>pageidx = arguments['pageidx']</exec:code>
     <exec:code>page = pages[pageidx]</exec:code>
     <exec:code>events = list(arguments['events'])</exec:code>
-    <exec:code>modulations = list(arguments['modulations'])</exec:code>
+    <exec:code>modes = list(arguments['modes'])</exec:code>
     <exec:code>frequencies = arguments['frequencies']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
@@ -50,7 +50,7 @@
             </colgroup>
             <thead>
               <th>Frequency</th>
-              <th>Modulation and Mode</th>
+              <th>Mode and Mode</th>
               <th>Actions</th>
             </thead>
             <tbody>
@@ -65,12 +65,12 @@
                   </td>
                   <td>
                     <div class="ym-fbox">
-                      <select form:field="modulation_id">
-                        <tea:for-each tea:bind="modulation"
-                                      tea:from="modulations">
-                          <option exec:value="modulation.id"
-                                  exec:selected="'selected' if modulation.id == row.modulation_id else None">
-                            <exec:text>modulation</exec:text>
+                      <select form:field="mode_id">
+                        <tea:for-each tea:bind="mode"
+                                      tea:from="modes">
+                          <option exec:value="mode.id"
+                                  exec:selected="'selected' if mode.id == row.mode_id else None">
+                            <exec:text>mode</exec:text>
                           </option>
                         </tea:for-each>
                       </select>

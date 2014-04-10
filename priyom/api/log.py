@@ -76,7 +76,7 @@ class BroadcastFrequencyRow(teapot.forms.Row):
         super().__init__(*args, **kwargs)
         if reference is not None:
             self.fields[BroadcastFrequencyRow.frequency.name] = reference.frequency
-            self.modulation_id = reference.modulation_id
+            self.mode_id = reference.mode_id
 
     @teapot.forms.field
     def frequency(self, value):
@@ -105,19 +105,19 @@ class BroadcastFrequencyRow(teapot.forms.Row):
         return 0
 
     @teapot.forms.field
-    def modulation_id(self, value):
+    def mode_id(self, value):
         return int(value)
 
-    @modulation_id.default
-    def modulation_id(self):
+    @mode_id.default
+    def mode_id(self):
         return 0
 
     def postvalidate(self, request):
         super().postvalidate(request)
         dbsession = request.dbsession
-        if not dbsession.query(priyom.model.Modulation).get(self.modulation_id):
-            teapot.forms.ValidationError("Not a valid modulation",
-                                         BroadcastFrequencyRow.modulation_id,
+        if not dbsession.query(priyom.model.Mode).get(self.mode_id):
+            teapot.forms.ValidationError("Not a valid mode",
+                                         BroadcastFrequencyRow.mode_id,
                                          self).register()
 
 class LogPage2_Broadcast(teapot.forms.Form):
@@ -327,10 +327,10 @@ def log_POST(request: teapot.request.Request):
         ).order_by(
             priyom.model.Event.start_time.asc())
 
-        template_args["modulations"] = list(dbsession.query(
-            priyom.model.Modulation
+        template_args["modes"] = list(dbsession.query(
+            priyom.model.Mode
         ).order_by(
-            priyom.model.Modulation.display_name.asc()))
+            priyom.model.Mode.display_name.asc()))
 
         template_args["frequencies"] = dbsession.query(
             priyom.model.EventFrequency
@@ -338,7 +338,7 @@ def log_POST(request: teapot.request.Request):
             priyom.model.Event
         ).group_by(
             priyom.model.EventFrequency.frequency,
-            priyom.model.EventFrequency.modulation_id
+            priyom.model.EventFrequency.mode_id
         ).filter(
             priyom.model.Event.station_id == pages[0].station_id
         )
@@ -354,7 +354,7 @@ def log_POST(request: teapot.request.Request):
                 row = BroadcastFrequencyRow(reference=event_frequency)
             else:
                 row = BroadcastFrequencyRow()
-                row.modulation_id = template_args["modulations"][0].id
+                row.mode_id = template_args["modes"][0].id
                 row.frequency = "0"
             page.frequencies.append(row)
             # re-run post-validation
@@ -411,7 +411,7 @@ def log_POST(request: teapot.request.Request):
                 for row in pages[1].frequencies:
                     frequency = priyom.model.EventFrequency()
                     frequency.frequency = row.frequency
-                    frequency.modulation_id = row.modulation_id
+                    frequency.mode_id = row.mode_id
                     event.frequencies.append(frequency)
             else:
                 event = dbsession.query(priyom.model.Broadcast).get(
