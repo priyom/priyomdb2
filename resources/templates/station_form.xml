@@ -18,28 +18,42 @@
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit station</h2>
         <form class="ym-form" method="POST" name="format" form:form="form">
-          <input type="hidden" form:field="id" />
           <h6 class="ym-fbox-heading">Station properties</h6>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">None</tea:pass>
+          </tea:call>
           <div class="ym-fbox">
             <label for="enigma-id">Enigma Identifier</label>
             <input type="text" id="enigma-id"
                    placeholder="e.g. S28"
                    form:field="enigma_id"/>
           </div>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">'enigma_id'</tea:pass>
+          </tea:call>
           <div class="ym-fbox">
             <label for="priyom-id">Priyom Identifier</label>
             <input type="text" id="priyom-id"
                    form:field="priyom_id"/>
           </div>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">'priyom_id'</tea:pass>
+          </tea:call>
           <div class="ym-fbox">
             <label for="nickname">Nickname</label>
             <input type="text" id="nickname"
                    form:field="nickname"/>
           </div>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">'nickname'</tea:pass>
+          </tea:call>
           <div class="ym-fbox">
             <label for="description">Description</label>
             <textarea id="description" form:field="description"/>
           </div>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">'description'</tea:pass>
+          </tea:call>
           <div class="ym-fbox-footer ym-fbox-button">
             <input type="submit"
                    name="action:save"

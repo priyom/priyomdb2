@@ -12,7 +12,7 @@
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <tea:include src="nav.xml" />
+    <tea:include tea:source="nav.xml" />
     <main>
       <h2>Delete station</h2>
       <p>Deletion of stations is not supported yet. Ask Horrorcat if you

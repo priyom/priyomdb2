@@ -27,7 +27,7 @@ anonymous_sitemap.new(
     label="Home")
 anonymous_sitemap.new(
     stations.view_stations,
-    label="View stations")
+    label="Stations")
 anonymous_sitemap.new(
     anonymous_user.login,
     label="Log in")

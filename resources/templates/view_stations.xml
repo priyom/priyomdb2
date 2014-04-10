@@ -23,10 +23,13 @@
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
-            <h3>Activities</h3>
-            <ul class="navlist">
-              <li><a href="#" class="ym-button ym-success ym-add">New station</a></li>
-            </ul>
+            <exec:if condition="is_admin">
+              <h3>Activities</h3>
+              <ul class="navlist">
+                <li><a exec:href="href(view_station, station_id=0)"
+                       class="ym-button ym-success ym-add">New station</a></li>
+              </ul>
+            </exec:if>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <exec:if condition="view.f">
@@ -50,6 +53,7 @@
           <col class="enigma_id" name="enigma_id" />
           <col class="priyom_id" name="priyom_id" />
           <col name="nickname" />
+          <col name="events" />
           <col class="actions" style="width: 20em;" />
         </colgroup>
         <thead>
@@ -59,11 +63,12 @@
             <th>Enigma ID</th>
             <th>Priyom ID</th>
             <th>Nickname</th>
+            <th>Event count</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname"
+          <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname, events"
                         tea:from="view">
             <tr>
               <td><exec:text>id</exec:text></td>
@@ -71,6 +76,7 @@
               <td><exec:text>enigma_id or ''</exec:text></td>
               <td><exec:text>priyom_id or ''</exec:text></td>
               <td><exec:text>nickname or ''</exec:text></td>
+              <td><exec:text>events or 0</exec:text></td>
               <td>
                 <a exec:href="href(view_station, station_id=id)"
                    exec:class="'ym-button ym-primary'+
