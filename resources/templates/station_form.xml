@@ -13,8 +13,6 @@
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <exec:code>view_events = arguments['view_events']</exec:code>
-    <exec:code>event_view = arguments['event_view']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
@@ -64,56 +62,7 @@
           </div>
         </form>
         <exec:if condition="form.id">
-          <exec:code>recent_events = arguments['recent_events']</exec:code>
-          <h2>Most recent events</h2>
-          <aside class="sidebar"><div class="sbox">
-            <a exec:href="href(view_events, view=event_view)"
-               class="ym-button ym-reply">View all</a>
-          </div></aside>
-          <table>
-            <colgroup>
-              <col />
-              <col />
-              <col />
-              <col />
-            </colgroup>
-            <thead>
-              <th>#</th>
-              <th>Modified</th>
-              <th>Submitter</th>
-              <th>Timestamp</th>
-              <th>Contents</th>
-              <th>Actions</th>
-            </thead>
-            <tbody>
-              <tea:for-each tea:bind="event" tea:from="recent_events">
-                <tr>
-                  <td><exec:text>event.id</exec:text></td>
-                  <td><exec:text>event.modified</exec:text></td>
-                  <td>
-                    <exec:if condition="event.submitter">
-                      <exec:text>event.submitter</exec:text>
-                    </exec:if>
-                    <exec:if condition="not event.submitter">system generated</exec:if>
-                  </td>
-                  <td><exec:text>event.start_time</exec:text></td>
-                  <td class="tx-content">
-                    <tea:call tea:src="library.xml" tea:name="event_contents">
-                      <tea:pass name="event">event</tea:pass>
-                    </tea:call>
-                  </td>
-                  <td>
-                    <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
-                    <a exec:class="'ym-button ym-primary '+
-                                   ('ym-edit' if is_admin else '')"
-                       href="#">
-                      <exec:text>'Edit' if is_admin else 'View'</exec:text>
-                    </a>
-                  </td>
-                </tr>
-              </tea:for-each>
-            </tbody>
-          </table>
+          <tea:include tea:source="station_event_view.xml" />
         </exec:if>
       </div></div>
     </main>

@@ -42,6 +42,7 @@
           </textarea>
         </div>
       </div>
+      <tea:include tea:source="station_event_view.xml" />
     </main>
   </body>
 </html>
