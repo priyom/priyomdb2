@@ -18,7 +18,7 @@ def get_recent_events(station):
             priyom.model.Event
         ).filter(
             priyom.model.Event.station_id == station.id
-        )
+        ).limit(20)
     else:
         recent_events = None
 
