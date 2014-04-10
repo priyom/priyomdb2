@@ -34,7 +34,9 @@
                      form:field="password" />
             </div>
             <div class="ym-fbox-footer">
-              <input type="submit" name="submit" class="ym-button ym-primary" value="Login"/>
+              <button type="submit"
+                      name="submit"
+                      class="ym-button ym-primary ym-save">Sign in</button>
             </div>
           </form>
         </div></div>

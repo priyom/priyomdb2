@@ -99,4 +99,13 @@ errors = form.errors.get(field, [])</exec:code>
       </div>
     </exec:if>
   </tea:def>
+  <tea:def tea:name="event_contents">
+    <tea:arg name="event" mode="lazy" default="event" />
+    <exec:code>rows = event.contents</exec:code>
+    <tea:for-each tea:bind="row" tea:from="rows">
+      <exec:if condition="row.parent_contents is None">
+        <div><exec:text>row</exec:text></div>
+      </exec:if>
+    </tea:for-each>
+  </tea:def>
 </library>

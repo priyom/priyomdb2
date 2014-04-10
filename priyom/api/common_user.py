@@ -3,8 +3,10 @@ import teapot.request
 
 import priyom.model
 
-from .shared import *
 from .auth import *
+from .shared import *
+
+from .log import log
 
 @require_login()
 @router.route("/", methods={teapot.request.Method.GET})
@@ -38,6 +40,10 @@ def dash(request: teapot.request.Request):
     ).order_by(
         priyom.model.Event.created.desc()
     ).limit(10)
+
+    template_args.update({
+        "log_tx": log,
+    })
 
     yield (template_args, transform_args)
 

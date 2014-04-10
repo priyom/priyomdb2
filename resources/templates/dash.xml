@@ -14,6 +14,7 @@
     <exec:code>recents = arguments['recents']</exec:code>
     <exec:code>unapproved = arguments['unapproved']</exec:code>
     <exec:code>mine = arguments['mine']</exec:code>
+    <exec:code>log_tx = arguments['log_tx']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <h2>Radio dash</h2>
@@ -90,7 +91,8 @@
       <h3>Activities</h3>
       <div class="ym-grid linearize-level-1">
         <div class="ym-gl ym-g50"><div class="ym-gbox">
-          <h4><a class="ym-button ym-add">Log transmission</a></h4>
+          <h4><a exec:href="href(log_tx)"
+                 class="ym-button ym-primary ym-add">Log transmission</a></h4>
           <p>Log a new transmission into the database system. If you do not
           have unmoderated privilegues, your submission will need to await
           moderator approval.</p>
@@ -136,12 +138,9 @@
                 <td><exec:text>event.station</exec:text></td>
                 <td><exec:text>event.modified</exec:text></td>
                 <td class="tx-content">
-                  <exec:code>rows = event.contents</exec:code>
-                  <tea:for-each tea:bind="row" tea:from="rows">
-                    <exec:if condition="row.parent_contents is None">
-                      <div><exec:text>row</exec:text></div>
-                    </exec:if>
-                  </tea:for-each>
+                  <tea:call tea:src="library.xml" tea:name="event_contents">
+                    <tea:pass name="event">event</tea:pass>
+                  </tea:call>
                 </td>
               </tr>
             </tea:for-each>

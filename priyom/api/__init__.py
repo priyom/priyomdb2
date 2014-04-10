@@ -6,6 +6,7 @@ from . import common_user
 from . import anonymous_user
 from . import log
 from . import stations
+from . import events
 from . import formats
 from . import alphabets
 from . import modes
@@ -29,8 +30,11 @@ anonymous_sitemap.new(
     stations.view_stations,
     label="Stations")
 anonymous_sitemap.new(
+    events.view_events,
+    label="Events")
+anonymous_sitemap.new(
     anonymous_user.login,
-    label="Log in")
+    label="Sign in")
 
 user_sitemap.label = "Common activities"
 user_sitemap.new(
@@ -38,7 +42,10 @@ user_sitemap.new(
     label="Dash")
 user_sitemap.new(
     stations.view_stations,
-    label="View stations")
+    label="Stations")
+user_sitemap.new(
+    events.view_events,
+    label="Events")
 user_sitemap.new(
     log.log,
     label="Log TX")

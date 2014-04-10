@@ -1,6 +1,7 @@
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 import teapot
 
@@ -9,6 +10,29 @@ import priyom.model
 from .auth import *
 from .dbview import *
 from .shared import *
+
+def get_recent_events(station):
+    if station is not None:
+        dbsession = Session.object_session(station)
+        recent_events = dbsession.query(
+            priyom.model.Event
+        ).filter(
+            priyom.model.Event.station_id == station.id
+        )
+    else:
+        recent_events = None
+
+    return recent_events
+
+def get_event_view(station):
+    if station is None:
+        return None
+    from .events import view_events
+    dbsession = Session.object_session(station)
+    view = view_events.dbview.new_view(
+        dbsession,
+        station_id=station.id)
+    return view
 
 @dbview(priyom.model.Station,
         [
@@ -54,8 +78,12 @@ def view_station(request: teapot.request.Request, station_id):
         last_modified=station.modified if station else None)
 
     if station:
+        from .events import view_events
         yield {
-            "station": station
+            "station": station,
+            "view_events": view_events,
+            "event_view": get_event_view(station),
+            "recent_events": get_recent_events(station)
         }, {}
 
     else:
@@ -133,8 +161,13 @@ def edit_station(station_id, request: teapot.request.Request):
     form = StationForm(from_station=station)
     yield teapot.response.Response(None)
 
+    from .events import view_events
     yield {
-        "form": form
+        "form": form,
+        "station_id": station_id,
+        "view_events": view_events,
+        "recent_events": get_recent_events(station),
+        "event_view": get_event_view(station),
     }, {}
 
 @require_capability("admin")
@@ -177,8 +210,14 @@ def edit_station_POST(station_id, request: teapot.request.Request):
                 station_id=station.id)
 
     yield teapot.response.Response(None)
+
+    from .events import view_events
     yield {
-        "form": form
+        "form": form,
+        "station_id": station_id,
+        "view_events": view_events,
+        "recent_events": get_recent_events(station),
+        "event_view": get_event_view(station)
     }, {}
 
 @require_capability("admin")

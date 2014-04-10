@@ -239,9 +239,12 @@ class View(teapot.forms.Form):
         return self.length
 
     def __iter__(self):
-        return (
-            row[1:]
-            for row in self.query)
+        if self.dbview._provide_primary_object:
+            return iter(self.query)
+        else:
+            return (
+                row[1:]
+                for row in self.query)
 
     def at_page(self, new_pageno):
         result = copy.deepcopy(self)
@@ -306,6 +309,7 @@ class dbview(teapot.routing.selectors.Selector):
                  itemsperpage=25,
                  default_orderfield=None,
                  default_orderdir="asc",
+                 provide_primary_object=False,
                  **kwargs):
         super().__init__(**kwargs)
         self._primary_object = primary_object
@@ -326,14 +330,20 @@ class dbview(teapot.routing.selectors.Selector):
         self._orderdir_key = orderdir_key
         self._filter_key = filter_key
 
+        filterable_fields = list(filter(
+            lambda x: x[2] or (hasattr(x[1], "type") and
+                               hasattr(x[1].type, "python_type")),
+            fields))
+        self._filterable_fields = filterable_fields
+
         field_names = frozenset(
             field_name
-            for field_name, _, _ in fields)
+            for field_name, _, _ in filterable_fields)
 
         fieldclasses = {
             field_name: self.create_class_for_field(
                 field_name, field, type_hint)
-            for field_name, field, type_hint in fields}
+            for field_name, field, type_hint in filterable_fields}
 
         namespace = {
             orderfield_key: one_of_descriptor(
@@ -352,16 +362,18 @@ class dbview(teapot.routing.selectors.Selector):
                 self.FIELDNAME_KEY, fieldclasses),
         }
 
-        self._ViewForm = teapot.forms.Meta(
+        self.ViewForm = teapot.forms.Meta(
             viewname,
             (View,),
             namespace)
 
         self._itemsperpage = itemsperpage
+        self._provide_primary_object = provide_primary_object
+        self._fieldclasses = fieldclasses
 
     def select(self, request):
         dbsession = request.original_request.dbsession
-        view = self._ViewForm(dbsession,
+        view = self.ViewForm(dbsession,
                               self,
                               request=request.original_request,
                               post_data=request.query_data)
@@ -375,8 +387,8 @@ class dbview(teapot.routing.selectors.Selector):
         try:
             view = request.kwargs.pop(self._destarg)
         except KeyError:
-            view = self._ViewForm(dbsession,
-                                  self)
+            view = self.ViewForm(dbsession,
+                                 self)
         dest = request.query_data
 
         dest[self._pageno_key] = [str(getattr(view, self._pageno_key))]
@@ -392,6 +404,31 @@ class dbview(teapot.routing.selectors.Selector):
             value = getattr(row, self.VALUE_KEY)
             _, _, _, formatter = type_mapping[type(value)]
             dest[prefix+self.VALUE_KEY] = [formatter(value)]
+
+    def __call__(self, callable):
+        result = super().__call__(callable)
+        result.dbview = self
+        return result
+
+    def new_view(self,
+                 dbsession,
+                 **simple_filters):
+        view = self.ViewForm(dbsession, self)
+        filter_rows = getattr(view, self._filter_key)
+        for fieldname, value in simple_filters.items():
+            try:
+                cls = self._fieldclasses[fieldname]
+            except KeyError:
+                raise ValueError("Field `{}' is not filterable".format(
+                    fieldname))
+
+            row = cls()
+            setattr(row, self.FIELDNAME_KEY, fieldname)
+            setattr(row, self.OPERATOR_KEY, "__eq__")
+            setattr(row, self.VALUE_KEY, value)
+            filter_rows.append(row)
+
+        return view
 
 class lazy_node:
     def __init__(self, onlazy):
