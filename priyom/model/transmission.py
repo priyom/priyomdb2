@@ -301,31 +301,38 @@ class TransmissionFormat(TopLevel):
         for node in curr.children:
             self.build_node_dict(node, dct)
 
-    def _build_tree_leaves(self, items, contents, parent):
-        primitive_order = 0
-        for key, (node, values) in items:
-            for value in values:
-                order = len(parent.children) if parent else primitive_order
-                content_node = TransmissionContentNode(contents, node, order, value, parent=parent)
-                primitive_order += 1
+    def _build_tree_leaves(self, item, contents, parent, offs):
+        primitive_order = offs
+        key, (node, values) = item
+        for value in values:
+            order = len(parent.children) if parent else primitive_order
+            content_node = TransmissionContentNode(
+                contents, node, order, value, parent=parent)
+            primitive_order += 1
+        return primitive_order
 
-    def _build_tree_nodes(self, items, contents, parent):
-        primitive_order = 0
-        for key, (node, values) in items:
-            for value in values:
-                order = len(parent.children) if parent else primitive_order
-                content_node = TransmissionContentNode(contents, node, order, None, parent=parent)
-                self._build_tree(value, contents, content_node)
-                primitive_order += 1
+    def _build_tree_nodes(self, item, contents, parent, offs):
+        primitive_order = offs
+        key, (node, values) = item
+        for value in values:
+            order = len(parent.children) if parent else primitive_order
+            content_node = TransmissionContentNode(
+                contents, node, order, None, parent=parent)
+            self._build_tree(value, contents, content_node)
+            primitive_order += 1
+        return primitive_order
 
     def _build_tree(self, parse_result, contents, parent):
         items = sorted(parse_result.items(), key=lambda x: x[1][0].order)
         if not items:
             return
-        if items[0][1][1] and isinstance(items[0][1][1][0], str):
-            self._build_tree_leaves(items, contents, parent)
-        else:
-            self._build_tree_nodes(items, contents, parent)
+        offs = 0
+        for item in items:
+            key, (node, values) = item
+            if values and isinstance(values[0], str):
+                offs = self._build_tree_leaves(item, contents, parent, offs)
+            else:
+                offs = self._build_tree_nodes(item, contents, parent, offs)
 
     def parse(self, message):
         """
@@ -396,7 +403,7 @@ class TransmissionContents(Base):
     }
 
     def __init__(self, mime, is_transcribed=False,
-            is_transcoded=False, transmission=None, alphabet=None,
+            is_transcoded=False, alphabet=None,
             attribution=None):
         super(TransmissionContents, self).__init__()
         self.mime = mime
