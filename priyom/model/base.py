@@ -4,7 +4,12 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy import event, Column, DateTime
 
-Base = declarative_base()
+class Base(declarative_base()):
+    __abstract__ = True
+    __table_args__ = {
+        "mysql_character_set": "utf8",
+        "mysql_collate": "utf8_general_ci"
+    }
 
 def update_timestamp(mapper, connection, target):
     target.modified = datetime.utcnow()

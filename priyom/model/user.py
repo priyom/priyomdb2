@@ -166,6 +166,7 @@ class UserSession(Base):
 
     __table_args__ = (
         UniqueConstraint("session_key"),
+        Base.__table_args__
     )
 
     id = Column(Integer, primary_key=True)

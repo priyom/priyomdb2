@@ -16,6 +16,7 @@ class Alphabet(Base):
     __table_args__ = (
         UniqueConstraint('short_name'),
         UniqueConstraint('display_name'),
+        Base.__table_args__
     )
 
     id = Column(Integer, primary_key=True)
