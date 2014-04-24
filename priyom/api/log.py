@@ -6,39 +6,9 @@ import teapot.forms
 import priyom.model
 
 from .auth import *
+from .event_forms import *
 from .shared import *
-
-datetime_formats = [
-    "%Y-%m-%dT%H:%M:%SZ",
-    "%Y-%m-%dT%H:%M:%S",
-    "%Y-%m-%dT%H:%MZ",
-    "%Y-%m-%dT%H:%M",
-]
-
-def parse_isodate_full(s):
-    if s.endswith("Z"):
-        s = s[:-1]
-    date, sep, milliseconds = s.rpartition(".")
-    if sep is not None:
-        fracseconds = float(sep+milliseconds)
-    date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
-    return date.replace(
-        microsecond=int(fracseconds*1000000))
-
-def parse_datetime(s):
-    # format with milliseconds
-    try:
-        return parse_isodate_full(s)
-    except ValueError:
-        pass
-
-    for fmt in datetime_formats:
-        try:
-            return datetime.strptime(s, fmt)
-        except ValueError:
-            continue
-    else:
-        raise ValueError("Not a valid UTC timestamp".format(s))
+from .utils import *
 
 class LogPage1_Station(teapot.forms.Form):
     @teapot.forms.field
@@ -66,59 +36,6 @@ class LogPage1_Station(teapot.forms.Form):
                     "Non-existant station selected",
                     LogPage1_Station.station_id,
                     self).register()
-
-class BroadcastFrequencyRow(teapot.forms.Row):
-    FREQUENCY_RE = re.compile(
-        r"^([0-9]+(\.[0-9]*)?|[0-9]*\.[0-9]+)\s*(([a-z]?)Hz)?$",
-        re.I)
-
-    def __init__(self, *args, reference=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if reference is not None:
-            self.fields[BroadcastFrequencyRow.frequency.name] = reference.frequency
-            self.mode_id = reference.mode_id
-
-    @teapot.forms.field
-    def frequency(self, value):
-        try:
-            value, _, prefix, unit = self.FREQUENCY_RE.match(value).groups()
-        except AttributeError:
-            # NoneType has no attribute groups
-            raise ValueError("Not a valid frequency. Specify like this: "
-                             "10.4 MHz or 1000 Hz or 123.4 kHz")
-
-        try:
-            factor = {
-                None: 1,
-                "k": 1000,
-                "m": 1000000,
-                "g": 1000000000,
-                "t": 1000000000000
-            }[prefix.lower() if prefix else None]
-        except KeyError:
-            raise ValueError("Unknown unit prefix")
-
-        return round(float(value) * factor)
-
-    @frequency.default
-    def frequency(self):
-        return 0
-
-    @teapot.forms.field
-    def mode_id(self, value):
-        return int(value)
-
-    @mode_id.default
-    def mode_id(self):
-        return 0
-
-    def postvalidate(self, request):
-        super().postvalidate(request)
-        dbsession = request.dbsession
-        if not dbsession.query(priyom.model.Mode).get(self.mode_id):
-            teapot.forms.ValidationError("Not a valid mode",
-                                         BroadcastFrequencyRow.mode_id,
-                                         self).register()
 
 class LogPage2_Broadcast(teapot.forms.Form):
     @teapot.forms.field
@@ -148,7 +65,7 @@ class LogPage2_Broadcast(teapot.forms.Form):
     def existing_broadcast_frequency_id(self):
         return 0
 
-    frequencies = teapot.forms.rows(BroadcastFrequencyRow)
+    frequencies = teapot.forms.rows(EventFrequencyRow)
 
     def postvalidate(self, request):
         super().postvalidate(request)
@@ -164,84 +81,8 @@ class LogPage2_Broadcast(teapot.forms.Form):
                                              LogPage2_Broadcast.frequencies,
                                              self).register()
 
-
-class ContentsRow(teapot.forms.Row):
-    @teapot.forms.field
-    def alphabet_id(self, value):
-        return int(value)
-
-    @alphabet_id.default
-    def alphabet_id(self):
-        return 0
-
-    @teapot.forms.field
-    def contents(self, value):
-        return value
-
-    @contents.default
-    def contents(self):
-        return ""
-
-    @teapot.forms.field
-    def attribution(self, value):
-        return value
-
-    @attribution.default
-    def attribution(self):
-        return ""
-
-    def get_format(self, request):
-        return self.parent.instance.get_format(request)
-
-    def postvalidate(self, request):
-        super().postvalidate(request)
-        dbsession = request.dbsession
-        fmt = self.get_format(request)
-        if fmt is not None:
-            try:
-                fmt.root_node.parse(self.contents)
-            except ValueError:
-                teapot.forms.ValidationError("Message does not match format",
-                                             ContentsRow.contents,
-                                             self).register()
-
-        alphabet = dbsession.query(priyom.model.Alphabet).get(self.alphabet_id)
-        if not alphabet:
-            teapot.forms.ValidationError("Not a valid alphabet",
-                                         ContentsRow.alphabet_id,
-                                         self).register()
-
-class TopLevelContentsRow(ContentsRow):
-    @teapot.forms.field
-    def format_id(self, value):
-        if value == 'None':
-            return None
-        return int(value)
-
-    @format_id.default
-    def format_id(self):
-        return 0
-
-    def get_format(self, request):
-        dbsession = request.dbsession
-        fmt = dbsession.query(
-            priyom.model.TransmissionFormat
-        ).get(self.format_id)
-        return fmt
-
-    def postvalidate(self, request):
-        fmt = self.get_format(request)
-        if fmt is None:
-            teapot.forms.ValidationError("Not a valid transmission format",
-                                         TopLevelContentsRow.format_id,
-                                         self).register()
-
-        super().postvalidate(request)
-
-    transcripts = teapot.forms.rows(ContentsRow)
-
 class LogPage3_Contents(teapot.forms.Form):
-    contents = teapot.forms.rows(TopLevelContentsRow)
+    contents = teapot.forms.rows(EventTopLevelContentsRow)
 
 @require_login()
 @router.route("/action/log", methods={teapot.request.Method.GET})
@@ -251,7 +92,7 @@ def log(request: teapot.request.Request):
 
     contents = LogPage3_Contents()
     contents.contents.append(
-        TopLevelContentsRow())
+        EventTopLevelContentsRow())
 
     pages = [
         LogPage1_Station(),
@@ -351,9 +192,9 @@ def log_POST(request: teapot.request.Request):
             event_frequency = dbsession.query(
                 priyom.model.EventFrequency).get(reference_id)
             if event_frequency is not None:
-                row = BroadcastFrequencyRow(reference=event_frequency)
+                row = EventFrequencyRow(reference=event_frequency)
             else:
-                row = BroadcastFrequencyRow()
+                row = EventFrequencyRow()
                 row.mode_id = template_args["modes"][0].id
                 row.frequency = "0"
             page.frequencies.append(row)
@@ -388,10 +229,10 @@ def log_POST(request: teapot.request.Request):
         if action is not None:
             target, action = action
         if action == "add":
-            row = TopLevelContentsRow()
+            row = EventTopLevelContentsRow()
             page.contents.append(row)
         elif action == "add_transcript":
-            row = ContentsRow()
+            row = EventContentsRow()
             row.contents = target.contents
             target.transcripts.append(row)
         elif action == "delete_transcript":
