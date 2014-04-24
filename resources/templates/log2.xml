@@ -62,6 +62,9 @@
                       <input type="text"
                              form:field="frequency" />
                     </div>
+                    <tea:call tea:src="library.xml" tea:name="errors">
+                      <tea:pass name="field">'frequency'</tea:pass>
+                    </tea:call>
                   </td>
                   <td>
                     <div class="ym-fbox">
@@ -111,13 +114,9 @@
               </tr>
             </tbody>
           </table>
-          <form:if-has-error form:field="frequencies">
-            <ul class="box error">
-              <form:for-each-error form:field="frequencies">
-                <li><exec:text>error.err</exec:text></li>
-              </form:for-each-error>
-            </ul>
-          </form:if-has-error>
+          <tea:call tea:src="library.xml" tea:name="errors">
+            <tea:pass name="field">'frequencies'</tea:pass>
+          </tea:call>
         </fieldset>
         <exec:if condition="not events">
           <p class="box info">

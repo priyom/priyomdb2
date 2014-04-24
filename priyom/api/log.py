@@ -136,6 +136,7 @@ def log_POST(request: teapot.request.Request):
         page = pages[page_index]
         if page.errors:
             currpage = page_index
+            break
 
     template = "log{}.xml".format(currpage+1)
 
