@@ -29,23 +29,7 @@
             <tea:for-each tea:bind="station" tea:from="stations">
               <option exec:value="station.id"
                       exec:selected="'selected' if page.station_id == station.id else None">
-                <exec:if condition="station.enigma_id">
-                  <exec:text>station.enigma_id</exec:text>
-                  <exec:if condition="station.priyom_id">
-                    <exec:text>' / '+station.priyom_id</exec:text>
-                  </exec:if>
-                </exec:if>
-                <exec:if condition="not station.enigma_id">
-                  <exec:if condition="station.priyom_id">
-                    <exec:text>station.priyom_id</exec:text>
-                  </exec:if>
-                  <exec:if condition="not station.priyom_id">
-                    <exec:text>'#'+str(station.id)</exec:text>
-                  </exec:if>
-                </exec:if>
-                <exec:if condition="station.nickname">
-                  <exec:text>' ({})'.format(station.nickname)</exec:text>
-                </exec:if>
+                <exec:text>station</exec:text>
               </option>
             </tea:for-each>
           </select>

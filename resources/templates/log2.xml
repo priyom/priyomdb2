@@ -42,78 +42,11 @@
             <p>For a new transmission event, you have to fill in the
             frequencies which were used during the transmission.</p>
           </div>
-          <table>
-            <colgroup>
-              <col />
-              <col />
-              <col class="actions" style="width: 15em" />
-            </colgroup>
-            <thead>
-              <th>Frequency</th>
-              <th>Mode and Mode</th>
-              <th>Actions</th>
-            </thead>
-            <tbody>
-              <exec:code>rows = page.frequencies</exec:code>
-              <tea:for-each tea:bind="row" tea:from="rows">
-                <tr form:form="row">
-                  <td>
-                    <div class="ym-fbox">
-                      <input type="text"
-                             form:field="frequency" />
-                    </div>
-                    <tea:call tea:src="library.xml" tea:name="errors">
-                      <tea:pass name="field">'frequency'</tea:pass>
-                    </tea:call>
-                  </td>
-                  <td>
-                    <div class="ym-fbox">
-                      <select form:field="mode_id">
-                        <tea:for-each tea:bind="mode"
-                                      tea:from="modes">
-                          <option exec:value="mode.id"
-                                  exec:selected="'selected' if mode.id == row.mode_id else None">
-                            <exec:text>mode</exec:text>
-                          </option>
-                        </tea:for-each>
-                      </select>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="ym-fbox">
-                      <button type="submit"
-                              form:action="delete"
-                              class="ym-button ym-delete ym-warning">Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              </tea:for-each>
-              <tr>
-                <td colspan="3">
-                  <div class="ym-fbox">
-                    <label form:for-field="existing_broadcast_frequency_id">
-                      Add another frequency
-                    </label>
-                    <select form:field="existing_broadcast_frequency_id">
-                      <option value="0">Select known frequency or hit add to
-                      create a new one</option>
-                      <tea:for-each tea:bind="event_frequency"
-                                    tea:from="frequencies">
-                        <option exec:value="event_frequency.id">
-                          <exec:text>event_frequency</exec:text>
-                        </option>
-                      </tea:for-each>
-                    </select>
-                  </div>
-                  <div class="ym-fbox">
-                    <button type="submit"
-                            form:action="add"
-                            class="ym-button ym-add">Add new</button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <exec:code>rows = page.frequencies</exec:code>
+          <tea:call tea:src="library.xml" tea:name="frequency_list_input">
+            <tea:pass name="rows">rows</tea:pass>
+            <tea:pass name="existing_frequencies">frequencies</tea:pass>
+          </tea:call>
           <tea:call tea:src="library.xml" tea:name="errors">
             <tea:pass name="field">'frequencies'</tea:pass>
           </tea:call>

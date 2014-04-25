@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <library
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+    xmlns:form="https://xmlns.zombofant.net/xsltea/form"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
   <tea:def tea:name="page">
     <tea:arg name="page" mode="lazy" default="page" />
@@ -107,5 +109,194 @@ errors = form.errors.get(field, [])</exec:code>
         <div><exec:text>row</exec:text></div>
       </exec:if>
     </tea:for-each>
+  </tea:def>
+  <tea:def tea:name="frequency_list_input">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="rows" />
+    <tea:arg name="existing_frequencies" />
+    <tea:arg name="modes" mode="lazy" default="modes" />
+    <table>
+      <colgroup>
+        <col />
+        <col />
+        <col class="actions" style="width: 15em" />
+      </colgroup>
+      <thead>
+        <th>Frequency</th>
+        <th>Mode and Mode</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        <tea:for-each tea:bind="row" tea:from="rows">
+          <tr form:form="row">
+            <td>
+              <div class="ym-fbox">
+                <input type="text"
+                       form:field="frequency" />
+              </div>
+              <tea:call tea:name="errors">
+                <tea:pass name="field">'frequency'</tea:pass>
+              </tea:call>
+            </td>
+            <td>
+              <div class="ym-fbox">
+                <select form:field="mode_id">
+                  <tea:for-each tea:bind="mode"
+                                tea:from="modes">
+                    <option exec:value="mode.id"
+                            exec:selected="'selected' if mode.id == row.mode_id else None">
+                      <exec:text>mode</exec:text>
+                    </option>
+                  </tea:for-each>
+                </select>
+              </div>
+            </td>
+            <td>
+              <div class="ym-fbox">
+                <button type="submit"
+                        form:action="delete"
+                        class="ym-button ym-delete ym-warning">Delete</button>
+              </div>
+            </td>
+          </tr>
+        </tea:for-each>
+        <tr>
+          <td colspan="3">
+            <div class="ym-fbox">
+              <label form:for-field="existing_broadcast_frequency_id">
+                Add another frequency
+              </label>
+              <select form:field="existing_broadcast_frequency_id">
+                <option value="0">Select known frequency or hit add to
+                create a new one</option>
+                <tea:for-each tea:bind="event_frequency"
+                              tea:from="existing_frequencies">
+                  <option exec:value="event_frequency.id">
+                    <exec:text>event_frequency</exec:text>
+                  </option>
+                </tea:for-each>
+              </select>
+            </div>
+            <div class="ym-fbox">
+              <button type="submit"
+                      form:action="add_frequency"
+                      class="ym-button ym-add">Add new</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </tea:def>
+  <tea:def tea:name="transcriptdata">
+    <tea:arg name="row" mode="lazy" default="row" />
+    <tea:arg name="alphabets" mode="lazy" default="alphabets" />
+    <div class="ym-fbox" form:form="row">
+      <label form:for-field="alphabet_id">Alphabet</label>
+      <select form:field="alphabet_id">
+        <tea:for-each tea:bind="alphabet" tea:from="alphabets">
+          <option exec:value="alphabet.id"
+                  exec:selected="'selected' if row.alphabet_id == alphabet.id else None">
+            <exec:text>alphabet.display_name</exec:text>
+          </option>
+        </tea:for-each>
+      </select>
+    </div>
+    <div class="ym-fbox" form:form="row">
+      <label form:for-field="contents">Contents</label>
+      <textarea form:field="contents"
+                rows="10"
+                class="transmission"/>
+    </div>
+  </tea:def>
+  <tea:def tea:name="transcriptmetadata">
+    <tea:arg name="row" mode="lazy" default="row" />
+    <div class="ym-fbox" form:form="row">
+      <label form:for-field="attribution">Attribution</label>
+      <textarea form:field="attribution" />
+    </div>
+  </tea:def>
+  <tea:def tea:name="contents_list_input">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="rows" />
+    <tea:arg name="alphabets" mode="lazy" default="alphabets" />
+    <tea:arg name="formats" mode="lazy" default="formats" />
+    <table>
+      <colgroup>
+        <col width="66%" />
+        <col width="33%" />
+      </colgroup>
+      <thead>
+        <th>Contents</th>
+        <th>Actions and Metadata</th>
+      </thead>
+      <tbody>
+        <tea:for-each tea:bind="row" tea:from="rows">
+          <tr form:form="row">
+            <td>
+              <div class="ym-fbox">
+                <label form:for-field="format_id">Format</label>
+                <select form:field="format_id">
+                  <tea:for-each tea:bind="format" tea:from="formats">
+                    <option exec:value="format.id"
+                            exec:selected="'selected' if row.format_id == format.id else None">
+                      <exec:text>format.display_name</exec:text>
+                    </option>
+                  </tea:for-each>
+                </select>
+              </div>
+              <tea:call tea:name="transcriptdata" />
+            </td>
+            <td>
+              <h6 class="ym-fbox-heading">Metadata</h6>
+              <tea:call tea:name="transcriptmetadata" />
+              <h6 class="ym-fbox-heading">Actions</h6>
+              <div class="ym-fbox ym-fbox-button">
+                <button type="submit"
+                        form:action="add_transcript"
+                        class="ym-button ym-add">Add transcript</button>
+              </div>
+              <div class="ym-fbox ym-fbox-button">
+                <button type="submit"
+                        form:action="delete"
+                        class="ym-button ym-delete ym-warning">Delete</button>
+              </div>
+            </td>
+          </tr>
+          <exec:code>transcripts = row.transcripts</exec:code>
+          <tea:for-each tea:bind="subrow" tea:from="transcripts">
+            <tr form:form="subrow">
+              <td>
+                <h6 class="ym-fbox-heading">Transcript</h6>
+                <tea:call tea:name="transcriptdata">
+                  <tea:pass name="row">subrow</tea:pass>
+                </tea:call>
+              </td>
+              <td>
+                <h6 class="ym-fbox-heading">Transcript metadata</h6>
+                <tea:call tea:name="transcriptmetadata">
+                  <tea:pass name="row">subrow</tea:pass>
+                </tea:call>
+                <h6 class="ym-fbox-heading">Transcript actions</h6>
+                <div class="ym-fbox ym-fbox-button">
+                  <button type="submit"
+                          form:action="delete"
+                          class="ym-button ym-delete ym-warning">Delete transcript</button>
+                </div>
+              </td>
+            </tr>
+          </tea:for-each>
+        </tea:for-each>
+        <tr>
+          <td />
+          <td>
+            <div class="ym-fbox">
+              <button type="submit"
+                      form:action="add_contents"
+                      class="ym-button ym-add">Add another transmission</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </tea:def>
 </library>

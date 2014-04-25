@@ -78,7 +78,9 @@ class TransmissionFormatNode(Base):
             "parent",
             remote_side=[id]),
         single_parent=True,
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        lazy="joined",
+        join_depth=4
     )
 
     def __init__(self, *args, **kwargs):
@@ -490,11 +492,17 @@ class TransmissionContentNode(Base):
 
     children = relationship(
         "TransmissionContentNode",
-        backref=backref("parent", remote_side=[id])
+        backref=backref("parent",
+                        remote_side=[id],
+                        passive_deletes=True),
+        lazy="joined",
+        join_depth=4
     )
     format_node = relationship(TransmissionFormatNode)
     contents = relationship(TransmissionStructuredContents,
-                            backref=backref("nodes", order_by=order))
+                            backref=backref("nodes",
+                                            order_by=order,
+                                            passive_deletes=True))
 
     def __init__(self, structured_contents, format_node, order, segment,
             parent=None, **kwargs):
@@ -535,4 +543,6 @@ class EventAttachment(Attachment):
         "waterfall"
     ))
 
-    event = relationship(Event, backref=backref("attachments"))
+    event = relationship(Event,
+                         backref=backref("attachments",
+                                         passive_deletes=True))

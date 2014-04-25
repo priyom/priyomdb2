@@ -21,6 +21,8 @@ def parse_isodate_full(s):
         microsecond=int(fracseconds*1000000))
 
 def parse_datetime(s):
+    if isinstance(s, datetime):
+        return s
     # format with milliseconds
     try:
         return parse_isodate_full(s)

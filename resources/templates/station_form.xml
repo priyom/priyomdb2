@@ -6,7 +6,7 @@
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
-    <title>Edit format</title>
+    <title>Edit station</title>
     <tea:include tea:source="stylesheets.xml"
                  tea:xpath="h:link"
                  tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>

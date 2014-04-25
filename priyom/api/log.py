@@ -149,11 +149,8 @@ def log_POST(request: teapot.request.Request):
 
     page = pages[currpage]
     if currpage == 0:
-        template_args["stations"] = dbsession.query(
-            priyom.model.Station
-        ).order_by(
-            priyom.model.Station.enigma_id.asc()
-        )
+        template_args["stations"] = station_id_picker_options(
+            dbsession)
     elif currpage == 1:
         interval = timedelta(seconds=600)
         start_time_min = pages[0].timestamp - interval
@@ -169,26 +166,15 @@ def log_POST(request: teapot.request.Request):
         ).order_by(
             priyom.model.Event.start_time.asc())
 
-        template_args["modes"] = list(dbsession.query(
-            priyom.model.Mode
-        ).order_by(
-            priyom.model.Mode.display_name.asc()))
+        template_args["modes"] = list(mode_picker_options(dbsession))
 
-        template_args["frequencies"] = dbsession.query(
-            priyom.model.EventFrequency
-        ).join(
-            priyom.model.Event
-        ).group_by(
-            priyom.model.EventFrequency.frequency,
-            priyom.model.EventFrequency.mode_id
-        ).filter(
-            priyom.model.Event.station_id == pages[0].station_id
-        )
+        template_args["frequencies"] = frequency_picker_options(
+            dbsession, for_event=pages[0])
 
         action = page.find_action(request.post_data)
         if action is not None:
             target, action = action
-        if action == "add":
+        if action == "add_frequency":
             reference_id = page.existing_broadcast_frequency_id
             event_frequency = dbsession.query(
                 priyom.model.EventFrequency).get(reference_id)
@@ -214,30 +200,19 @@ def log_POST(request: teapot.request.Request):
                 pass
             page.postvalidate(request)
     elif currpage == 2:
-        template_args["formats"] = list(dbsession.query(
-            priyom.model.TransmissionFormat
-        ).order_by(
-            priyom.model.TransmissionFormat.display_name.asc()
-        ))
-
-        template_args["alphabets"] = list(dbsession.query(
-            priyom.model.Alphabet
-        ).order_by(
-            priyom.model.Alphabet.display_name.asc()
-        ))
+        template_args["formats"] = list(format_picker_options())
+        template_args["alphabets"] = list(alphabet_picker_options())
 
         action = page.find_action(request.post_data)
         if action is not None:
             target, action = action
-        if action == "add":
+        if action == "add_contents":
             row = EventTopLevelContentsRow()
             page.contents.append(row)
         elif action == "add_transcript":
             row = EventContentsRow()
             row.contents = target.contents
             target.transcripts.append(row)
-        elif action == "delete_transcript":
-            del target.parent[target.index]
         elif action == "delete":
             del target.parent[target.index]
         elif action == "save" and not any(page.errors for page in pages):

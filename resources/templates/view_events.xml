@@ -13,6 +13,7 @@
   </head>
   <body>
     <exec:code>view_events = arguments['view_events']</exec:code>
+    <exec:code>edit_event = arguments['edit_event']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
@@ -82,7 +83,7 @@
                 </tea:call>
               </td>
               <td>
-                <a href="#"
+                <a exec:href="href(edit_event, event_id=id)"
                    exec:class="'ym-button ym-primary'+
                                (' ym-edit' if request.auth else '')">
                   <exec:text>'Edit' if request.auth else 'View'</exec:text>
