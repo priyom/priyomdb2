@@ -4,8 +4,47 @@ body > nav h3 {
     display: block;
 }
 
+body > nav {
+    box-shadow: 0 0 1.5em #000;
+}
+
+body > footer {
+    box-shadow: 0 0 1.5em #444;
+}
+
 form.inline {
     display: inline;
+}
+
+table {
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+}
+
+thead th {
+    border-bottom: 1px solid #000;
+}
+
+tbody td {
+
+}
+
+thead th a {
+    display: block;
+    margin-bottom: -0.71429em;
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+    margin-top: -0.71429em !important;
+    padding-bottom: 0.71429em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 0.71429em;
+}
+
+th div.order-indicator {
+    float: right;
+    width: 1.5em;
+    margin-right: -0.25em;
 }
 
 .ym-hlist ul {
@@ -84,6 +123,7 @@ col.actions {
 
 td.tx-content {
     font-family: monospace;
+    width: 20em;
 }
 
 .icon-user:before {
@@ -130,11 +170,6 @@ input.error, textarea.error, select.error {
 
 col.order-by {
     background-color: rgba(0, 0, 0, 0.1);
-}
-
-th div.order-indicator {
-    float: right;
-    width: 1.5em;
 }
 
 textarea.transmission {

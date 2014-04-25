@@ -106,7 +106,7 @@ errors = form.errors.get(field, [])</exec:code>
     <exec:code>rows = event.contents</exec:code>
     <tea:for-each tea:bind="row" tea:from="rows">
       <exec:if condition="row.parent_contents is None">
-        <div><exec:text>row</exec:text></div>
+        <div><exec:text>row.short_str(max_len=69)</exec:text></div>
       </exec:if>
     </tea:for-each>
   </tea:def>

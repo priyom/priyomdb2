@@ -414,6 +414,12 @@ class TransmissionContents(Base):
         self.alphabet = alphabet
         self.attribution = attribution
 
+    def short_str(self, max_len=140, ellipsis="…"):
+        s = str(self)
+        if len(s) > max_len:
+            s = s[:max_len-len(ellipsis)] + ellipsis
+        return s
+
 class TransmissionRawContents(TransmissionContents):
     __tablename__ = "transmission_raw_contents"
     __mapper_args__ = {"polymorphic_identity": "raw_contents"}
