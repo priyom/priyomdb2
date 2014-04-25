@@ -200,8 +200,8 @@ def log_POST(request: teapot.request.Request):
                 pass
             page.postvalidate(request)
     elif currpage == 2:
-        template_args["formats"] = list(format_picker_options())
-        template_args["alphabets"] = list(alphabet_picker_options())
+        template_args["formats"] = list(format_picker_options(dbsession))
+        template_args["alphabets"] = list(alphabet_picker_options(dbsession))
 
         action = page.find_action(request.post_data)
         if action is not None:
