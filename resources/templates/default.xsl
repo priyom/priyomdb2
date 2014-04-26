@@ -40,7 +40,7 @@
 
   <xsl:template name="sitemap">
     <xsl:param name="node" />
-    <h3><xsl:value-of select="$node/@label" /></h3>
+    <h3><span><xsl:value-of select="$node/@label" /></span></h3>
     <xsl:if test="$node/sitemap:entry">
       <ul>
         <xsl:apply-templates select="$node/sitemap:entry" />
