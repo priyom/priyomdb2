@@ -4,6 +4,7 @@
      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
   <exec:code>view_events = arguments['view_events']</exec:code>
   <exec:code>event_view = arguments['event_view']</exec:code>
+  <exec:code>view_event = arguments['view_event']</exec:code>
   <exec:code>recent_events = arguments['recent_events']</exec:code>
   <h2>Most recent events</h2>
   <aside class="sidebar"><div class="sbox">
@@ -31,10 +32,12 @@
           <td><exec:text>event.id</exec:text></td>
           <td><exec:text>event.modified</exec:text></td>
           <td>
-            <exec:if condition="event.submitter">
-              <exec:text>event.submitter</exec:text>
-            </exec:if>
-            <exec:if condition="not event.submitter">system generated</exec:if>
+            <tea:switch>
+              <tea:case exec:eval="event.submitter">
+                <exec:text>event.submitter</exec:text>
+              </tea:case>
+              <tea:default>system generated</tea:default>
+            </tea:switch>
           </td>
           <td><exec:text>event.start_time</exec:text></td>
           <td class="tx-content">
@@ -43,11 +46,11 @@
             </tea:call>
           </td>
           <td>
-            <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
+            <exec:code>can_edit = request.auth.has_capability(Capability.EDIT_EVENT)</exec:code>
             <a exec:class="'ym-button ym-primary '+
-                           ('ym-edit' if is_admin else '')"
-               href="#">
-              <exec:text>'Edit' if is_admin else 'View'</exec:text>
+                           ('ym-edit' if can_edit else '')"
+               exec:href="href(view_event, id=event.id)">
+              <exec:text>'Edit' if can_edit else 'View'</exec:text>
             </a>
           </td>
         </tr>

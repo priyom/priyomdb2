@@ -16,12 +16,14 @@
     <exec:code>mode_id = arguments['mode_id']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
-      <exec:if condition="form.errors">
-        <h2>Deletion failed</h2>
-      </exec:if>
-      <exec:if condition="not form.errors">
-        <h2>Delete mode</h2>
-      </exec:if>
+      <tea:switch>
+        <tea:case exec:eval="form.errors">
+          <h2>Deletion failed</h2>
+        </tea:case>
+        <tea:default>
+          <h2>Delete mode</h2>
+        </tea:default>
+      </tea:switch>
       <form form:form="form" method="POST" class="ym-form">
         <div class="ym-fbox">
           <tea:call tea:src="library.xml" tea:name="errors">

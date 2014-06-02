@@ -61,9 +61,9 @@
                    class="ym-primary" />
           </div>
         </form>
-        <exec:if condition="form.id">
+        <tea:if exec:eval="form.id">
           <tea:include tea:source="station_event_view.xml" />
-        </exec:if>
+        </tea:if>
       </div></div>
     </main>
   </body>

@@ -42,13 +42,13 @@
             </form>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
-            <exec:if condition="view.f">
+            <tea:if exec:eval="view.f">
               <h3>Filters</h3>
               <tea:call tea:src="library.xml" tea:name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_modes</tea:pass>
               </tea:call>
-            </exec:if>
+            </tea:if>
           </div></div>
         </div>
       </div></aside>
@@ -82,7 +82,7 @@
               <td>
                 <a exec:href="href(edit_mode, mode_id=id)"
                    class="ym-button ym-primary ym-edit">Edit</a>
-                <exec:if condition="not user_count">
+                <tea:if exec:eval="not user_count">
                   <form exec:action="href(delete_mode, mode_id=id)"
                         method="POST"
                         class="inline">
@@ -90,7 +90,7 @@
                             name="action:delete"
                             class="ym-button ym-danger ym-delete ym-small">Delete</button>
                   </form>
-                </exec:if>
+                </tea:if>
               </td>
             </tr>
           </tea:for-each>

@@ -7,4 +7,4 @@ from .transmission import\
     EventAttachment, TransmissionContentNode, \
     TransmissionStructuredContents, \
     TransmissionFormat, TransmissionFormatNode, Alphabet
-from .user import User, UserSession, Capability
+from .user import User, UserSession, Capability, Group

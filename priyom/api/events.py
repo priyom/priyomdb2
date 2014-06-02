@@ -16,6 +16,7 @@ from .event_forms import *
 from .shared import *
 from .utils import *
 
+@require_capability(Capability.VIEW_EVENT)
 @dbview(priyom.model.Event,
         [
             ("id", priyom.model.Event.id, None),
@@ -39,15 +40,12 @@ from .utils import *
               methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_events.xml")
 def view_events(request: teapot.request.Request, view):
-    from .stations import view_station, edit_station
+    from .stations import get_station_viewer
 
     yield teapot.response.Response(None)
     yield {
         "view_events": view_events,
-        "view_station": (edit_station
-                         if (request.auth and
-                             request.auth.user.has_capability("admin"))
-                         else view_station),
+        "view_station": get_station_viewer(request),
         "view": view,
         "edit_event": edit_event,
     }, {}
@@ -180,7 +178,7 @@ def default_response(request, event, form):
                                                          for_event=event)
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_EVENT)
 @router.route("/event/{event_id:d}/edit",
               methods={teapot.request.Method.GET})
 @xsltea_site.with_template("event_form.xml")
@@ -190,7 +188,7 @@ def edit_event(event_id, request: teapot.request.Request):
 
     yield from default_response(request, event, form)
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_EVENT)
 @router.route("/event/{event_id:d}/edit",
               methods={teapot.request.Method.POST})
 @xsltea_site.with_template("event_form.xml")
@@ -272,3 +270,16 @@ def edit_event_POST(event_id, request: teapot.request.Request):
 
 
     yield from default_response(request, event, form)
+
+def get_event_viewer(request):
+    """
+    Return an event viewer call suitable for the logged-in user.
+
+    Returns edit_event if the user has the appropriate capabilities and
+    view_event otherwise.
+    """
+
+    if request.auth.has_capability(Capability.EDIT_EVENT):
+        return edit_event
+    else:
+        return view_event

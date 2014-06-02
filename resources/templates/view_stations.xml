@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
   <head>
@@ -16,29 +17,28 @@
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>delete_station = arguments['delete_station']</exec:code>
-    <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <h2>Stations</h2>
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
-            <exec:if condition="is_admin">
+            <tea:if auth:cap="CREATE_STATION">
               <h3>Activities</h3>
               <ul class="navlist">
                 <li><a exec:href="href(view_station, station_id=0)"
                        class="ym-button ym-success ym-add">New station</a></li>
               </ul>
-            </exec:if>
+            </tea:if>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
-            <exec:if condition="view.f">
+            <tea:if exec:eval="view.f">
               <h3>Filters</h3>
               <tea:call tea:src="library.xml" tea:name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_stations</tea:pass>
               </tea:call>
-            </exec:if>
+            </tea:if>
           </div></div>
         </div>
       </div></aside>
@@ -78,15 +78,16 @@
               <td><exec:text>nickname or ''</exec:text></td>
               <td><exec:text>events or 0</exec:text></td>
               <td>
+                <exec:code>can_edit = request.auth.has_capability(Capability.EDIT_STATION)</exec:code>
                 <a exec:href="href(view_station, station_id=id)"
                    exec:class="'ym-button ym-primary'+
-                               (' ym-edit' if request.auth else '')">
-                  <exec:text>'Edit' if request.auth else 'View'</exec:text>
+                               (' ym-edit' if can_edit else '')">
+                  <exec:text>'Edit' if can_edit else 'View'</exec:text>
                 </a>
-                <exec:if condition="is_admin">
+                <tea:if auth:cap="DELETE_STATION">
                   <a exec:href="href(delete_station, station_id=id)"
                      class="ym-button ym-danger ym-delete ym-small">Delete</a>
-                </exec:if>
+                </tea:if>
               </td>
             </tr>
           </tea:for-each>

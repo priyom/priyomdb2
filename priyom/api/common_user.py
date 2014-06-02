@@ -23,7 +23,7 @@ def dash(request: teapot.request.Request):
     ).order_by(
         priyom.model.Event.created.desc()
     ).limit(10)
-    if request.auth.user.has_capability("moderator"):
+    if request.auth.has_capability(Capability.REVIEW_LOG):
         template_args["unapproved"] = dbsession.query(
             priyom.model.Event
         ).filter(

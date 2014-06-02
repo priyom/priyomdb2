@@ -56,7 +56,7 @@
                   class="ym-button ym-success ym-add"
                   form:action="add_child">Add child</button>
         </div>
-        <exec:if condition="level > 0">
+        <tea:if exec:eval="level > 0">
           <div class="ym-fbox">
             <button type="submit"
                     class="ym-button ym-up"
@@ -70,7 +70,7 @@
                     class="ym-button ym-danger ym-delete"
                     form:action="delete">Delete</button>
           </div>
-        </exec:if>
+        </tea:if>
       </div></div>
     </div>
   </div>

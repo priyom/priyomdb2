@@ -1,4 +1,5 @@
 import binascii
+import logging
 
 import sqlalchemy
 import sqlalchemy.orm
@@ -12,7 +13,7 @@ import xsltea
 
 import priyom.model
 
-from . import sitemap, sortable_table
+from . import sitemap, sortable_table, auth
 
 __all__ = [
     "xsltea_site",
@@ -22,6 +23,8 @@ __all__ = [
     "moderator_sitemap",
     "Session",
     "router"]
+
+logger = logging.getLogger(__name__)
 
 source = teapot.templating.FileSystemSource(
     "/var/www/docroot/horazont/projects/priyomdb2/resources/templates/")
@@ -39,6 +42,7 @@ _transform_loader = xsltea.TransformLoader(source)
 
 _xsltea_loader = xsltea.Pipeline()
 _xsltea_loader.loader = xsltea.XMLTemplateLoader(source)
+_xsltea_loader.loader.add_processor(xsltea.BranchingProcessor())
 _xsltea_loader.loader.add_processor(xsltea.ForeachProcessor(
     safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(xsltea.FormProcessor(
@@ -50,6 +54,7 @@ _xsltea_loader.loader.add_processor(sortable_table.SortableTableProcessor(
 _xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
 _xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
 _xsltea_loader.loader.add_processor(xsltea.FunctionProcessor())
+_xsltea_loader.loader.add_processor(auth.AuthProcessor())
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "anonymous", anonymous_sitemap
 ))
@@ -90,6 +95,8 @@ class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
         super().__init__(*args, sessionmaker=Session, **kwargs)
 
     def _reauth(self, request):
+        from .auth import Authorization
+
         if "api_session_key" in request.cookie_data:
             try:
                 key = request.cookie_data["api_session_key"].pop()
@@ -97,13 +104,31 @@ class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
                 return None
             try:
                 session = request.dbsession.query(
-                    priyom.model.UserSession).filter(
-                        priyom.model.UserSession.session_key == \
-                        binascii.a2b_hex(key.encode())).one()
+                    priyom.model.UserSession
+                ).filter(
+                    priyom.model.UserSession.session_key == \
+                    binascii.a2b_hex(key.encode())
+                ).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
-                return None
+                pass
+            else:
+                return Authorization.from_session(session)
 
-            return session
+        try:
+            anon_group = request.dbsession.query(
+                priyom.model.Group
+            ).filter(
+                priyom.model.Group.name == priyom.model.Group.ANONYMOUS
+            ).one()
+        except sqlalchemy.orm.exc.NoResultFound as err:
+            logger.warn(
+                "No anonymous group found, non-logged-in users will have no"
+                " privilegues. To silence this warning, create a group without"
+                " privilegues called '%s'.",
+                priyom.model.Group.ANONYMOUS)
+            return Authorization()
+        else:
+            return Authorization.from_groups(anon_group)
 
     def pre_route_hook(self, request):
         super().pre_route_hook(request)

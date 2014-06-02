@@ -43,13 +43,13 @@
     <tea:include tea:source="nav.xml" />
     <main>
       <h2>Edit transmission format</h2>
-      <exec:if condition="arguments['has_users']">
+      <tea:if exec:eval="arguments['has_users']">
         <p class="box warning">
           <strong>Warning:</strong>
           This format has users. This implies that you cannot modify it. You
           can, however, save a copy of the format.
         </p>
-      </exec:if>
+      </tea:if>
       <form class="ym-form" method="POST" name="format" form:form="form">
         <h6 class="ym-fbox-heading">General properties</h6>
         <div class="ym-fbox">
@@ -86,11 +86,11 @@
           </tbody>
         </table>
         <div class="ym-fbox-footer ym-fbox-button">
-          <exec:if condition="not arguments['has_users']">
+          <tea:if exec:eval="not arguments['has_users']">
             <button type="submit"
                     form:action="save_to_db"
                     class="ym-button ym-primary ym-save">Save to database</button>
-          </exec:if>
+          </tea:if>
           <button type="submit"
                   form:action="save_copy"
                   class="ym-button ym-add">Save as copy</button>

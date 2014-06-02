@@ -2,6 +2,8 @@ import sqlalchemy.orm
 
 import priyom.model
 
+from .auth import Capability
+
 def get_capability(dbsession, key):
     try:
         cap = dbsession.query(priyom.model.Capability).filter(
@@ -11,6 +13,22 @@ def get_capability(dbsession, key):
         cap.key = key
         dbsession.add(cap)
     return cap
+
+def get_group(dbsession, name):
+    try:
+        group = dbsession.query(priyom.model.Group).filter(
+            priyom.model.Group.name == name).one()
+    except sqlalchemy.orm.exc.NoResultFound as err:
+        group = priyom.model.Group()
+        group.name = name
+        dbsession.add(group)
+    return group
+
+def setup_group(dbsession, name, capabilities):
+    group = get_group(dbsession, name)
+    group.capabilities.clear()
+    for cap in capabilities:
+        group.add_capability(get_capability(dbsession, cap))
 
 def create_base_data(dbsession):
     try:
@@ -24,9 +42,39 @@ def create_base_data(dbsession):
         dbsession.add(admin_user)
         dbsession.commit()
 
-    mod_cap = get_capability(dbsession, "moderator")
-    admin_user.capabilities.append(mod_cap)
-    admin_cap = get_capability(dbsession, "admin")
-    admin_user.capabilities.append(admin_cap)
+    setup_group(
+        dbsession,
+        priyom.model.Group.ANONYMOUS,
+        [
+            Capability.VIEW_STATION,
+            Capability.VIEW_EVENT
+        ])
+
+    setup_group(
+        dbsession,
+        priyom.model.Group.REGISTERED,
+        [
+            Capability.LOG,
+            Capability.EDIT_SELF,
+            Capability.VIEW_USER,
+            Capability.VIEW_ALPHABET,
+            Capability.VIEW_FORMAT,
+            Capability.VIEW_MODE,
+            Capability.VIEW_GROUP
+        ])
+
+    setup_group(
+        dbsession,
+        priyom.model.Group.MODERATORS,
+        [
+            Capability.REVIEW_LOG
+        ])
+
+    setup_group(
+        dbsession,
+        priyom.model.Group.ADMINS,
+        [
+            Capability.ROOT
+        ])
 
     dbsession.commit()

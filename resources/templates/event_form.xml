@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
@@ -21,8 +22,6 @@
     <exec:code>modes = arguments['modes']</exec:code>
     <exec:code>alphabets = arguments['alphabets']</exec:code>
     <exec:code>formats = arguments['formats']</exec:code>
-    <exec:code>is_admin = request.auth and request.auth.user.has_capability('admin')</exec:code>
-    <exec:code>is_mod = is_admin</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
@@ -80,23 +79,25 @@
           </tea:call>
           <div class="ym-fbox">
             <label form:for-field="submitter_id">Submitter</label>
-            <exec:if condition="not is_admin">
-              <input type="hidden"
-                     form:field="submitter_id" />
-              <div><exec:text>event.submitter</exec:text></div>
-            </exec:if>
-            <exec:if condition="is_admin">
-              <select form:field="submitter_id">
-                <option value=""
-                        exec:selected="'selected' if not form.submitter_id else None">Anonymous / External submitter</option>
-                <tea:for-each tea:bind="user" tea:from="users">
-                <option exec:value="user.id"
-                        exec:selected="'selected' if form.submitter_id == user.id else None">
-                  <exec:text>str(user)</exec:text>
-                </option>
-                </tea:for-each>
-              </select>
-            </exec:if>
+            <tea:switch>
+              <tea:case auth:cap="REASSIGN_EVENT">
+                <select form:field="submitter_id">
+                  <option value=""
+                          exec:selected="'selected' if not form.submitter_id else None">Anonymous / External submitter</option>
+                  <tea:for-each tea:bind="user" tea:from="users">
+                    <option exec:value="user.id"
+                            exec:selected="'selected' if form.submitter_id == user.id else None">
+                      <exec:text>str(user)</exec:text>
+                    </option>
+                  </tea:for-each>
+                </select>
+              </tea:case>
+              <tea:default>
+                <input type="hidden"
+                       form:field="submitter_id" />
+                <div><exec:text>event.submitter</exec:text></div>
+              </tea:default>
+            </tea:switch>
           </div>
           <tea:call tea:src="library.xml" tea:name="errors">
             <tea:pass name="field">'event_class_id'</tea:pass>
@@ -105,7 +106,7 @@
             <div class="ym-label">Moderator approval (without, the Event and its contents will not be shown in queries)</div>
             <input type="checkbox"
                    form:field="approved"
-                   exec:disabled="None if is_mod else 'disabled'" />
+                   exec:disabled="None if request.auth.has_capability(Capability.REVIEW_LOG) else 'disabled'" />
             <label form:for-field="approved">Approved</label>
           </div>
           <div class="ym-fbox ym-fbox-button">

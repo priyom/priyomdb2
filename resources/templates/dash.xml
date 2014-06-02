@@ -19,41 +19,7 @@
     <main>
       <h2>Radio dash</h2>
       <div class="ym-grid linearize-level-2">
-        <div class="ym-gl ym-g50"><div class="ym-gbox">
-          <h3>Log entry moderation queue</h3>
-          <table>
-            <colgroup>
-              <col class="id" />
-              <col />
-              <col />
-              <col />
-            </colgroup>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Submitter</th>
-                <th>Station</th>
-                <th>Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tea:for-each tea:bind="event" tea:from="unapproved">
-                <tr>
-                  <td><exec:text>event.id</exec:text></td>
-                  <td>
-                    <exec:if condition="event.submitter">
-                      <exec:text>event.submitter</exec:text>
-                    </exec:if>
-                    <exec:if condition="not event.submitter">system generated</exec:if>
-                  </td>
-                  <td><exec:text>event.station</exec:text></td>
-                  <td><exec:text>event.start_time</exec:text></td>
-                </tr>
-              </tea:for-each>
-            </tbody>
-          </table>
-        </div></div>
-        <div class="ym-gr ym-g50"><div class="ym-gbox">
+        <div exec:class="'ym-gl ' + ('ym-g50' if unapproved is not None else 'ym-g100')"><div class="ym-gbox">
           <h3>Recent entries</h3>
           <table>
             <colgroup>
@@ -75,10 +41,12 @@
                 <tr>
                   <td><exec:text>event.id</exec:text></td>
                   <td>
-                    <exec:if condition="event.submitter">
-                      <exec:text>event.submitter</exec:text>
-                    </exec:if>
-                    <exec:if condition="not event.submitter">system generated</exec:if>
+                    <tea:switch>
+                      <tea:case exec:eval="event.submitter">
+                        <exec:text>event.submitter</exec:text>
+                      </tea:case>
+                      <tea:default>system generated</tea:default>
+                    </tea:switch>
                   </td>
                   <td><exec:text>event.station</exec:text></td>
                   <td><exec:text>event.start_time</exec:text></td>
@@ -87,6 +55,44 @@
             </tbody>
           </table>
         </div></div>
+        <tea:if exec:eval="unapproved is not None">
+          <div class="ym-gr ym-g50"><div class="ym-gbox">
+            <h3>Log entry moderation queue</h3>
+            <table>
+              <colgroup>
+                <col class="id" />
+                <col />
+                <col />
+                <col />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Submitter</th>
+                  <th>Station</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tea:for-each tea:bind="event" tea:from="unapproved">
+                  <tr>
+                    <td><exec:text>event.id</exec:text></td>
+                    <td>
+                      <tea:switch>
+                        <tea:case exec:eval="event.submitter">
+                          <exec:text>event.submitter</exec:text>
+                        </tea:case>
+                        <tea:default>system generated</tea:default>
+                      </tea:switch>
+                    </td>
+                    <td><exec:text>event.station</exec:text></td>
+                    <td><exec:text>event.start_time</exec:text></td>
+                  </tr>
+                </tea:for-each>
+              </tbody>
+            </table>
+          </div></div>
+        </tea:if>
       </div>
       <h3>Activities</h3>
       <div class="ym-grid linearize-level-1">

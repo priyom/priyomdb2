@@ -23,19 +23,17 @@ _secure_random = random.SystemRandom()
 
 DEFAULT_ITERATION_COUNT = 2**14
 
-user_capability_table = Table(
-    "user_capabilities",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id")),
-    Column("capability_id", Integer, ForeignKey("capabilities.id")))
-
-session_capability_table = Table(
-    "session_capabilities",
-    Base.metadata,
-    Column("session_id", Integer, ForeignKey("user_sessions.id")),
-    Column("capability_id", Integer, ForeignKey("capabilities.id")))
-
 def pbkdf2(hashfun, input_data, salt, iterations, dklen):
+    """
+    Derivate a key from a password. *input_data* is taken as the bytes object
+    resembling the password (or other input). *hashfun* must be a callable
+    returning a :mod:`hashlib`-compatible hash function. *salt* is the salt to
+    be used in the PBKDF2 run, *iterations* the count of iterations. *dklen* is
+    the length in bytes of the key to be derived.
+
+    Return the derived key as :class:`bytes` object.
+    """
+
     if dklen is not None and dklen <= 0:
         raise ValueError("Invalid length for derived key: {}".format(dklen))
 
@@ -118,6 +116,48 @@ def verify_password(verifier, password):
 
     return hmac.compare_digest(hashed, new_hashed)
 
+class Capability(Base):
+    __tablename__ = "capabilities"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+    key = Column(Unicode(length=127), nullable=False)
+
+group_capabilities = Table(
+    "group_capabilities",
+    Base.metadata,
+    Column("capability_id", Integer, ForeignKey("capabilities.id")),
+    Column("group_id", Integer, ForeignKey("groups.id"))
+)
+
+class Group(Base):
+    __tablename__ = "groups"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+    name = Column(Unicode(length=127), nullable=False)
+
+    capabilities = relationship(
+        Capability,
+        secondary=group_capabilities,
+        backref=backref("groups"))
+
+    ANONYMOUS = "anonymous"
+    ADMINS = "admins"
+    MODERATORS = "moderators"
+    REGISTERED = "registered"
+
+    def add_capability(self, capability):
+        self.capabilities.append(capability)
+
+    def add_user(self, user):
+        self.users.append(user)
+
+user_groups = Table(
+    "user_groups",
+    Base.metadata,
+    Column("group_id", Integer, ForeignKey("groups.id")),
+    Column("user_id", Integer, ForeignKey("users.id"))
+)
+
 class User(Base):
     __tablename__ = "users"
 
@@ -127,27 +167,51 @@ class User(Base):
     email = Column(Unicode(length=255), nullable=False)
     password_verifier = Column(Binary(length=1023), nullable=False)
 
-    capabilities = relationship(
-        "Capability",
-        secondary=user_capability_table,
-        backref="users")
+    groups = relationship(
+        Group,
+        secondary=user_groups,
+        backref=backref("users"))
 
     def __init__(self, loginname, email):
         super().__init__()
         self.loginname = loginname
         self.email = email
 
+    def get_capabilities(self):
+        return get_capabilities_from_groups(self.groups)
+
     def has_capability(self, key):
         session = Session.object_session(self)
         if not session:
-            raise RuntimeError("Cannot get capabilities of non-persisted user.")
-        try:
-            capability = session.query(Capability).filter(
-                Capability.key == key).one()
-        except sqlalchemy.orm.exc.NoResultFound:
-            return False
+            # fall back to inefficient method, which also works with
+            # non-persisted objects
+            return key in self.get_capabilities()
 
-        return capability in self.capabilities
+        return session.query(Capability.key).join(
+                group_capabilities
+            ).join(
+                Group
+            ).join(
+                user_groups
+            ).filter(
+                user_groups.columns["user_id"] == self.id,
+                Capability.key == key
+            ).count() > 0
+
+    def has_group(self, name):
+        session = Session.object_session(self)
+        if not session:
+            # fall back to inefficient method, which also works with
+            # non-persisted objects
+            return get_has_group_from_groups(self.groups, name)
+
+        return session.query(Group.name).join(
+            user_groups
+        ).filter(
+            user_groups.columns["user_id"] == self.id,
+            Group.name == name
+        ).count() > 0
+
 
     def set_password_from_plaintext(self,
                                     plaintext,
@@ -182,9 +246,14 @@ class UserSession(Base):
         self.expiration = datetime.utcnow() + lifetime
         self.user = from_user
 
-class Capability(Base):
-    __tablename__ = "capabilities"
 
-    id = Column(Integer, nullable=False, primary_key=True)
-    key = Column(Unicode(length=127), nullable=False)
-    display_name = Column(Unicode(length=1023))
+def get_capabilities_from_groups(groups):
+    return frozenset(
+        capability.key
+        for group in groups
+        for capability in group.capabilities)
+
+def get_has_group_from_groups(groups, group_name):
+    return any(
+        group.name == group_name
+        for group in groups)

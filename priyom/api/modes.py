@@ -17,7 +17,7 @@ class ModeForm(teapot.forms.Form):
             raise ValueError("Must not be empty")
         return value
 
-@require_capability("admin")
+@require_capability(Capability.VIEW_MODE)
 @dbview(priyom.model.Mode,
         [
             ("id", priyom.model.Mode.id, None),
@@ -46,7 +46,7 @@ def view_modes(request: teapot.request.Request, view):
         "form": ModeForm()
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_MODE)
 @router.route("/mode/{mode_id:d}/edit",
               order=0,
               methods={teapot.request.Method.GET})
@@ -65,7 +65,7 @@ def edit_mode(request: teapot.request.Request, mode_id=0):
         "form": form
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_MODE)
 @router.route("/mode/{mode_id:d}/edit",
               order=0,
               methods={teapot.request.Method.POST})
@@ -102,7 +102,7 @@ def edit_mode_POST(request: teapot.request.Request, mode_id=0):
         "form": form
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.DELETE_MODE)
 @router.route("/mode/{mode_id:d}/delete",
               order=0,
               methods={teapot.request.Method.POST,

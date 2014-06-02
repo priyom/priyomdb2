@@ -50,7 +50,7 @@ def mdzhb_format():
     )
     return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
 
-@require_capability("admin")
+@require_capability(Capability.VIEW_FORMAT)
 @dbview(priyom.model.TransmissionFormat,
         [
             ("id", priyom.model.TransmissionFormat.id, None),
@@ -79,7 +79,7 @@ def view_formats(request: teapot.request.Request, view):
         "view": view,
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_FORMAT)
 @router.route("/format/{format_id:d}/edit",
               methods={teapot.request.Method.GET}, order=0)
 @xsltea_site.with_template("format_form.xml")
@@ -99,7 +99,7 @@ def edit_format(request: teapot.request.Request, format_id=0):
         "has_users": format.get_has_users()
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_FORMAT)
 @router.route("/format/{format_id:d}/edit",
               methods={teapot.request.Method.POST})
 @xsltea_site.with_template("format_form.xml")

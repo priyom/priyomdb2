@@ -51,33 +51,35 @@
             <tea:pass name="field">'frequencies'</tea:pass>
           </tea:call>
         </fieldset>
-        <exec:if condition="not events">
-          <p class="box info">
-            <strong>Note: </strong>No related events were found for this
-            station at the given time. If you meant to append to an existing
-            event, go back and double-check the time and station.
-          </p>
-        </exec:if>
-        <exec:if condition="events">
-          <fieldset>
-            <legend class="ym-fbox-check">
-              <input type="radio"
-                     form:field="broadcast_source"
-                     form:id="broadcast_source_existing"
-                     value="'existing'" />
-              <label for="broadcast_source_existing">Append to existing broadcast</label>
-            </legend>
-            <div class="ym-fbox">
-              <select form:field="broadcast_id">
-                <tea:for-each tea:bind="event" tea:from="events">
-                  <option exec:value="event.id">
-                    <exec:text>event</exec:text>
-                  </option>
-                </tea:for-each>
-              </select>
-            </div>
-          </fieldset>
-        </exec:if>
+        <tea:switch>
+          <tea:case tea:eval="events">
+            <fieldset>
+              <legend class="ym-fbox-check">
+                <input type="radio"
+                       form:field="broadcast_source"
+                       form:id="broadcast_source_existing"
+                       value="'existing'" />
+                <label for="broadcast_source_existing">Append to existing broadcast</label>
+              </legend>
+              <div class="ym-fbox">
+                <select form:field="broadcast_id">
+                  <tea:for-each tea:bind="event" tea:from="events">
+                    <option exec:value="event.id">
+                      <exec:text>event</exec:text>
+                    </option>
+                  </tea:for-each>
+                </select>
+              </div>
+            </fieldset>
+          </tea:case>
+          <tea:default>
+            <p class="box info">
+              <strong>Note: </strong>No related events were found for this
+              station at the given time. If you meant to append to an existing
+              event, go back and double-check the time and station.
+            </p>
+          </tea:default>
+        </tea:switch>
         <tea:call tea:src="log_library.xml" tea:name="footer" />
       </form>
     </main>

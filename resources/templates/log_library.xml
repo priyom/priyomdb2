@@ -8,15 +8,15 @@
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
     <input type="hidden" name="currpage" exec:value="pageidx" />
-    <exec:if condition="pageidx != 0">
+    <tea:if exec:eval="pageidx != 0">
       <exec:code>default_form = pages[0]</exec:code>
       <input type="hidden"
              form:field="station_id" />
       <input type="hidden"
              form:field="timestamp"
              form:mode="datetime" />
-    </exec:if>
-    <exec:if condition="pageidx != 1">
+    </tea:if>
+    <tea:if exec:eval="pageidx != 1">
       <exec:code>default_form = pages[1]</exec:code>
       <input type="hidden"
              form:field="broadcast_source" />
@@ -31,8 +31,8 @@
                form:form="row"
                form:field="mode_id" />
       </tea:for-each>
-    </exec:if>
-    <exec:if condition="pageidx != 2">
+    </tea:if>
+    <tea:if exec:eval="pageidx != 2">
       <exec:code>default_form = pages[2]</exec:code>
       <exec:code>rows = pages[2].contents</exec:code>
       <tea:for-each tea:bind="row" tea:from="rows">
@@ -61,28 +61,28 @@
                  form:field="attribution" />
         </tea:for-each>
       </tea:for-each>
-    </exec:if>
+    </tea:if>
   </tea:def>
   <tea:def tea:name="footer">
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
     <div class="ym-fbox-footer ym-fbox-button">
-      <exec:if condition="pageidx > 0">
+      <tea:if exec:eval="pageidx > 0">
         <button type="submit"
                 class="ym-button ym-previous"
                 name="backward">Previous</button>
-      </exec:if>
-      <exec:if condition="pageidx &lt; len(pages)-1">
+      </tea:if>
+      <tea:if exec:eval="pageidx &lt; len(pages)-1">
         <button type="submit"
                 class="ym-button ym-next ym-primary"
                 name="forward">Next</button>
-      </exec:if>
-      <exec:if condition="pageidx == len(pages)-1">
+      </tea:if>
+      <tea:if exec:eval="pageidx == len(pages)-1">
         <exec:code>default_form = pages[pageidx]</exec:code>
         <button type="submit"
                 form:action="save"
                 class="ym-button ym-save ym-success">Save</button>
-      </exec:if>
+      </tea:if>
     </div>
   </tea:def>
 </library>

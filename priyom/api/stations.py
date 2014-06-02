@@ -34,6 +34,7 @@ def get_event_view(station):
         station_id=station.id)
     return view
 
+@require_capability(Capability.VIEW_STATION)
 @dbview(priyom.model.Station,
         [
             ("id", priyom.model.Station.id, None),
@@ -64,6 +65,7 @@ def view_stations(request: teapot.request.Request, view):
         "view": view
     }, {}
 
+@require_capability(Capability.VIEW_STATION)
 @router.route("/station/{station_id:d}",
               methods={teapot.request.Method.GET})
 @xsltea_site.with_variable_template()
@@ -83,7 +85,8 @@ def view_station(request: teapot.request.Request, station_id):
             "station": station,
             "view_events": view_events,
             "event_view": get_event_view(station),
-            "recent_events": get_recent_events(station)
+            "recent_events": get_recent_events(station),
+            # "view_event":
         }, {}
 
     else:
@@ -152,7 +155,7 @@ class StationForm(teapot.forms.Form):
                     None,
                     self).register()
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_STATION)
 @router.route("/station/{station_id:d}/edit", methods={
     teapot.request.Method.GET})
 @xsltea_site.with_template("station_form.xml")
@@ -170,7 +173,7 @@ def edit_station(station_id, request: teapot.request.Request):
         "event_view": get_event_view(station),
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_STATION)
 @router.route("/station/{station_id:d}/edit",
               methods={teapot.request.Method.POST})
 @xsltea_site.with_template("station_form.xml")
@@ -220,10 +223,17 @@ def edit_station_POST(station_id, request: teapot.request.Request):
         "event_view": get_event_view(station)
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.DELETE_STATION)
 @router.route("/station/{station_id:d}/delete",
               methods={teapot.request.Method.GET})
 @xsltea_site.with_template("station_delete.xml")
 def delete_station(station_id, request: teapot.request.Request):
     yield teapot.response.Response(None)
     yield {}, {}
+
+
+def get_station_viewer(request):
+    if request.auth.has_capability(Capability.EDIT_STATION):
+        return edit_station
+    else:
+        return view_station

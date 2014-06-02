@@ -25,13 +25,13 @@
             </ul>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
-            <exec:if condition="view.f">
+            <tea:if exec:eval="view.f">
               <h3>Filters</h3>
               <tea:call tea:src="library.xml" tea:name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_formats</tea:pass>
               </tea:call>
-            </exec:if>
+            </tea:if>
           </div></div>
         </div>
       </div></aside>

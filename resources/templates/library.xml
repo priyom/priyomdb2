@@ -37,33 +37,33 @@ elif skip_after and not skip_before:
     skip_before, skip_after, start_at, end_at = calculate_range(start_at, end_at)
 pagerange = range(start_at, end_at+1)</exec:code>
     <ul class="pagination">
-      <exec:if condition="page.get_pageno() &gt; 1">
+      <tea:if exec:eval="page.get_pageno() &gt; 1">
         <li class="wide">
           <a exec:href="href(view, view=page.at_page(page.get_pageno()-1))">« prev</a>
         </li>
-      </exec:if>
+      </tea:if>
       <tea:call tea:name="page">
         <tea:pass name="pageno">1</tea:pass>
       </tea:call>
-      <exec:if condition="skip_before">
+      <tea:if exec:eval="skip_before">
         <li><div class="fakebutton">…</div></li>
-      </exec:if>
+      </tea:if>
       <tea:for-each tea:bind="pageno" tea:from="pagerange">
         <tea:call tea:name="page" />
       </tea:for-each>
-      <exec:if condition="skip_after">
+      <tea:if exec:eval="skip_after">
         <li><div class="fakebutton">…</div></li>
-      </exec:if>
-      <exec:if condition="page.total_pages &gt; 1">
+      </tea:if>
+      <tea:if exec:eval="page.total_pages &gt; 1">
         <tea:call tea:name="page">
           <tea:pass name="pageno">total_pages</tea:pass>
         </tea:call>
-      </exec:if>
-      <exec:if condition="page.get_pageno() &lt; page.total_pages">
+      </tea:if>
+      <tea:if exec:eval="page.get_pageno() &lt; page.total_pages">
         <li class="wide">
           <a exec:href="href(view, view=page.at_page(page.get_pageno()+1))">next »</a>
         </li>
-      </exec:if>
+      </tea:if>
     </ul>
   </tea:def>
   <tea:def tea:name="filters">
@@ -89,7 +89,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <tea:arg name="field" />
     <exec:code>field = getattr(type(form), field) if field is not None and field != 'None' else None
 errors = form.errors.get(field, [])</exec:code>
-    <exec:if condition="errors">
+    <tea:if exec:eval="errors">
       <div class="ym-fbox">
         <div class="form-errors">
           <ul>
@@ -99,15 +99,15 @@ errors = form.errors.get(field, [])</exec:code>
           </ul>
         </div>
       </div>
-    </exec:if>
+    </tea:if>
   </tea:def>
   <tea:def tea:name="event_contents">
     <tea:arg name="event" mode="lazy" default="event" />
     <exec:code>rows = event.contents</exec:code>
     <tea:for-each tea:bind="row" tea:from="rows">
-      <exec:if condition="row.parent_contents is None">
+      <tea:if exec:eval="row.parent_contents is None">
         <div><exec:text>row.short_str(max_len=69)</exec:text></div>
-      </exec:if>
+      </tea:if>
     </tea:for-each>
   </tea:def>
   <tea:def tea:name="frequency_list_input">

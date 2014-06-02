@@ -23,7 +23,7 @@ class AlphabetForm(teapot.forms.Form):
             raise ValueError("Must not be empty")
         return value
 
-@require_capability("admin")
+@require_capability(Capability.VIEW_ALPHABET)
 @dbview(priyom.model.Alphabet,
         [
             ("id", priyom.model.Alphabet.id, None),
@@ -53,7 +53,7 @@ def view_alphabets(request: teapot.request.Request, view):
         "form": AlphabetForm()
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_ALPHABET)
 @router.route("/alphabet/{alphabet_id:d}/edit",
               order=0,
               methods={teapot.request.Method.GET})
@@ -74,7 +74,7 @@ def edit_alphabet(request: teapot.request.Request, alphabet_id=0):
         "form": form
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.EDIT_ALPHABET)
 @router.route("/alphabet/{alphabet_id:d}/edit",
               order=0,
               methods={teapot.request.Method.POST})
@@ -116,7 +116,7 @@ def edit_alphabet_POST(request: teapot.request.Request, alphabet_id=0):
     }, {}
 
 
-@require_capability("admin")
+@require_capability(Capability.DELETE_ALPHABET)
 @router.route("/alphabet/{alphabet_id:d}/delete",
               order=0,
               methods={teapot.request.Method.GET})
@@ -131,7 +131,7 @@ def delete_alphabet(request: teapot.request.Request,
         "alphabet_id": alphabet_id
     }, {}
 
-@require_capability("admin")
+@require_capability(Capability.DELETE_ALPHABET)
 @router.route("/alphabet/{alphabet_id:d}/delete",
               order=0,
               methods={teapot.request.Method.POST})
