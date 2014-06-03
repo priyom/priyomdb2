@@ -1,4 +1,8 @@
+import os
+
 import teapot
+
+import priyom.config
 
 from .shared import *
 
@@ -11,9 +15,17 @@ from . import formats
 from . import alphabets
 from . import modes
 
+mimetypes = {
+    ".ttf": teapot.mime.Type("application", "x-font-ttf"),
+    ".eot": teapot.mime.Type("application", "vnd.ms-fontobject"),
+    ".woff": teapot.mime.Type("application", "octet-stream"),
+    ".svg": teapot.mime.Type("image", "svg+xml"),
+    None: teapot.mime.Type("application", "octet-stream")
+}
+
 @teapot.file_from_directory(
     "/css/",
-    "/var/www/docroot/horazont/projects/priyomdb2/resources/css/",
+    priyom.config.css_path,
     "f",
     filterfunc=lambda x: x.endswith(".css"))
 @router.route(methods={teapot.request.Method.GET})
@@ -21,6 +33,19 @@ def css_file(f):
     return teapot.response.Response.file(
         teapot.mime.Type("text", "css").with_charset("utf-8"),
         f)
+
+
+@teapot.file_from_directory(
+    "/img/",
+    priyom.config.img_path,
+    "f")
+@router.route(methods={teapot.request.Method.GET})
+def img_file(f):
+    _, ext = os.path.splitext(f.name)
+
+    mimetype = mimetypes.get(ext, mimetypes[None])
+
+    return teapot.response.Response.file(mimetype, f)
 
 anonymous_sitemap.label = "Anonymous activities"
 anonymous_sitemap.new(
