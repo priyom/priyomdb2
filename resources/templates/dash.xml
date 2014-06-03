@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:l10n="https://xmlns.zombofant.net/xsltea/l10n"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title>Radio Dash</title>
@@ -49,7 +50,7 @@
                     </tea:switch>
                   </td>
                   <td><exec:text>event.station</exec:text></td>
-                  <td><exec:text>event.start_time</exec:text></td>
+                  <td><l10n:datetime>event.start_time</l10n:datetime></td>
                 </tr>
               </tea:for-each>
             </tbody>
@@ -86,7 +87,7 @@
                       </tea:switch>
                     </td>
                     <td><exec:text>event.station</exec:text></td>
-                    <td><exec:text>event.start_time</exec:text></td>
+                    <td><l10n:datetime>event.start_time</l10n:datetime></td>
                   </tr>
                 </tea:for-each>
               </tbody>

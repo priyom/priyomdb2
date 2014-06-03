@@ -13,7 +13,7 @@ import xsltea
 
 import priyom.model
 
-from . import sitemap, sortable_table, auth
+from . import sitemap, sortable_table, auth, l10n
 
 __all__ = [
     "xsltea_site",
@@ -28,6 +28,11 @@ logger = logging.getLogger(__name__)
 
 source = teapot.templating.FileSystemSource(
     "/var/www/docroot/horazont/projects/priyomdb2/resources/templates/")
+
+# setup localization support
+
+textdb = l10n.TextDB(fallback_locale="en_GB")
+textdb.load_all(priyom.config.l10n_path)
 
 # setup sitemap root
 
@@ -55,6 +60,9 @@ _xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
 _xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
 _xsltea_loader.loader.add_processor(xsltea.FunctionProcessor())
 _xsltea_loader.loader.add_processor(auth.AuthProcessor())
+_xsltea_loader.loader.add_processor(l10n.L10NProcessor(
+    textdb,
+    safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "anonymous", anonymous_sitemap
 ))
