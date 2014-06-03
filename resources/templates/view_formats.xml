@@ -21,7 +21,7 @@
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <h3>Activities</h3>
             <ul class="navlist">
-              <li><a exec:href="href(arguments['add_format'], format_id=0)" class="ym-button ym-success ym-add">New format</a></li>
+              <li><a exec:href="context.href(arguments['add_format'], format_id=0)" class="ym-button ym-success ym-add">New format</a></li>
             </ul>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
@@ -64,7 +64,7 @@
               <td><exec:text>display_name</exec:text></td>
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
-                <a exec:href="href(arguments['edit_format'], format_id=id)"
+                <a exec:href="context.href(arguments['edit_format'], format_id=id)"
                    class="ym-button ym-edit ym-primary">Edit</a>
               </td>
             </tr>

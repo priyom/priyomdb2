@@ -106,7 +106,7 @@
             <div class="ym-label">Moderator approval (without, the Event and its contents will not be shown in queries)</div>
             <input type="checkbox"
                    form:field="approved"
-                   exec:disabled="None if request.auth.has_capability(Capability.REVIEW_LOG) else 'disabled'" />
+                   exec:disabled="None if context.request.auth.has_capability(Capability.REVIEW_LOG) else 'disabled'" />
             <label form:for-field="approved">Approved</label>
           </div>
           <div class="ym-fbox ym-fbox-button">

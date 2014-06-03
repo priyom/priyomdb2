@@ -141,113 +141,62 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             "xhtml": self._xhtml_sitemap
         }
 
-    @staticmethod
-    def setter(elemname, attrname, valuecode, sourceline):
-        return ast.Expr(
-            ast.Call(
-                ast.Attribute(
-                    ast.Name(
-                        elemname,
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    "set",
-                    ast.Load(),
-                    lineno=sourceline,
-                    col_offset=0),
-                [
-                    ast.Str(
-                        attrname,
-                        lineno=sourceline,
-                        col_offset=0),
-                    valuecode
-                ],
-                [],
-                None,
-                None,
-                lineno=sourceline,
-                col_offset=0),
-            lineno=sourceline,
-            col_offset=0)
-
     def _xhtml_svgicon(self, template, elem, svgicon, dest):
         sourceline = elem.sourceline or 0
 
-        body = [
-            ast.Assign(
+        body = template.ast_makeelement_and_setup(
+            svg_ns.svg,
+            sourceline,
+            attrdict=ast.Dict(
                 [
-                    ast.Name(
-                        dest,
-                        ast.Store(),
+                    ast.Str(
+                        "class",
+                        lineno=sourceline,
+                        col_offset=0),
+                    ast.Str(
+                        "viewBox",
                         lineno=sourceline,
                         col_offset=0),
                 ],
-                ast.Call(
+                [
+                    ast.Str(
+                        "icon",
+                        lineno=sourceline,
+                        col_offset=0),
+                    ast.Str(
+                        svgicon.viewbox(),
+                        lineno=sourceline,
+                        col_offset=0),
+                ],
+                lineno=sourceline,
+                col_offset=0),
+            nsdict=ast.Dict(
+                [
                     ast.Name(
-                        "makeelement",
+                        "None",
                         ast.Load(),
                         lineno=sourceline,
                         col_offset=0),
-                    [
-                        ast.Str(
-                            svg_ns.svg,
-                            lineno=sourceline,
-                            col_offset=0),
-                        ast.Dict(
-                            [
-                                ast.Str(
-                                    "class",
-                                    lineno=sourceline,
-                                    col_offset=0),
-                                ast.Str(
-                                    "viewBox",
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            [
-                                ast.Str(
-                                    "icon",
-                                    lineno=sourceline,
-                                    col_offset=0),
-                                ast.Str(
-                                    svgicon.viewbox(),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            lineno=sourceline,
-                            col_offset=0),
-                        ast.Dict(
-                            [
-                                ast.Name(
-                                    "None",
-                                    ast.Load(),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                                ast.Str(
-                                    "xlink",
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            [
-                                ast.Str(
-                                    str(svg_ns),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                                ast.Str(
-                                    str(xlink_ns),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
+                    ast.Str(
+                        "xlink",
+                        lineno=sourceline,
+                        col_offset=0),
+                ],
+                [
+                    ast.Str(
+                        str(svg_ns),
+                        lineno=sourceline,
+                        col_offset=0),
+                    ast.Str(
+                        str(xlink_ns),
+                        lineno=sourceline,
+                        col_offset=0),
+                ],
                 lineno=sourceline,
                 col_offset=0),
+            varname=dest)
+
+        body.extend([
             ast.Expr(
                 ast.Call(
                     ast.Attribute(
@@ -278,24 +227,13 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                                     col_offset=0),
                             ],
                             [
-                                ast.Call(
-                                    ast.Name(
-                                        "href",
-                                        ast.Load(),
+                                template.ast_href(
+                                    ast.Str(
+                                        self._sprites_source + "#" +
+                                        svgicon.elementid,
                                         lineno=sourceline,
                                         col_offset=0),
-                                    [
-                                        ast.Str(
-                                            self._sprites_source + "#" +
-                                            svgicon.elementid,
-                                            lineno=sourceline,
-                                            col_offset=0),
-                                    ],
-                                    [],
-                                    None,
-                                    None,
-                                    lineno=sourceline,
-                                    col_offset=0),
+                                    sourceline),
                             ],
                             lineno=sourceline,
                             col_offset=0),
@@ -307,43 +245,17 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                     col_offset=0),
                 lineno=sourceline,
                 col_offset=0),
-        ]
+        ])
 
         return body
 
     def _xhtml_elemcode(self, template, elem, node):
         sourceline = elem.sourceline or 0
 
-        body = []
-
-        body.append(
-            ast.Assign(
-                [
-                    ast.Name(
-                        "textcont",
-                        ast.Store(),
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                ast.Call(
-                    ast.Name(
-                        "makeelement",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        ast.Str(
-                            xhtml_ns.span,
-                            lineno=sourceline,
-                            col_offset=0)
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0))
+        body = template.ast_makeelement_and_setup(
+            xhtml_ns.span,
+            sourceline,
+            varname="textcont")
 
         if node.routable:
             routable_key = template.store(node.routable)
@@ -352,11 +264,7 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                 ast.If(
                     ast.Compare(
                         ast.Attribute(
-                            ast.Name(
-                                "request",
-                                ast.Load(),
-                                lineno=sourceline,
-                                col_offset=0),
+                            template.ast_get_request(sourceline),
                             "current_routable",
                             ast.Load(),
                             lineno=sourceline,
@@ -365,7 +273,7 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                             ast.Eq()
                         ],
                         [
-                            template.storage_access_code(
+                            template.ast_get_stored(
                                 routable_key,
                                 sourceline)
                         ],
@@ -373,9 +281,8 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                         col_offset=0),
                     [
                         # set the class of the surrounding element
-                        self.setter(
-                            "elem",
-                            getattr(xhtml_ns, "class"),
+                        template.ast_set_elem_attr(
+                            "class",
                             ast.Str(
                                 "active",
                                 lineno=sourceline,
@@ -424,26 +331,15 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                             lineno=sourceline,
                             col_offset=0),
                         # set the link href
-                        self.setter(
-                            "textcont",
-                            xhtml_ns.href,
-                            ast.Call(
-                                ast.Name(
-                                    "href",
-                                    ast.Load(),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                                [
-                                    template.storage_access_code(
-                                        routable_key,
-                                        sourceline)
-                                ],
-                                [],
-                                None,
-                                None,
-                                lineno=sourceline,
-                                col_offset=0),
-                    sourceline)
+                        template.ast_set_elem_attr(
+                            "href",
+                            template.ast_href(
+                                template.ast_get_stored(
+                                    routable_key,
+                                    sourceline),
+                                sourceline),
+                            sourceline,
+                            varname="textcont"),
                     ],
                     lineno=sourceline,
                     col_offset=0))
@@ -569,10 +465,6 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
 
     def _xhtml_childrencode(self, template, elem, node, offset):
         sourceline = elem.sourceline or 0
-
-        childfun_name = "children{}".format(offset)
-
-        precode = self._xhtml_childfun(template, elem, node, childfun_name)
         if not precode:
             return [], []
 
@@ -618,99 +510,35 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
         sourceline = elem.sourceline or 0
 
         precode = []
-        elemcode = []
-        elemcode.append(
-            ast.Assign(
-                [
-                    ast.Name(
-                        "elem",
-                        ast.Store(),
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                ast.Call(
-                    ast.Name(
-                        "makeelement",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        ast.Str(
-                            getattr(xhtml_ns, type_),
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0))
 
+        elemcode = template.ast_makeelement_and_setup(
+            getattr(xhtml_ns, type_),
+            sourceline)
         elemcode.extend(self._xhtml_elemcode(template, elem, node))
 
         elemcode.append(
-            ast.Expr(
-                ast.Yield(
-                    ast.Name(
-                        "elem",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0))
+            template.ast_yield(
+                "elem",
+                sourceline))
 
-        child_precode, child_elemcode = self._xhtml_childrencode(
-            template, elem, node, offset)
+        childfun_name = "children{}".format(offset)
 
-        if child_elemcode and child_precode:
-            elemcode.append(
-                ast.Assign(
-                    [
-                        ast.Name(
-                            "elem",
-                            ast.Store(),
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    ast.Call(
-                        ast.Name(
-                            "makeelement",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        [
-                            ast.Str(
-                                xhtml_ns.ul,
-                                lineno=sourceline,
-                                col_offset=0),
-                        ],
-                        [],
-                        None,
-                        None,
-                        lineno=sourceline,
-                        col_offset=0),
-                    lineno=sourceline,
-                    col_offset=0))
+        child_precode = self._xhtml_childfun(
+            template, elem, node, childfun_name)
+
+        if child_precode:
+            elemcode.extend(
+                template.ast_makeelement_and_setup(
+                    xhtml_ns.ul,
+                    sourceline,
+                    childfun=childfun_name))
 
             elemcode.append(
-                ast.Expr(
-                    ast.Yield(
-                        ast.Name(
-                            "elem",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        lineno=sourceline,
-                        col_offset=0),
-                    lineno=sourceline,
-                    col_offset=0))
+                template.ast_yield(
+                    "elem",
+                    sourceline))
 
             precode.extend(child_precode)
-            elemcode.extend(child_elemcode)
 
         return precode, elemcode, []
 
@@ -720,9 +548,9 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
         if node.routable:
             routable_name = template.store(node.routable)
             elem.set(xsltea.exec.ExecProcessor.xmlns.href,
-                     "href(template_storage[{!r}])".format(routable_name))
+                     "href(context.storage[{!r}])".format(routable_name))
             elem.set(xsltea.exec.ExecProcessor.xmlns.active,
-                     "'' if request.current_routable == template_storage[{!r}] "
+                     "'' if request.current_routable == context.storage[{!r}] "
                      "else None".format(routable_name))
         for child in node:
             childelem = etree.SubElement(elem, self.xmlns.entry)

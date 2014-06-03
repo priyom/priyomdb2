@@ -28,7 +28,7 @@
             <form form:form="form"
                   method="POST"
                   class="ym-form"
-                  exec:action="href(edit_mode, mode_id=0)">
+                  exec:action="context.href(edit_mode, mode_id=0)">
               <div class="ym-fbox">
                 <label form:for-field="display_name">Display name</label>
                 <input type="text"
@@ -80,10 +80,10 @@
               <td><exec:text>display_name or ''</exec:text></td>
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
-                <a exec:href="href(edit_mode, mode_id=id)"
+                <a exec:href="context.href(edit_mode, mode_id=id)"
                    class="ym-button ym-primary ym-edit">Edit</a>
                 <tea:if exec:eval="not user_count">
-                  <form exec:action="href(delete_mode, mode_id=id)"
+                  <form exec:action="context.href(delete_mode, mode_id=id)"
                         method="POST"
                         class="inline">
                     <button type="submit"

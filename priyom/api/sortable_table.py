@@ -77,13 +77,13 @@ if _a.get_orderby_field() == _b:
             template.compose_attrdict(elem, context)
 
         elemcode = compile("""\
-elem = makeelement(_elem_tag, attrib=_attrdict)
+elem = context.makeelement(_elem_tag, attrib=_attrdict)
 elem.tail = _elem_tail
 elem_a = etree.SubElement(elem, _xhtml_a)
 if _page.get_orderby_field() == _name:
     elem_a.set(
         "href",
-        href(_viewobj, view=_page.with_orderby(
+        context.href(_viewobj, view=_page.with_orderby(
             new_direction="asc" if _page.get_orderby_dir() == "desc" else "desc")))
     elem_div = etree.SubElement(
         elem_a,
@@ -97,7 +97,7 @@ else:
     elem_a.text = _elem_text
     elem_a.set(
         "href",
-        href(_viewobj, view=_page.with_orderby(new_fieldname=_name)))
+        context.href(_viewobj, view=_page.with_orderby(new_fieldname=_name)))
 append_children(elem_a, _childfun())
 yield elem""",
                            context.filename,

@@ -39,7 +39,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <ul class="pagination">
       <tea:if exec:eval="page.get_pageno() &gt; 1">
         <li class="wide">
-          <a exec:href="href(view, view=page.at_page(page.get_pageno()-1))">« prev</a>
+          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()-1))">« prev</a>
         </li>
       </tea:if>
       <tea:call tea:name="page">
@@ -61,7 +61,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
       </tea:if>
       <tea:if exec:eval="page.get_pageno() &lt; page.total_pages">
         <li class="wide">
-          <a exec:href="href(view, view=page.at_page(page.get_pageno()+1))">next »</a>
+          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()+1))">next »</a>
         </li>
       </tea:if>
     </ul>
@@ -82,7 +82,8 @@ pagerange = range(start_at, end_at+1)</exec:code>
       </tea:for-each>
     </ul>
     <a class="ym-button ym-warning ym-delete"
-       exec:href="href(view, view=page.without_filters())">Clear all filters</a>
+       exec:href="context.
+href(view, view=page.without_filters())">Clear all filters</a>
   </tea:def>
   <tea:def tea:name="errors">
     <tea:arg name="form" mode="lazy" default="default_form" />

@@ -203,45 +203,41 @@ class AuthProcessor(xsltea.processor.TemplateProcessor):
         }
         self.elemhooks = {}
 
-    def _access_auth(self, elem):
+    def _access_auth(self, template, sourceline):
         return ast.Attribute(
-            ast.Name(
-                "request",
-                ast.Load(),
-                lineno=elem.sourceline or 0,
-                col_offset=0),
+            template.ast_get_request(sourceline),
             "auth",
             ast.Load(),
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
-    def _build_capability_condition(self, elem, capability_key):
+    def _build_capability_condition(self, auth_ast, capability_key, sourceline):
         return ast.Call(
             ast.Attribute(
-                self._access_auth(elem),
+                auth_ast,
                 "has_capability",
                 ast.Load(),
-                lineno=elem.sourceline or 0,
+                lineno=sourceline,
                 col_offset=0),
             [ # arguments
                 ast.Str(
                     getattr(Capability, capability_key),
-                    lineno=elem.sourceline or 0,
+                    lineno=sourceline,
                     col_offset=0),
             ],
             [],
             None,
             None,
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
-    def _build_login_condition(self, elem, logged_in):
+    def _build_login_condition(self, auth_ast, logged_in, sourceline):
         return ast.Compare(
             ast.Attribute(
-                self._access_auth(elem),
+                auth_ast,
                 "user",
                 ast.Load(),
-                lineno=elem.sourceline or 0,
+                lineno=sourceline,
                 col_offset=0),
             [
                 ast.IsNot() if logged_in else ast.Is()
@@ -250,41 +246,53 @@ class AuthProcessor(xsltea.processor.TemplateProcessor):
                 ast.Name(
                     "None",
                     ast.Load(),
-                    lineno=elem.sourceline or 0,
+                    lineno=sourceline,
                     col_offset=0)
             ],
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
-    def _build_group_condition(self, elem, group_key):
+    def _build_group_condition(self, auth_ast, group_key, sourceline):
         return ast.Call(
             ast.Attribute(
-                self._access_auth(elem),
+                auth_ast,
                 "has_group",
                 ast.Load(),
-                lineno=elem.sourceline or 0,
+                lineno=sourceline,
                 col_offset=0),
             [ # arguments
                 ast.Str(
                     getattr(priyom.model.user.Group, group_key),
-                    lineno=elem.sourceline or 0,
+                    lineno=sourceline,
                     col_offset=0),
             ],
             [],
             None,
             None,
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
     def cond_cap(self, template, elem, key, value, context):
-        return [], [], None, self._build_capability_condition(elem, value), []
+        sourceline = elem.sourceline or 0
+        auth_ast = self._access_auth(template, sourceline)
+        return [], [], None, self._build_capability_condition(
+            auth_ast, value, sourceline), []
 
     def cond_login(self, template, elem, key, value, context):
+        sourceline = elem.sourceline or 0
+        auth_ast = self._access_auth(template, sourceline)
         return [], [], None, self._build_login_condition(
-            elem, value.lower() in {"true", "yes", "1"}), []
+            auth_ast,
+            value.lower() in {"true", "yes", "1"},
+            sourceline), []
 
     def cond_group(self, template, elem, key, value, context):
-        return [], [], None, self._build_group_condition(elem, value), []
+        sourceline = elem.sourceline or 0
+        auth_ast = self._access_auth(template, sourceline)
+        return [], [], None, self._build_group_condition(
+            auth_ast,
+            value,
+            sourceline), []
 
     def provide_vars(self, template, tree, context):
         precode = [
@@ -296,22 +304,9 @@ class AuthProcessor(xsltea.processor.TemplateProcessor):
                         lineno=0,
                         col_offset=0),
                 ],
-                ast.Subscript(
-                    ast.Name(
-                        "template_storage",
-                        ast.Load(),
-                        lineno=0,
-                        col_offset=0),
-                    ast.Index(
-                        ast.Str(
-                            template.store(Capability),
-                            lineno=0,
-                            col_offset=0),
-                        lineno=0,
-                        col_offset=0),
-                    ast.Load(),
-                    lineno=0,
-                    col_offset=0),
+                template.ast_get_stored(
+                    template.store(Capability),
+                    0),
                 lineno=0,
                 col_offset=0
             )

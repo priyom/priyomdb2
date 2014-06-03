@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <data xmlns="http://www.w3.org/1999/xhtml"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
-  <link rel="stylesheet" exec:href="href('css/core/base.min.css')" type="text/css" />
-  <link rel="stylesheet" exec:href="href('css/screen/typography.css')" type="text/css" />
-  <link rel="stylesheet" exec:href="href('css/navigation/hlist.css')" type="text/css" />
-  <link rel="stylesheet" exec:href="href('css/screen/screen-FULLPAGE-layout.css')" type="text/css" />
-  <link rel="stylesheet" exec:href="href('css/forms/gray-theme.css')" type="text/css" />
-  <link rel="stylesheet" exec:href="href('css/style.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/core/base.min.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/screen/typography.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/navigation/hlist.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/screen/screen-FULLPAGE-layout.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/forms/gray-theme.css')" type="text/css" />
+  <link rel="stylesheet" exec:href="context.href('css/style.css')" type="text/css" />
 </data>

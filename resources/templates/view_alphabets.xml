@@ -26,7 +26,7 @@
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <h3>Quick add</h3>
             <form form:form="form"
-                  exec:action="href(edit_alphabet, alphabet_id=0)"
+                  exec:action="context.href(edit_alphabet, alphabet_id=0)"
                   method="POST"
                   class="ym-form">
               <div class="ym-fbox">
@@ -86,10 +86,10 @@
               <td><exec:text>display_name or ''</exec:text></td>
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
-                <a exec:href="href(edit_alphabet, alphabet_id=id)"
+                <a exec:href="context.href(edit_alphabet, alphabet_id=id)"
                    class="ym-button ym-primary ym-edit">Edit</a>
                 <tea:if exec:eval="not user_count">
-                  <form exec:action="href(delete_alphabet, alphabet_id=id)"
+                  <form exec:action="context.href(delete_alphabet, alphabet_id=id)"
                         method="POST"
                         class="inline">
                     <button type="submit"

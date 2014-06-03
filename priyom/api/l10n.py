@@ -147,23 +147,22 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
         self._varname = varname
         self._safety_level = safety_level
 
-    def _lookup_type(self, elem, key, type_):
-        if isinstance(key, str):
-            key = ast.Str(
-                key,
-                lineno=elem.sourceline or 0,
-                col_offset=0)
+    def _access_var(self, template, ctx, sourceline):
+        return template.ast_get_from_object(
+            self._varname,
+            "context",
+            sourceline,
+            ctx=ctx)
+
+    def _lookup_type(self, template, key, type_, sourceline):
+        key = template.ast_or_str(key, sourceline)
 
         return ast.Call(
             ast.Attribute(
-                ast.Name(
-                    self._varname,
-                    ast.Load(),
-                    lineno=elem.sourceline or 0,
-                    col_offset=0),
+                self._access_var(template, ast.Load(), sourceline),
                 type_,
                 ast.Load(),
-                lineno=elem.sourceline or 0,
+                lineno=sourceline,
                 col_offset=0),
             [
                 key
@@ -171,35 +170,37 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
             [],
             None,
             None,
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
     def handle_attr(self, template, elem, key, value, context):
+        sourceline = elem.sourceline or 0
+
         keycode = ast.Str(
             key,
-            lineno=elem.sourceline or 0,
+            lineno=sourceline,
             col_offset=0)
 
-        valuecode = self._lookup_type(elem, value, "_")
+        valuecode = self._lookup_type(template, value, "_", sourceline)
 
         return [], [], keycode, valuecode, []
 
     def handle_elem(self, template, elem, context, offset):
+        sourceline = elem.sourceline or 0
+
         elemcode = template.preserve_tail_code(elem, context)
         elemcode.insert(
             0,
-            ast.Expr(
-                ast.Yield(
-                    self._lookup_type(elem, elem.text, "_"),
-                    lineno=elem.sourceline or 0,
-                    col_offset=0),
-                lineno=elem.sourceline or 0,
-                col_offset=0)
+            template.ast_yield(
+                self._lookup_type(template, elem.text, "_", sourceline),
+                sourceline)
         )
 
         return [], elemcode, []
 
     def handle_elem_type(self, type_, template, elem, context, offset):
+        sourceline = elem.sourceline or 0
+
         key_code = compile(
             elem.text,
             context.filename,
@@ -210,39 +211,24 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
         elemcode = template.preserve_tail_code(elem, context)
         elemcode.insert(
             0,
-            ast.Expr(
-                ast.Yield(
-                    self._lookup_type(elem, key_code, type_),
-                    lineno=elem.sourceline or 0,
-                    col_offset=0),
-                lineno=elem.sourceline or 0,
-                col_offset=0)
+            template.ast_yield(
+                self._lookup_type(template, key_code, type_, sourceline),
+                sourceline)
         )
 
         return [], elemcode, []
 
     def provide_vars(self, template, tree, context):
-        stored_code = ast.Subscript(
-            ast.Name(
-                "template_storage",
-                ast.Load(),
-                lineno=0,
-                col_offset=0),
-            ast.Index(
-                ast.Str(
-                    template.store(self._textdb),
-                    lineno=0,
-                    col_offset=0),
-                lineno=0,
-                col_offset=0),
-            ast.Load(),
-            lineno=0,
-            col_offset=0)
-
+        textdb_key = template.store(self._textdb)
         precode = [
             ast.Assign(
                 [
-                    ast.Name(
+                    ast.Attribute(
+                        ast.Name(
+                            "context",
+                            ast.Load(),
+                            lineno=0,
+                            col_offset=0),
                         self._varname,
                         ast.Store(),
                         lineno=0,
@@ -250,18 +236,16 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
                 ],
                 ast.Call(
                     ast.Attribute(
-                        stored_code,
+                        template.ast_get_stored(
+                            textdb_key,
+                            0),
                         "catalog_by_preference",
                         ast.Load(),
                         lineno=0,
                         col_offset=0),
                     [
                         ast.Attribute(
-                            ast.Name(
-                                "request",
-                                ast.Load(),
-                                lineno=0,
-                                col_offset=0),
+                            template.ast_get_request(0),
                             "accept_language",
                             ast.Load(),
                             lineno=0,
