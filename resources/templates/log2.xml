@@ -52,7 +52,7 @@
           </tea:call>
         </fieldset>
         <tea:switch>
-          <tea:case tea:eval="events">
+          <tea:case exec:eval="events">
             <fieldset>
               <legend class="ym-fbox-check">
                 <input type="radio"

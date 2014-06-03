@@ -82,7 +82,7 @@
                 </tea:call>
               </td>
               <td>
-                <exec:code>can_edit = request.auth.has_capaiblity(Capability.EDIT_EVENT)</exec:code>
+                <exec:code>can_edit = request.auth.has_capability(Capability.EDIT_EVENT)</exec:code>
                 <a exec:href="href(edit_event, event_id=id)"
                    exec:class="'ym-button ym-primary'+
                                (' ym-edit' if can_edit else '')">
