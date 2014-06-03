@@ -40,37 +40,67 @@ body > nav.ym-hlist ul li {
 }
 
 body > nav.ym-hlist ul li a,
-body > nav.ym-hlist ul li strong {
+body > nav.ym-hlist ul li strong,
+body > nav.ym-hlist ul li span {
     margin: 0;
     padding-left: 0.875em;
     padding-right: 0.875em;
     border-radius: 0;
     background: transparent;
-    border: 1px solid #444;
-    margin-left: -1px;
-    margin-top: -1px;
-    border-bottom: 1px solid #444;
+    /* margin-left: 0.25em; */
+    /* margin-right: 0.25em; */
+    /* border: 1px solid #444; */
+    /* margin-left: -1px; */
+    /* margin-top: -1px; */
+    /* border-bottom: 1px solid #444; */
     /* padding-bottom: 1px; */
+}
+
+body > nav.ym-hlist ul li a:focus,
+body > nav.ym-hlist ul li a:hover {
+    /* box-shadow: inset 0 0 20px rgba(127, 127, 127, 1); */
+    /* border-radius: 0; */
+    background: transparent;
+    /* background: rgba(77, 135, 199, 0.4); */
+    color: rgb(220, 220, 220);
+    /* border: 1px solid #444; */
+    /* border-bottom: none; */
+}
+
+body > nav.ym-hlist ul li.active {
+    background: transparent;
+}
+
+body > nav.ym-hlist ul li.active strong,
+body > nav.ym-hlist ul li.active a,
+body > nav.ym-hlist ul li.active span, {
+    color: #fff;
+}
+
+body > nav.ym-hlist ul li svg.icon {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: -0.35em;
+    margin-left: -0.25em;
+    margin-right: 0.25em;
+}
+
+body > nav.ym-hlist ul li svg.icon {
+    fill: rgb(170, 170, 170);
+}
+
+body > nav.ym-hlist ul li a:hover svg.icon {
+    fill: rgb(220, 220, 220);
+}
+
+body > nav.ym-hlist ul li strong svg.icon {
+    fill: #ffffff;
 }
 
 body > nav.ym-hlist ul li:first-line a,
 body > nav.ym-hlist ul li:first-line strong {
     border-top: none;
-}
-
-body > nav.ym-hlist ul li a:focus,
-body > nav.ym-hlist ul li a:hover {
-    box-shadow: inset 0 0 20px rgba(127, 127, 127, 1);
-    border-radius: 0;
-    background: rgba(77, 135, 199, 0.4);
-    border: 1px solid #444;
-    /* border-bottom: none; */
-}
-
-body > nav.ym-hlist ul li.active {
-    border-radius: 0;
-    background: rgba(127, 127, 127, 0.8);
-    border: none;
 }
 
 body > nav {

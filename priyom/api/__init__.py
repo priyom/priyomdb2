@@ -50,46 +50,62 @@ def img_file(f):
 anonymous_sitemap.label = "Anonymous activities"
 anonymous_sitemap.new(
     anonymous_user.anonhome,
-    label="Home")
+    label="Home",
+    svgicon=sitemap.SVGIcon("icon-bars"))
 anonymous_sitemap.new(
     stations.view_stations,
-    label="Stations")
+    label="Stations",
+    svgicon=sitemap.SVGIcon("icon-podcast"))
 anonymous_sitemap.new(
     events.view_events,
-    label="Events")
+    label="Events",
+    svgicon=sitemap.SVGIcon("icon-info-circle"))
 anonymous_sitemap.new(
     anonymous_user.login,
-    label="Sign in")
+    label="Sign in",
+    svgicon=sitemap.SVGIcon("icon-enter"))
 
 user_sitemap.label = "Common activities"
 user_sitemap.new(
     common_user.dash,
-    label="Dash")
+    label="Dash",
+    svgicon=sitemap.SVGIcon("icon-bars"))
 user_sitemap.new(
     stations.view_stations,
-    label="Stations")
+    label="Stations",
+    svgicon=sitemap.SVGIcon("icon-podcast"))
 user_sitemap.new(
     events.view_events,
-    label="Events")
+    label="Events",
+    svgicon=sitemap.SVGIcon("icon-info-circle"))
 user_sitemap.new(
     log.log,
-    label="Log TX")
+    label="Log TX",
+    svgicon=sitemap.SVGIcon("icon-microphone"))
 user_sitemap.new(
     common_user.logout,
-    label="Sign out")
+    label="Sign out",
+    svgicon=sitemap.SVGIcon("icon-exit"))
 
 admin_sitemap.label = "Admin activities"
 admin_sitemap.new(
     alphabets.view_alphabets,
-    label="Alphabets")
+    label="Alphabets",
+    svgicon=sitemap.SVGIcon("icon-font"))
 admin_sitemap.new(
     modes.view_modes,
-    label="Modes")
+    label="Modes",
+    svgicon=sitemap.SVGIcon("icon-bars2"))
 admin_sitemap.new(
     formats.view_formats,
-    label="Transmission formats")
+    label="Transmission formats",
+    svgicon=sitemap.SVGIcon("icon-tree"))
 
 moderator_sitemap.label = "Moderator activities"
+moderator_sitemap.new(
+    common_user.dash,
+    label="Review queue",
+    svgicon=sitemap.SVGIcon("icon-eye"))
 
 from . import initializer
 initializer.create_base_data(Session())

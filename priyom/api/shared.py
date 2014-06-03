@@ -65,16 +65,20 @@ _xsltea_loader.loader.add_processor(l10n.L10NProcessor(
     textdb,
     safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
-    "anonymous", anonymous_sitemap
+    "anonymous", anonymous_sitemap,
+    "/img/sprites.svg"
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
-    "user", user_sitemap
+    "user", user_sitemap,
+    "/img/sprites.svg"
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
-    "moderator", moderator_sitemap
+    "moderator", moderator_sitemap,
+    "/img/sprites.svg"
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
-    "admin", admin_sitemap
+    "admin", admin_sitemap,
+    "/img/sprites.svg"
 ))
 
 _xsltea_website_output = xsltea.XHTMLPipeline()
