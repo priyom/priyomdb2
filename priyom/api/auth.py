@@ -165,12 +165,18 @@ class Authorization:
 
         return self._capabilities
 
-    def has_capability(self, capability_key):
+    def _has_capability(self, capability_key):
         if self.user is not None:
             # this is more efficient and uses the database
             return self.user.has_capability(capability_key)
 
         return capability_key in self.capabilities
+
+    def has_capability(self, capability_key, root_override=True):
+        result = self._has_capability(capability_key)
+        if root_override and not result:
+            return self._has_capability(Capability.ROOT)
+        return result
 
     def has_group(self, group_name):
         if self.user is not None:
