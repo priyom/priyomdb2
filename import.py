@@ -13,6 +13,10 @@ import lxml.etree as etree
 
 import teapot.timeutils
 
+import priyom.config
+priyom.config.base_path = "/var/www/docroot/horazont/projects/priyomdb2"
+priyom.config.recalc_paths()
+
 import priyom.api.initializer
 import priyom.model
 

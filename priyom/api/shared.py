@@ -11,6 +11,7 @@ import teapot.templating
 
 import xsltea
 
+import priyom.config
 import priyom.model
 
 from . import sitemap, sortable_table, auth, l10n
