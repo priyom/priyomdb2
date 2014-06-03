@@ -2,6 +2,39 @@ body {
     background-image: url('/img/bg.png');
 }
 
+svg.icon {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: -0.35em;
+}
+
+svg.button-icon {
+    background: #ccc;
+    background: rgba(0, 0, 0, 0.1);
+    float: left;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    margin: 0 1em 0 -1.5em;
+    padding: 0 .2em;
+    -webkit-box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.5), 2px 0 0 rgba(255, 255, 255, 0.5);
+    border-radius: .15em 0 0 .15em;
+    pointer-events: none;
+    display: block;
+    padding-left: 0.3em;
+    padding-right: 0.2em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    fill: #fff;
+}
+
+svg.button-icon.icon-microphone {
+    padding-left: 0.6em;
+    padding-right: 0.1em;
+}
+
 body > nav.ym-hlist {
     background-image: url('/img/pattern.png');
 }
@@ -87,10 +120,6 @@ body > nav.ym-hlist ul li.active span {
 }
 
 body > nav.ym-hlist ul li svg.icon {
-    display: inline-block;
-    width: 1.5em;
-    height: 1.5em;
-    vertical-align: -0.35em;
     margin-left: -0.25em;
     margin-right: 0.25em;
 }
@@ -484,7 +513,6 @@ ul.pagination > li:last-child > div.fakebutton
     }
 
 }
-
 
 .ym-g100 {
     width: 100%;

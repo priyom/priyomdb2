@@ -14,7 +14,7 @@ import xsltea
 import priyom.config
 import priyom.model
 
-from . import sitemap, sortable_table, auth, l10n
+from . import sitemap, sortable_table, auth, l10n, svgicon
 
 __all__ = [
     "xsltea_site",
@@ -44,6 +44,8 @@ admin_sitemap = sitemap.Node()
 
 # setup xsltea transforms
 
+sprites = "/img/sprites.svg"
+
 _transform_loader = xsltea.TransformLoader(source)
 
 _xsltea_loader = xsltea.Pipeline()
@@ -61,24 +63,27 @@ _xsltea_loader.loader.add_processor(xsltea.ExecProcessor())
 _xsltea_loader.loader.add_processor(xsltea.IncludeProcessor())
 _xsltea_loader.loader.add_processor(xsltea.FunctionProcessor())
 _xsltea_loader.loader.add_processor(auth.AuthProcessor())
+_xsltea_loader.loader.add_processor(svgicon.SVGIconProcessor(
+    sprites,
+    default_viewbox="0 0 32 32"))
 _xsltea_loader.loader.add_processor(l10n.L10NProcessor(
     textdb,
     safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "anonymous", anonymous_sitemap,
-    "/img/sprites.svg"
+    sprites
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "user", user_sitemap,
-    "/img/sprites.svg"
+    sprites
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "moderator", moderator_sitemap,
-    "/img/sprites.svg"
+    sprites
 ))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "admin", admin_sitemap,
-    "/img/sprites.svg"
+    sprites
 ))
 
 _xsltea_website_output = xsltea.XHTMLPipeline()
@@ -146,6 +151,14 @@ class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
     def pre_route_hook(self, request):
         super().pre_route_hook(request)
         request.auth = self._reauth(request)
+
+        class Foo:
+            caps = request.auth.capabilities
+
+            def __str__(self):
+                return "authorized with capabilities: {}".format(", ".join(self.caps))
+
+        logger.info(Foo())
 
 router = _Router()
 

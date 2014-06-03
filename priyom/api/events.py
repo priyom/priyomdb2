@@ -282,4 +282,4 @@ def get_event_viewer(request):
     if request.auth.has_capability(Capability.EDIT_EVENT):
         return edit_event
     else:
-        return view_event
+        return None

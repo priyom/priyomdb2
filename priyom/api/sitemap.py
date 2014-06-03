@@ -9,16 +9,7 @@ import xsltea.exec
 
 from xsltea.namespaces import NamespaceMeta, xhtml_ns, xlink_ns, svg_ns
 
-class SVGIcon:
-    def __init__(self, elementid, x0=0, y0=0, x1=32, y1=32):
-        self.elementid = elementid
-        self.x0 = x0
-        self.y0 = y0
-        self.x1 = x1
-        self.y1 = x1
-
-    def viewbox(self):
-        return "{} {} {} {}".format(self.x0, self.y0, self.x1, self.y1)
+from . import svgicon
 
 class Node(collections.abc.MutableSequence):
     @classmethod
@@ -140,114 +131,6 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             "xml": self._xml_sitemap,
             "xhtml": self._xhtml_sitemap
         }
-
-    def _xhtml_svgicon(self, template, elem, svgicon, dest):
-        sourceline = elem.sourceline or 0
-
-        body = template.ast_makeelement_and_setup(
-            svg_ns.svg,
-            sourceline,
-            attrdict=ast.Dict(
-                [
-                    ast.Str(
-                        "class",
-                        lineno=sourceline,
-                        col_offset=0),
-                    ast.Str(
-                        "viewBox",
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                [
-                    ast.Str(
-                        "icon",
-                        lineno=sourceline,
-                        col_offset=0),
-                    ast.Str(
-                        svgicon.viewbox(),
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                lineno=sourceline,
-                col_offset=0),
-            nsdict=ast.Dict(
-                [
-                    ast.Name(
-                        "None",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    ast.Str(
-                        "xlink",
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                [
-                    ast.Str(
-                        str(svg_ns),
-                        lineno=sourceline,
-                        col_offset=0),
-                    ast.Str(
-                        str(xlink_ns),
-                        lineno=sourceline,
-                        col_offset=0),
-                ],
-                lineno=sourceline,
-                col_offset=0),
-            varname=dest)
-
-        body.extend([
-            ast.Expr(
-                ast.Call(
-                    ast.Attribute(
-                        ast.Name(
-                            "etree",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        "SubElement",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        ast.Name(
-                            dest,
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        ast.Str(
-                            svg_ns.use,
-                            lineno=sourceline,
-                            col_offset=0),
-                        ast.Dict(
-                            [
-                                ast.Str(
-                                    xlink_ns.href,
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            [
-                                template.ast_href(
-                                    ast.Str(
-                                        self._sprites_source + "#" +
-                                        svgicon.elementid,
-                                        lineno=sourceline,
-                                        col_offset=0),
-                                    sourceline),
-                            ],
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0),
-        ])
-
-        return body
 
     def _xhtml_elemcode(self, template, elem, node):
         sourceline = elem.sourceline or 0
@@ -374,8 +257,13 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
 
         if node.svgicon and self._sprites_source:
             body.extend(
-                self._xhtml_svgicon(
-                    template, elem, node.svgicon, "svgicon"))
+                svgicon.SVGIconProcessor.create_svgicon(
+                    template,
+                    self._sprites_source,
+                    node.svgicon.elementid,
+                    node.svgicon.viewbox(),
+                    sourceline,
+                    varname="svgicon"))
 
             body.append(
                 ast.Expr(

@@ -98,7 +98,7 @@ else:
     elem_a.set(
         "href",
         context.href(_viewobj, view=_page.with_orderby(new_fieldname=_name)))
-append_children(elem_a, _childfun())
+utils.append_children(elem_a, _childfun())
 yield elem""",
                            context.filename,
                            "exec",

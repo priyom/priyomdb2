@@ -6,23 +6,28 @@ import priyom.model
 from .auth import *
 from .shared import *
 
-from .log import log
-
-@require_login()
 @router.route("/", methods={teapot.request.Method.GET})
-@xsltea_site.with_template("dash.xml")
+@xsltea_site.with_variable_template()
 def dash(request: teapot.request.Request):
+    if request.auth.user:
+        yield "dash-authed.xml"
+    else:
+        yield "dash-unauthed.xml"
+
     dbsession = request.dbsession
     yield teapot.response.Response(None)
+
     transform_args = {
         "version": "devel"
     }
     template_args = dict(transform_args)
+
     template_args["recents"] = dbsession.query(
         priyom.model.Event
     ).order_by(
         priyom.model.Event.created.desc()
     ).limit(10)
+
     if request.auth.has_capability(Capability.REVIEW_LOG):
         template_args["unapproved"] = dbsession.query(
             priyom.model.Event
@@ -33,25 +38,25 @@ def dash(request: teapot.request.Request):
         ).limit(10)
     else:
         template_args["unapproved"] = None
-    template_args["mine"] = dbsession.query(
-        priyom.model.Event
-    ).filter(
-        priyom.model.Event.submitter_id == request.auth.user.id
-    ).order_by(
-        priyom.model.Event.created.desc()
-    ).limit(10)
+
+    if request.auth.user:
+        template_args["mine"] = dbsession.query(
+            priyom.model.Event
+        ).filter(
+            priyom.model.Event.submitter_id == request.auth.user.id
+        ).order_by(
+            priyom.model.Event.created.desc()
+        ).limit(10)
+    else:
+        template_args["mine"] = None
+
+    from . import log, login, stations, events
 
     template_args.update({
-        "log_tx": log,
+        "log_tx": log.log,
+        "sign_in": login.login,
+        "view_station": stations.get_station_viewer(request),
+        "view_event": events.get_event_viewer(request),
     })
 
     yield (template_args, transform_args)
-
-@require_login()
-@router.route("/logout", methods={teapot.request.Method.GET})
-def logout(request: teapot.request.Request):
-    from .anonymous_user import anonhome
-    response = teapot.make_redirect_response(request, anonhome)
-    response.cookies["api_session_key"] = ""
-    response.cookies["api_session_key"]["Expires"] = 1
-    return response

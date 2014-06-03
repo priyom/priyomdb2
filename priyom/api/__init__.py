@@ -6,14 +6,14 @@ import priyom.config
 
 from .shared import *
 
-from . import common_user
-from . import anonymous_user
 from . import log
 from . import stations
 from . import events
 from . import formats
 from . import alphabets
 from . import modes
+from . import dash
+from . import login
 
 mimetypes = {
     ".ttf": teapot.mime.Type("application", "x-font-ttf"),
@@ -50,63 +50,63 @@ def img_file(f):
 
 anonymous_sitemap.label = "Anonymous activities"
 anonymous_sitemap.new(
-    anonymous_user.anonhome,
+    dash.dash,
     label="Home",
-    svgicon=sitemap.SVGIcon("icon-bars"))
+    svgicon=svgicon.SVGIcon("icon-bars"))
 anonymous_sitemap.new(
     stations.view_stations,
     label="Stations",
-    svgicon=sitemap.SVGIcon("icon-podcast"))
+    svgicon=svgicon.SVGIcon("icon-podcast"))
 anonymous_sitemap.new(
     events.view_events,
     label="Events",
-    svgicon=sitemap.SVGIcon("icon-info-circle"))
+    svgicon=svgicon.SVGIcon("icon-info-circle"))
 anonymous_sitemap.new(
-    anonymous_user.login,
+    login.login,
     label="Sign in",
-    svgicon=sitemap.SVGIcon("icon-enter"))
+    svgicon=svgicon.SVGIcon("icon-enter"))
 
 user_sitemap.label = "Common activities"
 user_sitemap.new(
-    common_user.dash,
+    dash.dash,
     label="Dash",
-    svgicon=sitemap.SVGIcon("icon-bars"))
+    svgicon=svgicon.SVGIcon("icon-bars"))
 user_sitemap.new(
     stations.view_stations,
     label="Stations",
-    svgicon=sitemap.SVGIcon("icon-podcast"))
+    svgicon=svgicon.SVGIcon("icon-podcast"))
 user_sitemap.new(
     events.view_events,
     label="Events",
-    svgicon=sitemap.SVGIcon("icon-info-circle"))
+    svgicon=svgicon.SVGIcon("icon-info-circle"))
 user_sitemap.new(
     log.log,
     label="Log TX",
-    svgicon=sitemap.SVGIcon("icon-microphone"))
+    svgicon=svgicon.SVGIcon("icon-microphone"))
 user_sitemap.new(
-    common_user.logout,
+    login.logout,
     label="Sign out",
-    svgicon=sitemap.SVGIcon("icon-exit"))
+    svgicon=svgicon.SVGIcon("icon-exit"))
 
 admin_sitemap.label = "Admin activities"
 admin_sitemap.new(
     alphabets.view_alphabets,
     label="Alphabets",
-    svgicon=sitemap.SVGIcon("icon-font"))
+    svgicon=svgicon.SVGIcon("icon-font"))
 admin_sitemap.new(
     modes.view_modes,
     label="Modes",
-    svgicon=sitemap.SVGIcon("icon-bars2"))
+    svgicon=svgicon.SVGIcon("icon-bars2"))
 admin_sitemap.new(
     formats.view_formats,
     label="Transmission formats",
-    svgicon=sitemap.SVGIcon("icon-tree"))
+    svgicon=svgicon.SVGIcon("icon-tree"))
 
 moderator_sitemap.label = "Moderator activities"
 moderator_sitemap.new(
-    common_user.dash,
+    dash.dash,
     label="Review queue",
-    svgicon=sitemap.SVGIcon("icon-eye"))
+    svgicon=svgicon.SVGIcon("icon-eye"))
 
 from . import initializer
 initializer.create_base_data(Session())

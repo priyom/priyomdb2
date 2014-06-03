@@ -26,7 +26,7 @@
             <tea:if auth:cap="CREATE_STATION">
               <h3>Activities</h3>
               <ul class="navlist">
-                <li><a exec:href="href(view_station, station_id=0)"
+                <li><a exec:href="context.href(view_station, station_id=0)"
                        class="ym-button ym-success ym-add">New station</a></li>
               </ul>
             </tea:if>

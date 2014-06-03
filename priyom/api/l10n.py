@@ -8,7 +8,9 @@ import babel.dates
 
 import teapot.accept
 
+import xsltea.template
 import xsltea.processor
+import xsltea.exec
 
 from xsltea.namespaces import NamespaceMeta
 
@@ -154,10 +156,19 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
             sourceline,
             ctx=ctx)
 
-    def _lookup_type(self, template, key, type_, sourceline):
-        key = template.ast_or_str(key, sourceline)
+    def _lookup_type(self, template, key, type_, sourceline, attrs={}):
+        lookup_key = template.ast_or_str(key, sourceline)
 
-        return ast.Call(
+        attrs_dict = ast.Dict([], [], lineno=sourceline, col_offset=0)
+        for key, value in attrs.items():
+            attrs_dict.keys.append(
+                ast.Str(
+                    key,
+                    lineno=sourceline,
+                    col_offset=0))
+            attrs_dict.values.append(value)
+
+        lookup_result = ast.Call(
             ast.Attribute(
                 self._access_var(template, ast.Load(), sourceline),
                 type_,
@@ -165,11 +176,28 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
                 lineno=sourceline,
                 col_offset=0),
             [
-                key
+                lookup_key
             ],
             [],
             None,
             None,
+            lineno=sourceline,
+            col_offset=0)
+
+        if not attrs:
+            return lookup_result
+
+        return ast.Call(
+            ast.Attribute(
+                lookup_result,
+                "format",
+                ast.Load(),
+                lineno=sourceline,
+                col_offset=0),
+            [],
+            [],
+            None,
+            attrs_dict,
             lineno=sourceline,
             col_offset=0)
 
@@ -188,13 +216,35 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
     def handle_elem(self, template, elem, context, offset):
         sourceline = elem.sourceline or 0
 
-        elemcode = template.preserve_tail_code(elem, context)
-        elemcode.insert(
-            0,
+        attrs = {}
+        for key, value in elem.attrib.items():
+            ns, name = xsltea.template.split_tag(key)
+            if ns == str(xsltea.exec.ExecProcessor.xmlns):
+                expr = compile(value,
+                               context.filename,
+                               "eval",
+                               ast.PyCF_ONLY_AST).body
+                self._safety_level.check_safety(expr)
+                attrs[name] = expr
+            elif ns is None:
+                attrs[name] = ast.Str(
+                    value,
+                    lineno=sourceline,
+                    col_offset=0)
+            else:
+                raise template.compilation_error(
+                    "Unexpected attribute on l10n:text: {} "
+                    "(in namespace {})".format(
+                        name, ns),
+                    context,
+                    sourceline)
+
+        elemcode = [
             template.ast_yield(
-                self._lookup_type(template, elem.text, "_", sourceline),
+                self._lookup_type(template, elem.text, "_", sourceline, attrs),
                 sourceline)
-        )
+        ]
+        elemcode.extend(template.preserve_tail_code(elem, context))
 
         return [], elemcode, []
 

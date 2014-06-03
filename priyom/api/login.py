@@ -8,6 +8,7 @@ import teapot.request
 
 import priyom.model
 
+from .auth import *
 from .shared import *
 
 class LoginForm(teapot.forms.Form):
@@ -22,16 +23,6 @@ class LoginForm(teapot.forms.Form):
         if not value:
             raise ValueError("Must not be empty")
         return str(value)
-
-@router.route("/", methods={teapot.request.Method.GET}, order=0)
-@xsltea_site.with_template("home.xml")
-def anonhome(request: teapot.request.Request):
-    yield teapot.response.Response(None)
-    transform_args = {
-        "version": "devel"
-    }
-    template_args = dict(transform_args)
-    yield (template_args, transform_args)
 
 @router.route("/login", methods={teapot.request.Method.GET}, order=1)
 @xsltea_site.with_template("login.xml")
@@ -86,10 +77,19 @@ def login_POST(request: teapot.request.Request):
     dbsession.add(session)
     dbsession.commit()
 
-    from .common_user import dash
-    response = teapot.make_redirect_response(request, dash)
+    from . import dash
+    response = teapot.make_redirect_response(request, dash.dash)
     response.cookies["api_session_key"] = binascii.b2a_hex(
         session.session_key).decode()
     response.cookies["api_session_key"]["httponly"] = True
 
     yield response
+
+@require_login()
+@router.route("/logout", methods={teapot.request.Method.GET})
+def logout(request: teapot.request.Request):
+    from .dash import dash
+    response = teapot.make_redirect_response(request, dash)
+    response.cookies["api_session_key"] = ""
+    response.cookies["api_session_key"]["Expires"] = 1
+    return response
