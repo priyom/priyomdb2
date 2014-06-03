@@ -20,6 +20,7 @@ mimetypes = {
     ".eot": teapot.mime.Type("application", "vnd.ms-fontobject"),
     ".woff": teapot.mime.Type("application", "octet-stream"),
     ".svg": teapot.mime.Type("image", "svg+xml"),
+    ".png": teapot.mime.Type("image", "png"),
     None: teapot.mime.Type("application", "octet-stream")
 }
 
