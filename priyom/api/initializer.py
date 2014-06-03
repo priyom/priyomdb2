@@ -28,7 +28,10 @@ def setup_group(dbsession, name, capabilities):
     group = get_group(dbsession, name)
     group.capabilities.clear()
     for cap in capabilities:
-        group.add_capability(get_capability(dbsession, cap))
+        capobj = get_capability(dbsession, cap)
+        if capobj not in group.capabilities:
+            group.add_capability(capobj)
+    return group
 
 def create_base_data(dbsession):
     try:
@@ -50,7 +53,7 @@ def create_base_data(dbsession):
             Capability.VIEW_EVENT
         ])
 
-    setup_group(
+    group = setup_group(
         dbsession,
         priyom.model.Group.REGISTERED,
         [
@@ -63,18 +66,29 @@ def create_base_data(dbsession):
             Capability.VIEW_GROUP
         ])
 
-    setup_group(
+    if admin_user not in group.users:
+        group.users.append(admin_user)
+
+    group = setup_group(
         dbsession,
         priyom.model.Group.MODERATORS,
         [
             Capability.REVIEW_LOG
         ])
 
-    setup_group(
+    if admin_user not in group.users:
+        group.users.append(admin_user)
+
+    group = setup_group(
         dbsession,
         priyom.model.Group.ADMINS,
         [
             Capability.ROOT
         ])
+
+    if admin_user not in group.users:
+        group.users.append(admin_user)
+
+
 
     dbsession.commit()
