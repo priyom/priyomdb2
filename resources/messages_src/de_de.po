@@ -1,2 +1,33 @@
-msgid "test"
-msgstr "Dies ist ein Test."
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "signup.loginname"
+msgstr "Benutzername"
+
+msgid "signup.loginname.hint"
+msgstr "Der Benutzername muss eindeutig sein, inklusive Normalisierung (zum Beispiel wird ² in 2 umgewandelt). Beim Anzeigen wird der ursprüngliche Benutzername verwendet (ohne Normalisierung)."
+
+msgid "signup.email"
+msgstr "E-Mail-Adresse"
+
+msgid "signup.password"
+msgstr "Passwort"
+
+msgid "signup.password.hint1"
+msgstr "Kriterien für die Passwortstärke:"
+
+msgid "signup.password.hint2"
+msgstr "Mindestens 8 Zeichen lang und"
+
+msgid "signup.password.hint3"
+msgstr "entweder ein Buchstabe, ein Sonderzeichen und eine Ziffer, oder, 8 zusätzliche Zeichen für jede Gruppe aus der Liste, die nicht erfüllt wird"
+
+msgid "signup.password_confirm"
+msgstr "Passwort (Bestätigung)"
+
+msgid "signup.submit"
+msgstr "Konto für die Priyom.org DB anlegen"
+
+msgid "Password violates strength criteria"
+msgstr "Passwort verletzt Stärkekriterien"

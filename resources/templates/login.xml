@@ -23,11 +23,9 @@
               <label for="name">User name</label>
               <input type="text" id="name" placeholder="e.g. franknord"
                      form:field="loginname" />
-              <form:for-each-error form:field="loginname">
-                <p class="error">
-                  <exec:text>error</exec:text>
-                </p>
-              </form:for-each-error>
+              <tea:call tea:src="library.xml" tea:name="errors">
+                <tea:pass name="field">'loginname'</tea:pass>
+              </tea:call>
             </div>
             <div class="ym-fbox">
               <label for="password">Password: </label>

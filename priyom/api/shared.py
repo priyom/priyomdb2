@@ -153,10 +153,12 @@ class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
         request.auth = self._reauth(request)
 
         class Foo:
-            caps = request.auth.capabilities
+            auth = request.auth
 
             def __str__(self):
-                return "authorized with capabilities: {}".format(", ".join(self.caps))
+                return "authorized with groups {} and capabilities {}".format(
+                    ", ".join(map(str, self.auth.groups)),
+                    ", ".join(map(str, self.auth.capabilities)))
 
         logger.info(Foo())
 

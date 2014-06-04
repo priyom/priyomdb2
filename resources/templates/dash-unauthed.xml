@@ -18,6 +18,8 @@
     <exec:code>sign_in = arguments['sign_in']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view_event = arguments['view_event']</exec:code>
+    <exec:code>signup_form = arguments['signup_form']</exec:code>
+    <exec:code>signup = arguments['signup']</exec:code>
     <tea:include tea:source="nav.xml" />
     <main>
       <h2>Radio dash</h2>
@@ -29,13 +31,8 @@
           <h3>Activities</h3>
           <h4>Sign up</h4>
           <p>Register with the Priyom.org database to be able to log
-          transmissions.</p>
-          <p>
-            <a href="#"
-               class="ym-button ym-success ym-large">
-              Sign up for Priyom.org DB
-            </a>
-          </p>
+          transmissions and get full access to the data.</p>
+          <tea:include tea:source="signup-form.xml" />
           <h4>Already have an account?</h4>
           <p>Log into the Priyom.org database with your existing account.</p>
           <p>

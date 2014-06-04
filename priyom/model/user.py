@@ -168,9 +168,15 @@ user_groups = Table(
 class User(Base):
     __tablename__ = "users"
 
+    __table_args__ = (
+        UniqueConstraint("loginname"),
+        Base.__table_args__
+    )
+
     id = Column(Integer, primary_key=True)
 
     loginname = Column(Unicode(length=63), nullable=False)
+    loginname_displayed = Column(Unicode(length=63), nullable=False)
     email = Column(Unicode(length=255), nullable=False)
     password_verifier = Column(Binary(length=1023), nullable=False)
 
@@ -181,7 +187,8 @@ class User(Base):
 
     def __init__(self, loginname, email):
         super().__init__()
-        self.loginname = loginname
+        self.loginname = saslprep.saslprep(loginname)
+        self.loginname_displayed = unicodedata.normalize("NFC", loginname)
         self.email = email
 
     def get_capabilities(self):
@@ -222,15 +229,14 @@ class User(Base):
 
     def set_password_from_plaintext(self,
                                     plaintext,
-                                    iterations,
                                     saltbytes=32):
         salt = _secure_random.getrandbits(saltbytes*8).to_bytes(
             saltbytes, "big")
-        self.password_verifier = create_password_verifier(
-            plaintext, iterations, salt, "sha256")
+        self.password_verifier = create_default_password_verifier(
+            plaintext, salt)
 
     def __str__(self):
-        return self.loginname
+        return self.loginname_displayed
 
 class UserSession(Base):
     __tablename__ = "user_sessions"

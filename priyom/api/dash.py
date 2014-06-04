@@ -49,6 +49,9 @@ def dash(request: teapot.request.Request):
         ).limit(10)
     else:
         template_args["mine"] = None
+        from . import login
+        template_args["signup_form"] = login.SignupForm()
+        template_args["signup"] = login.signup
 
     from . import log, login, stations, events
 

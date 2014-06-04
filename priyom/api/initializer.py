@@ -40,8 +40,7 @@ def create_base_data(dbsession):
     except sqlalchemy.orm.exc.NoResultFound as err:
         admin_user = priyom.model.User("root", "root@api.priyom.org")
         # FIXME: get rid of this!!!
-        admin_user.set_password_from_plaintext(
-            "admin", priyom.model.user.DEFAULT_ITERATION_COUNT)
+        admin_user.set_password_from_plaintext("admin")
         dbsession.add(admin_user)
         dbsession.commit()
 

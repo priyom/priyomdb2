@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title>Sign up</title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>signup_form = arguments['signup_form']</exec:code>
+    <exec:code>signup = arguments['signup']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <h2>Sign up</h2>
+      <tea:include tea:source="signup-form-full.xml" />
+    </main>
+  </body>
+</html>

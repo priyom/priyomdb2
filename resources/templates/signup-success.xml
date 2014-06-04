@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <head>
+    <title><i18n:_>signup.success.title</i18n:_></title>
+    <tea:include tea:source="stylesheets.xml"
+                 tea:xpath="h:link"
+                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>loginname = arguments['loginname']</exec:code>
+    <exec:code>login = arguments['login']</exec:code>
+    <tea:include tea:source="nav.xml" />
+    <main>
+      <h2><i18n:_>signup.success.title</i18n:_></h2>
+      <p class="box success">
+        <i18n:_ exec:loginname="loginname">signup.success.message</i18n:_>
+      </p>
+      <p>
+        <a exec:href="context.href(login)"
+           class="ym-button ym-primary ym-large">
+          <i18n:_>signup.success.signin</i18n:_>
+        </a>
+      </p>
+    </main>
+  </body>
+</html>
