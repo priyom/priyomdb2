@@ -7,10 +7,16 @@ import teapot.forms
 import teapot.request
 
 import priyom.model
+import priyom.model.user
+import priyom.model.saslprep
 
 from .auth import *
 from .shared import *
 
+fake_verifier = priyom.model.user.create_default_password_verifier(
+    b"foo", b"bar")
+
+ 
 class LoginForm(teapot.forms.Form):
     @teapot.forms.field
     def loginname(self, value):
@@ -23,6 +29,39 @@ class LoginForm(teapot.forms.Form):
         if not value:
             raise ValueError("Must not be empty")
         return str(value)
+
+    def postvalidate(self, request):
+        dbsession = request.dbsession
+        try:
+            user = dbsession.query(
+                priyom.model.User
+            ).filter(
+                priyom.model.User.loginname == self.loginname
+            ).one()
+        except (sqlalchemy.orm.exc.NoResultFound, LookupError, ValueError):
+            user = None
+            # do a fake validation here, to avoid timing attacks
+            priyom.model.user.verify_password(
+                fake_verifier,
+                self.password)
+            teapot.forms.ValidationError(
+                self._login_failed(),
+                LoginForm.loginname,
+                self).register()
+        else:
+            if not priyom.model.user.verify_password(
+                    user.password_verifier,
+                    self.password):
+                teapot.forms.ValidationError(
+                    self._login_failed(),
+                    LoginForm.loginname,
+                    self).register()
+
+        if self.errors:
+            user = None
+
+        self.user = user
+
 
 @router.route("/login", methods={teapot.request.Method.GET}, order=1)
 @xsltea_site.with_template("login.xml")
@@ -37,33 +76,7 @@ def login():
 @xsltea_site.with_template("login.xml")
 def login_POST(request: teapot.request.Request):
     dbsession = request.dbsession
-    form = LoginForm(post_data=request.post_data)
-    if not form.errors:
-        error = False
-        error_msg = None
-        try:
-            user = dbsession.query(
-                priyom.model.User).filter(
-                    priyom.model.User.loginname == form.loginname).one()
-            if not priyom.model.user.verify_password(
-                    user.password_verifier,
-                    form.password):
-                error = True
-        except sqlalchemy.orm.exc.NoResultFound as err:
-            error = True
-        except (LookupError, ValueError) as err:
-            error = True
-            # FIXME: stop leaking information about the existing user here, even
-            # if it is broken
-            error_msg = "Internal authentication error"
-
-        if error:
-            if error_msg is None:
-                error_msg = "Unknown user name or invalid password"
-            teapot.forms.ValidationError(
-                error_msg,
-                LoginForm.loginname,
-                form).register()
+    form = LoginForm(request=request)
 
     if form.errors:
         del form.password
@@ -72,6 +85,8 @@ def login_POST(request: teapot.request.Request):
             "form": form
         }, {}
         return
+
+    user = form.user
 
     session = priyom.model.UserSession(user)
     dbsession.add(session)

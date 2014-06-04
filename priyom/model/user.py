@@ -91,6 +91,9 @@ def create_password_verifier(plaintext, iterations, salt, hashfun, length=None):
         binascii.b2a_base64(salt),
         binascii.b2a_base64(hashed)])
 
+def create_default_password_verifier(plaintext, salt):
+    return create_password_verifier(
+        plaintext, DEFAULT_ITERATION_COUNT, salt, "sha256")
 
 def verify_password(verifier, password):
     hashfun, iterations, salt, hashed = verifier.split(b"$")
