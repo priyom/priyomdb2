@@ -123,7 +123,7 @@ def check_unassigned(chars):
                          "U+{}".format(ord(violator)))
 
 
-def saslprep(string, allow_unassigned=True):
+def saslprep(string, allow_unassigned=False):
     """
     Process the given *string* using the SASLprep profile. In the error cases
     defined in `RFC 3454`_ (stringprep), a :class:`ValueError` is raised.

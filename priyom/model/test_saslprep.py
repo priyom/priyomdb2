@@ -54,6 +54,11 @@ class TestSASLprep(unittest.TestCase):
                 msg="SASLprep requirement: unassigned") as err:
             saslprep.saslprep("\u0221", allow_unassigned=False)
 
+        with self.assertRaises(
+                ValueError,
+                msg="enforce no unassigned by default") as err:
+            saslprep.saslprep("\u0221")
+
         self.assertEqual(
             "\u0221",
             saslprep.saslprep("\u0221", allow_unassigned=True))
