@@ -84,7 +84,7 @@ class LogPage2_Broadcast(teapot.forms.Form):
 class LogPage3_Contents(teapot.forms.Form):
     contents = teapot.forms.rows(EventTopLevelContentsRow)
 
-@require_login()
+@require_capability(Capability.LOG)
 @router.route("/action/log", methods={teapot.request.Method.GET})
 @xsltea_site.with_template("log1.xml")
 def log(request: teapot.request.Request):
@@ -108,7 +108,7 @@ def log(request: teapot.request.Request):
                                 ).order_by(priyom.model.Station.enigma_id.asc())
     }, {}
 
-@require_login()
+@require_capability(Capability.LOG)
 @router.route("/action/log", methods={teapot.request.Method.POST})
 @xsltea_site.with_variable_template()
 def log_POST(request: teapot.request.Request):
@@ -222,8 +222,7 @@ def log_POST(request: teapot.request.Request):
                 event.start_time = pages[0].timestamp
                 event.end_time = pages[0].timestamp
                 event.approved = any(
-                    request.auth.user.has_capability(cap)
-                    for cap in ("unmoderated", "moderator", "admin"))
+                    request.auth.user.has_capability(Capability.LOG_UNMODERATED))
                 event.submitter = request.auth.user
                 for row in pages[1].frequencies:
                     frequency = priyom.model.EventFrequency()
