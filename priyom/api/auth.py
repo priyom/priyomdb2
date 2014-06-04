@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 # selectors for use with teapot
 
-
 def _raise_missing_auth_error(auth_routable, request, info=""):
     if auth_routable is not None:
         raise teapot.make_redirect_response(
