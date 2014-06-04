@@ -47,7 +47,7 @@ def view_events(request: teapot.request.Request, view):
         "view_events": view_events,
         "view_station": get_station_viewer(request),
         "view": view,
-        "edit_event": edit_event,
+        "edit_event": get_event_viewer(request)
     }, {}
 
 

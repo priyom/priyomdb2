@@ -250,10 +250,10 @@ def log_POST(request: teapot.request.Request):
 
             dbsession.add(event)
             dbsession.commit()
-            from .common_user import dash
+            from . import dash
             raise teapot.make_redirect_response(
                 request,
-                dash)
+                dash.dash)
 
     yield teapot.response.Response(None)
     yield template_args, {}

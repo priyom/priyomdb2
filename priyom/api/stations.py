@@ -60,7 +60,7 @@ def view_stations(request: teapot.request.Request, view):
 
     yield {
         "view_stations": view_stations,
-        "view_station": edit_station if request.auth else view_station,
+        "view_station": get_station_viewer(request),
         "delete_station": delete_station if request.auth else None,
         "view": view
     }, {}
@@ -80,13 +80,13 @@ def view_station(request: teapot.request.Request, station_id):
         last_modified=station.modified if station else None)
 
     if station:
-        from .events import view_events
+        from .events import get_event_viewer, view_events
         yield {
             "station": station,
             "view_events": view_events,
             "event_view": get_event_view(station),
             "recent_events": get_recent_events(station),
-            # "view_event":
+            "view_event": get_event_viewer(request)
         }, {}
 
     else:
@@ -164,13 +164,14 @@ def edit_station(station_id, request: teapot.request.Request):
     form = StationForm(from_station=station)
     yield teapot.response.Response(None)
 
-    from .events import view_events
+    from .events import view_events, get_event_viewer
     yield {
         "form": form,
         "station_id": station_id,
         "view_events": view_events,
         "recent_events": get_recent_events(station),
         "event_view": get_event_view(station),
+        "view_event": get_event_viewer(request)
     }, {}
 
 @require_capability(Capability.EDIT_STATION)
