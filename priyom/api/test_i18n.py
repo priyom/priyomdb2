@@ -2,7 +2,7 @@ import unittest
 
 import teapot.accept
 
-import priyom.api.l10n as l10n
+import priyom.api.i18n as i18n
 
 def simple_preflist(s):
     preflist = teapot.accept.LanguagePreferenceList()
@@ -11,7 +11,7 @@ def simple_preflist(s):
 
 class TestTextDB(unittest.TestCase):
     def test_match_preference(self):
-        textdb = l10n.TextDB(fallback_locale="en")
+        textdb = i18n.TextDB(fallback_locale="en")
         textdb._locales["en", None] = "en"
         textdb._locales["en", "gb"] = "en_GB"
         textdb._locales["en", "us"] = "en_us"

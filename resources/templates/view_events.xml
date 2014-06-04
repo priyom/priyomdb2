@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:l10n="https://xmlns.zombofant.net/xsltea/l10n"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
       xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
@@ -66,7 +66,7 @@
                         tea:from="view">
             <tr>
               <td><exec:text>id</exec:text></td>
-              <td><l10n:datetime>modified</l10n:datetime></td>
+              <td><i18n:datetime>modified</i18n:datetime></td>
               <td>
                 <a exec:href="context.href(view_station, station_id=station_obj.id)">
                   <exec:text>station_obj</exec:text>
@@ -75,7 +75,7 @@
               <td>
                 <exec:text>submitter or 'system generated'</exec:text>
               </td>
-              <td><l10n:datetime>start_time</l10n:datetime></td>
+              <td><i18n:datetime>start_time</i18n:datetime></td>
               <td class="tx-content">
                 <tea:call tea:src="library.xml" tea:name="event_contents">
                   <tea:pass name="event">event</tea:pass>

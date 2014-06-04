@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:l10n="https://xmlns.zombofant.net/xsltea/l10n"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title>Radio Dash</title>

@@ -3,7 +3,7 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
     xmlns:form="https://xmlns.zombofant.net/xsltea/form"
-    xmlns:l10n="https://xmlns.zombofant.net/xsltea/l10n"
+    xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
 
   <tea:def tea:name="recent-entries">
@@ -55,7 +55,7 @@
                 <tea:default><exec:text>event.station</exec:text></tea:default>
               </tea:switch>
             </td>
-            <td><l10n:datetime>event.start_time</l10n:datetime></td>
+            <td><i18n:datetime>event.start_time</i18n:datetime></td>
           </tr>
         </tea:for-each>
       </tbody>
@@ -132,7 +132,7 @@
                   </tea:switch>
                 </td>
                 <td><exec:text>event.station</exec:text></td>
-                <td><l10n:datetime>event.start_time</l10n:datetime></td>
+                <td><i18n:datetime>event.start_time</i18n:datetime></td>
               </tr>
             </tea:for-each>
           </tbody>

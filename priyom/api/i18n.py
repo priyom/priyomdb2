@@ -111,18 +111,18 @@ class TextDB:
         self._locales[for_locale] = catalog
 
 
-class L10NProcessor(xsltea.processor.TemplateProcessor):
+class I18NProcessor(xsltea.processor.TemplateProcessor):
     class xmlns(metaclass=NamespaceMeta):
-        xmlns = "https://xmlns.zombofant.net/xsltea/l10n"
+        xmlns = "https://xmlns.zombofant.net/xsltea/i18n"
 
     def __init__(self, textdb,
                  safety_level=xsltea.safe.SafetyLevel.conservative,
-                 varname="l10n",
+                 varname="i18n",
                  **kwargs):
         super().__init__(**kwargs)
 
         self.attrhooks = {
-            (str(self.xmlns), "text"): [self.handle_attr],
+            (str(self.xmlns), None): [self.handle_attr],
         }
         self.elemhooks = {
             (str(self.xmlns), "_"): [self.handle_elem],
@@ -204,8 +204,10 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
     def handle_attr(self, template, elem, key, value, context):
         sourceline = elem.sourceline or 0
 
+        ns, name = xsltea.template.split_tag(key)
+
         keycode = ast.Str(
-            key,
+            name,
             lineno=sourceline,
             col_offset=0)
 
@@ -233,7 +235,7 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
                     col_offset=0)
             else:
                 raise template.compilation_error(
-                    "Unexpected attribute on l10n:text: {} "
+                    "Unexpected attribute on i18n:text: {} "
                     "(in namespace {})".format(
                         name, ns),
                     context,
