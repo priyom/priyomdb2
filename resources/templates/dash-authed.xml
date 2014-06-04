@@ -34,7 +34,8 @@
         </div></div>
         <div class="ym-gr ym-g40"><div class="ym-gbox">
           <h3>Activities</h3>
-          <h4><a href="#" class="ym-button ym-primary ym-add">
+          <h4><a exec:href="context.href(log_tx)"
+                 class="ym-button ym-primary ym-add">
             Log transmission
           </a></h4>
           <p>Log a new transmission into the database.</p>
