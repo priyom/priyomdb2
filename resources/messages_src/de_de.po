@@ -2,32 +2,44 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "signup.loginname"
+msgid "account.loginname"
 msgstr "Benutzername"
 
-msgid "signup.loginname.hint"
+msgid "account.loginname.hint"
 msgstr "Der Benutzername muss eindeutig sein, inklusive Normalisierung (zum Beispiel wird ² in 2 umgewandelt). Beim Anzeigen wird der ursprüngliche Benutzername verwendet (ohne Normalisierung)."
 
-msgid "signup.email"
+msgid "account.email"
 msgstr "E-Mail-Adresse"
 
-msgid "signup.password"
+msgid "account.password"
 msgstr "Passwort"
 
-msgid "signup.password.hint1"
+msgid "account.password.hint1"
 msgstr "Kriterien für die Passwortstärke:"
 
-msgid "signup.password.hint2"
+msgid "account.password.hint2"
 msgstr "Mindestens 8 Zeichen lang und"
 
-msgid "signup.password.hint3"
+msgid "account.password.hint3"
 msgstr "entweder ein Buchstabe, ein Sonderzeichen und eine Ziffer, oder, 8 zusätzliche Zeichen für jede Gruppe aus der Liste, die nicht erfüllt wird"
 
-msgid "signup.password_confirm"
+msgid "account.password_confirm"
 msgstr "Passwort (Bestätigung)"
+
+msgid "signup.title"
+msgstr "Registrieren"
 
 msgid "signup.submit"
 msgstr "Konto für die Priyom.org DB anlegen"
+
+msgid "signup.success.title"
+msgstr "Erfolgreich registriert"
+
+msgid "signup.success.message"
+msgstr "Glückwunsch, {loginname}! Dein Account wurde angelegt und du kannst dich sofort einloggen."
+
+msgid "signup.success.signin"
+msgstr "Weiter zum Login"
 
 msgid "Password violates strength criteria"
 msgstr "Passwort verletzt Stärkekriterien"

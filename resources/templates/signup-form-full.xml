@@ -11,15 +11,15 @@
   <div class="ym-fbox">
     <div class="ym-grid linearize-level-1">
       <div class="ym-gr ym-g50"><div class="ym-gbox">
-        <p><i18n:_>signup.loginname.hint</i18n:_></p>
+        <p><i18n:_>account.loginname.hint</i18n:_></p>
       </div></div>
       <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <label form:for-field="loginname"><i18n:_>signup.loginname</i18n:_></label>
+        <label form:for-field="loginname"><i18n:_>account.loginname</i18n:_></label>
         <input type="text" form:field="loginname" />
         <tea:call tea:src="library.xml" tea:name="errors">
           <tea:pass name="field">'loginname'</tea:pass>
         </tea:call>
-        <label form:for-field="email"><i18n:_>signup.email</i18n:_></label>
+        <label form:for-field="email"><i18n:_>account.email</i18n:_></label>
         <input type="text" form:field="email" />
         <tea:call tea:src="library.xml" tea:name="errors">
           <tea:pass name="field">'email'</tea:pass>
@@ -30,19 +30,19 @@
   <div class="ym-fbox">
     <div class="ym-grid linearize-level-1">
       <div class="ym-gr ym-g50"><div class="ym-gbox">
-        <p><i18n:_>signup.password.hint1</i18n:_></p>
+        <p><i18n:_>account.password.hint1</i18n:_></p>
         <ul>
-          <li><i18n:_>signup.password.hint2</i18n:_></li>
-          <li><i18n:_>signup.password.hint3</i18n:_></li>
+          <li><i18n:_>account.password.hint2</i18n:_></li>
+          <li><i18n:_>account.password.hint3</i18n:_></li>
         </ul>
       </div></div>
       <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <label form:for-field="password"><i18n:_>signup.password</i18n:_></label>
+        <label form:for-field="password"><i18n:_>account.password</i18n:_></label>
         <input type="password" form:field="password" />
         <tea:call tea:src="library.xml" tea:name="errors">
           <tea:pass name="field">'password'</tea:pass>
         </tea:call>
-        <label form:for-field="password_confirm"><i18n:_>signup.password_confirm</i18n:_></label>
+        <label form:for-field="password_confirm"><i18n:_>account.password_confirm</i18n:_></label>
         <input type="password" form:field="password_confirm" />
         <tea:call tea:src="library.xml" tea:name="errors">
           <tea:pass name="field">'password_confirm'</tea:pass>

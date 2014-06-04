@@ -9,28 +9,28 @@
       exec:action="context.href(signup)"
       method="POST">
   <div class="ym-fbox">
-    <label form:for-field="loginname"><i18n:_>Login name</i18n:_></label>
+    <label form:for-field="loginname"><i18n:_>account.loginname</i18n:_></label>
     <input type="text" form:field="loginname" />
     <tea:call tea:src="library.xml" tea:name="errors">
       <tea:pass name="field">'loginname'</tea:pass>
     </tea:call>
   </div>
   <div class="ym-fbox">
-    <label form:for-field="email"><i18n:_>Email address</i18n:_></label>
+    <label form:for-field="email"><i18n:_>account.email</i18n:_></label>
     <input type="text" form:field="email" />
     <tea:call tea:src="library.xml" tea:name="errors">
       <tea:pass name="field">'email'</tea:pass>
     </tea:call>
   </div>
   <div class="ym-fbox">
-    <label form:for-field="password"><i18n:_>Password</i18n:_></label>
+    <label form:for-field="password"><i18n:_>account.password</i18n:_></label>
     <input type="password" form:field="password" />
     <tea:call tea:src="library.xml" tea:name="errors">
       <tea:pass name="field">'password'</tea:pass>
     </tea:call>
   <div class="ym-fbox">
   </div>
-    <label form:for-field="password_confirm"><i18n:_>Password (confirm)</i18n:_></label>
+    <label form:for-field="password_confirm"><i18n:_>account.password_confirm</i18n:_></label>
     <input type="password" form:field="password_confirm" />
     <tea:call tea:src="library.xml" tea:name="errors">
       <tea:pass name="field">'password_confirm'</tea:pass>
@@ -40,7 +40,7 @@
     <button type="submit"
             form:action="signup"
             class="ym-button ym-primary ym-success ym-large">
-      <i18n:_>Sign up for Priyom.org DB</i18n:_>
+      <i18n:_>signup.submit</i18n:_>
     </button>
   </div>
 </form>

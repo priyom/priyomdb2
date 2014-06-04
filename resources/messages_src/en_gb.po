@@ -2,29 +2,32 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "signup.loginname"
+msgid "account.loginname"
 msgstr "Login name"
 
-msgid "signup.loginname.hint"
+msgid "account.loginname.hint"
 msgstr "The login name must be unique, including normalization (for example, ² is converted to 2). When displaying, your original login name is used (without normalization)."
 
-msgid "signup.email"
+msgid "account.email"
 msgstr "Email address"
 
-msgid "signup.password"
+msgid "account.password"
 msgstr "Password"
 
-msgid "signup.password.hint1"
+msgid "account.password.hint1"
 msgstr "Password strength criteria:"
 
-msgid "signup.password.hint2"
+msgid "account.password.hint2"
 msgstr "At least 8 characters length and"
 
-msgid "signup.password.hint3"
+msgid "account.password.hint3"
 msgstr "either one letter, one special character and one number or, for each group missing from that list, 8 additional characters"
 
-msgid "signup.password_confirm"
+msgid "account.password_confirm"
 msgstr "Password (confirm)"
+
+msgid "signup.title"
+msgstr "Sign up"
 
 msgid "signup.submit"
 msgstr "Sign up for Priyom.org DB"
