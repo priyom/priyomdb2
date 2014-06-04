@@ -128,7 +128,6 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
         }
 
         self._outputfmts = {
-            "xml": self._xml_sitemap,
             "xhtml": self._xhtml_sitemap
         }
 
@@ -429,25 +428,6 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             precode.extend(child_precode)
 
         return precode, elemcode, []
-
-    def _build_xml_sitemap(self, template, elem, node):
-        if node.label:
-            elem.set("label", node.label)
-        if node.routable:
-            routable_name = template.store(node.routable)
-            elem.set(xsltea.exec.ExecProcessor.xmlns.href,
-                     "href(context.storage[{!r}])".format(routable_name))
-            elem.set(xsltea.exec.ExecProcessor.xmlns.active,
-                     "'' if request.current_routable == context.storage[{!r}] "
-                     "else None".format(routable_name))
-        for child in node:
-            childelem = etree.SubElement(elem, self.xmlns.entry)
-            self._build_xml_sitemap(template, childelem, child)
-
-    def _xml_sitemap(self, template, elem, context, offset):
-        root = etree.Element(self.xmlns.entry)
-        self._build_xml_sitemap(template, root, self._sitemap)
-        return template.default_subtree(root, context, offset)
 
     def _xhtml_sitemap(self, template, elem, context, offset):
         precode, elemcode, postcode = self._xhtml_node("h3", template, elem, self._sitemap, offset)
