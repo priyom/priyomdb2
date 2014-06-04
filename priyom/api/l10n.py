@@ -125,7 +125,7 @@ class L10NProcessor(xsltea.processor.TemplateProcessor):
             (str(self.xmlns), "text"): [self.handle_attr],
         }
         self.elemhooks = {
-            (str(self.xmlns), "text"): [self.handle_elem],
+            (str(self.xmlns), "_"): [self.handle_elem],
             (str(self.xmlns), "date"): [
                 functools.partial(
                     self.handle_elem_type,

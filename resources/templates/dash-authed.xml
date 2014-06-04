@@ -23,8 +23,8 @@
     <tea:include tea:source="nav.xml" />
     <main>
       <h2>Radio dash</h2>
-      <p><l10n:text
-             exec:username="context.request.auth.user if context.request.auth.user is not None else 'Anonymous'">Welcome, {username}.</l10n:text></p>
+      <p><l10n:_
+             exec:username="context.request.auth.user if context.request.auth.user is not None else 'Anonymous'">Welcome, {username}.</l10n:_></p>
       <div class="ym-grid linearize-level-2">
         <div class="ym-gl ym-g60"><div class="ym-gbox">
           <tea:if auth:cap="REVIEW_LOG">
