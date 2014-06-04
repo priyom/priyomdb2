@@ -13,8 +13,9 @@
   <body>
     <tea:include tea:source="nav.xml" />
     <main>
-      <div class="ym-grid">
-        <div class="ym-gl ym-g33" style="margin-left: 33%; margin-right: 33%"><div class="ym-gbox">
+      <div class="ym-grid linearize-level-1">
+        <div class="ym-gl ym-g33"><div class="ym-gbox">&#160;</div></div>
+        <div class="ym-gl ym-g33"><div class="ym-gbox">
           <h2>Login</h2>
           <form name="login" method="POST" class="ym-form"
                 form:form="arguments['form']">

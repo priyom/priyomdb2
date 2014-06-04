@@ -32,7 +32,7 @@
         <nav class="ym-hlist">
           <div class="ym-wrapper"><div class="ym-wbox">
             <div class="ym-grid linearize-level-1">
-              <xsl:apply-templates select="h:body/h:nav" />
+              <xsl:apply-templates select="h:body/h:nav/*" />
             </div>
           </div></div>
         </nav>

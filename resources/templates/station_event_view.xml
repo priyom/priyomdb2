@@ -8,7 +8,7 @@
   <exec:code>recent_events = arguments['recent_events']</exec:code>
   <h2>Most recent events</h2>
   <aside class="sidebar"><div class="sbox">
-    <a exec:href="href(view_events, view=event_view)"
+    <a exec:href="context.href(view_events, view=event_view)"
        class="ym-button ym-reply">View all</a>
   </div></aside>
   <table>
@@ -49,7 +49,7 @@
             <exec:code>can_edit = context.request.auth.has_capability(Capability.EDIT_EVENT)</exec:code>
             <a exec:class="'ym-button ym-primary '+
                            ('ym-edit' if can_edit else '')"
-               exec:href="href(view_event, id=event.id)">
+               exec:href="context.href(view_event, event_id=event.id) if view_event else '#'">
               <exec:text>'Edit' if can_edit else 'View'</exec:text>
             </a>
           </td>
