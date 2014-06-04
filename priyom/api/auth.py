@@ -36,16 +36,16 @@ def _raise_missing_auth_error(auth_routable, request, info=""):
                 401, msg)
 
 class require_login(teapot.routing.selectors.Selector):
-    def __init__(self, **kwargs):
+    def __init__(self, *, unauthed_routable=None, **kwargs):
         super().__init__(**kwargs)
-        self._auth_routable = None
+        self._unauthed_routable = unauthed_routable
 
     def select(self, request):
         request = request.original_request
         logger.debug("require_login: %r", request.auth)
         if request.auth.user is None:
             _raise_missing_auth_error(
-                self._auth_routable,
+                self._unauthed_routable,
                 request,
                 info="not logged in")
 
@@ -55,11 +55,11 @@ class require_login(teapot.routing.selectors.Selector):
         return True
 
 class require_capability(teapot.routing.selectors.Selector):
-    def __init__(self, *capabilities, **kwargs):
+    def __init__(self, *capabilities, unauthed_routable=None, **kwargs):
         super().__init__(**kwargs)
         self._capabilities = set(capabilities)
         self._capabilities.add(Capability.ROOT)
-        self._auth_routable = None
+        self._unauthed_routable = unauthed_routable
 
     def select(self, request):
         request = request.original_request
@@ -68,7 +68,7 @@ class require_capability(teapot.routing.selectors.Selector):
         if not any(request.auth.has_capability(cap)
                    for cap in self._capabilities):
             _raise_missing_auth_error(
-                self._auth_routable,
+                self._unauthed_routable,
                 request,
                 info="missing capability")
 

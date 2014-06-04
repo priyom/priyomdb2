@@ -13,6 +13,8 @@ import priyom.model.saslprep
 from .auth import *
 from .shared import *
 
+from . import dash
+
 fake_verifier = priyom.model.user.create_default_password_verifier(
     b"foo", b"bar")
 
@@ -92,7 +94,6 @@ def login_POST(request: teapot.request.Request):
     dbsession.add(session)
     dbsession.commit()
 
-    from . import dash
     response = teapot.make_redirect_response(request, dash.dash)
     response.cookies["api_session_key"] = binascii.b2a_hex(
         session.session_key).decode()
@@ -100,11 +101,10 @@ def login_POST(request: teapot.request.Request):
 
     yield response
 
-@require_login()
+@require_login(unauthed_routable=dash.dash)
 @router.route("/logout", methods={teapot.request.Method.GET})
 def logout(request: teapot.request.Request):
-    from .dash import dash
-    response = teapot.make_redirect_response(request, dash)
+    response = teapot.make_redirect_response(request, dash.dash)
     response.cookies["api_session_key"] = ""
     response.cookies["api_session_key"]["Expires"] = 1
     return response
