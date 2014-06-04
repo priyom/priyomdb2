@@ -94,7 +94,7 @@ errors = form.errors.get(field, [])</exec:code>
         <div class="form-errors">
           <ul>
             <tea:for-each tea:bind="error" tea:from="errors">
-              <li><exec:text>error.err</exec:text></li>
+              <li><exec:text>context.i18n(error.err)</exec:text></li>
             </tea:for-each>
           </ul>
         </div>
