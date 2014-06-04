@@ -1,6 +1,7 @@
 import ast
 import functools
 import gettext
+import logging
 import os
 
 import babel
@@ -14,10 +15,14 @@ import xsltea.exec
 
 from xsltea.namespaces import NamespaceMeta
 
+logger = logging.getLogger(__name__)
+
 class Catalog:
-    def __init__(self, locale, sourcefile):
+    def __init__(self, locale, sourcefile, fallback=None):
         super().__init__()
         self.translations = gettext.GNUTranslations(sourcefile)
+        if fallback is not None:
+            self.translations.add_fallback(fallback)
         self.localestr = "_".join(locale)
 
     def __call__(self, key):
@@ -25,6 +30,7 @@ class Catalog:
 
     def _(self, key):
         result = self.translations.gettext(key)
+        logger.debug("lookup: %s -> %s", key, result)
         return result
 
     def n(self, singular, plural, n):
@@ -107,7 +113,12 @@ class TextDB:
             raise ValueError("Locale {} already loaded".format(
                 "_".join(for_locale)))
 
-        catalog = Catalog(for_locale, sourcefile)
+        try:
+            fallback = self.catalog_for_locale(self._fallback_locale).translations
+        except KeyError:
+            fallback = None
+
+        catalog = Catalog(for_locale, sourcefile, fallback=fallback)
         self._locales[for_locale] = catalog
 
 
