@@ -11,6 +11,7 @@ import unicodedata
 import sqlalchemy
 import sqlalchemy.orm
 
+from . import saslprep
 from .base import Base
 
 from sqlalchemy import Column, DateTime, Unicode, Binary, Table, Integer, \
@@ -68,8 +69,11 @@ def pbkdf2(hashfun, input_data, salt, iterations, dklen):
 
     return result[:dklen]
 
+def prepare_username(username):
+    return saslprep.saslprep(username)
+
 def prepare_password(password):
-    return unicodedata.normalize("NFC", password).encode("utf-8")
+    return saslprep.saslprep(password).encode("utf-8")
 
 def create_password_verifier(plaintext, iterations, salt, hashfun, length=None):
     if isinstance(plaintext, str):

@@ -95,3 +95,17 @@ class TestPassword(unittest.TestCase):
             verifier, p2))
         self.assertFalse(priyom.model.user.verify_password(
             verifier, "a"))
+
+    def test_saslprep(self):
+        p = "E=mc²"
+        verifier = priyom.model.user.create_password_verifier(
+            p, 32, b"salt", "sha1")
+
+        self.assertTrue(priyom.model.user.verify_password(
+            verifier, p))
+        self.assertTrue(priyom.model.user.verify_password(
+            verifier, "E=mc2"))
+        self.assertFalse(priyom.model.user.verify_password(
+            verifier, "e=mc2"))
+        self.assertFalse(priyom.model.user.verify_password(
+            verifier, "e-mc2"))
