@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # selectors for use with teapot
 
-def _raise_missing_auth_error(auth_routable, request, info=""):
+def raise_missing_auth_error(auth_routable, request, info=""):
     if auth_routable is not None:
         raise teapot.make_redirect_response(
             request, auth_routable)
@@ -43,7 +43,7 @@ class require_login(teapot.routing.selectors.Selector):
         request = request.original_request
         logger.debug("require_login: %r", request.auth)
         if request.auth.user is None:
-            _raise_missing_auth_error(
+            raise_missing_auth_error(
                 self._unauthed_routable,
                 request,
                 info="not logged in")
@@ -66,7 +66,7 @@ class require_capability(teapot.routing.selectors.Selector):
 
         if not any(request.auth.has_capability(cap)
                    for cap in self._capabilities):
-            _raise_missing_auth_error(
+            raise_missing_auth_error(
                 self._unauthed_routable,
                 request,
                 info="missing capability")

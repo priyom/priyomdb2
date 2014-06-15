@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import re
 
 import teapot.forms
+import teapot.html
 
 import priyom.model
 
@@ -10,22 +11,14 @@ from .event_forms import *
 from .shared import *
 from .utils import *
 
+from . import fields
+
 class LogPage1_Station(teapot.forms.Form):
-    @teapot.forms.field
-    def station_id(self, value):
-        return int(value)
+    station = fields.ObjectRefField(priyom.model.Station)
 
-    @station_id.default
-    def station_id(self):
-        return 0
-
-    @teapot.forms.field
-    def timestamp(self, value):
-        return parse_datetime(value)
-
-    @timestamp.default
-    def timestamp(self):
-        return datetime.utcnow().replace(microsecond=0, second=0)
+    timestamp = teapot.html.DateTimeField(
+        teapot.html.DateTimeMode.Full & teapot.html.DateTimeMode.Minute,
+        "datetime")
 
     def postvalidate(self, request):
         super().postvalidate(request)
@@ -37,52 +30,38 @@ class LogPage1_Station(teapot.forms.Form):
                     LogPage1_Station.station_id,
                     self).register()
 
-class LogPage2_Broadcast(teapot.forms.Form):
-    @teapot.forms.field
-    def broadcast_source(self, value):
-        if value == "new":
-            return "new"
-        else:
-            return "existing"
+class LogPage2_Event(teapot.forms.Form):
+    event_source = teapot.html.EnumField(
+        options=[
+            "new",
+            "existing"
+        ],
+        default="new")
 
-    @broadcast_source.default
-    def broadcast_source(self):
-        return "new"
+    event = fields.ObjectRefField(
+        priyom.model.Event)
 
-    @teapot.forms.field
-    def broadcast_id(self, value):
-        return int(value)
+    existing_event_frequency = fields.ObjectRefField(
+        priyom.model.EventFrequency)
 
-    @broadcast_id.default
-    def broadcast_id(self):
-        return 0
-
-    @teapot.forms.field
-    def existing_broadcast_frequency_id(self, value):
-        return int(value)
-
-    @existing_broadcast_frequency_id.default
-    def existing_broadcast_frequency_id(self):
-        return 0
-
-    frequencies = teapot.forms.rows(EventFrequencyRow)
+    frequencies = teapot.forms.Rows(EventFrequencyRow)
 
     def postvalidate(self, request):
         super().postvalidate(request)
         dbsession = request.dbsession
-        if self.broadcast_source == "existing":
-            if not dbsession.query(priyom.model.Event).get(self.broadcast_id):
-                teapot.forms.ValidationError("Not a valid broadcast",
-                                             LogPage2_Broadcast.broadcast_id,
+        if self.event_source == "existing":
+            if self.event is None:
+                teapot.forms.ValidationError("Not a valid event",
+                                             LogPage2_Event.eventx,
                                              self).register()
         else:
             if not self.frequencies:
                 teapot.forms.ValidationError("At least one frequency is required",
-                                             LogPage2_Broadcast.frequencies,
+                                             LogPage2_Event.frequencies,
                                              self).register()
 
 class LogPage3_Contents(teapot.forms.Form):
-    contents = teapot.forms.rows(EventTopLevelContentsRow)
+    contents = teapot.forms.Rows(EventTopLevelContentsRow)
 
 @require_capability(Capability.LOG)
 @router.route("/action/log", methods={teapot.request.Method.GET})
@@ -96,7 +75,7 @@ def log(request: teapot.request.Request):
 
     pages = [
         LogPage1_Station(),
-        LogPage2_Broadcast(),
+        LogPage2_Event(),
         contents
     ]
 
@@ -116,7 +95,7 @@ def log_POST(request: teapot.request.Request):
 
     pages = [
         LogPage1_Station(request=request),
-        LogPage2_Broadcast(request=request),
+        LogPage2_Event(request=request),
         LogPage3_Contents(request=request)
     ]
 
@@ -175,9 +154,7 @@ def log_POST(request: teapot.request.Request):
         if action is not None:
             target, action = action
         if action == "add_frequency":
-            reference_id = page.existing_broadcast_frequency_id
-            event_frequency = dbsession.query(
-                priyom.model.EventFrequency).get(reference_id)
+            event_frequency = page.existing_event_frequency
             if event_frequency is not None:
                 row = EventFrequencyRow(reference=event_frequency)
             else:
@@ -187,7 +164,7 @@ def log_POST(request: teapot.request.Request):
             page.frequencies.append(row)
             # re-run post-validation
             try:
-                del page.errors[LogPage2_Broadcast.frequencies]
+                del page.errors[LogPage2_Event.frequencies]
             except KeyError:
                 pass
             page.postvalidate(request)
@@ -195,7 +172,7 @@ def log_POST(request: teapot.request.Request):
             del target.parent[target.index]
             # re-run post-validation
             try:
-                del page.errors[LogPage2_Broadcast.frequencies]
+                del page.errors[LogPage2_Event.frequencies]
             except KeyError:
                 pass
             page.postvalidate(request)
@@ -216,7 +193,7 @@ def log_POST(request: teapot.request.Request):
         elif action == "delete":
             del target.parent[target.index]
         elif action == "save" and not any(page.errors for page in pages):
-            if pages[1].broadcast_source == "new":
+            if pages[1].event_source == "new":
                 event = priyom.model.Event()
                 event.station_id = pages[0].station_id
                 event.start_time = pages[0].timestamp
@@ -230,8 +207,7 @@ def log_POST(request: teapot.request.Request):
                     frequency.mode_id = row.mode_id
                     event.frequencies.append(frequency)
             else:
-                event = dbsession.query(priyom.model.Broadcast).get(
-                    pages[1].broadcast_id)
+                event = pages[1].event
 
             for contentrow in pages[2].contents:
                 fmt = contentrow.get_format(request)

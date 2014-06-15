@@ -12,6 +12,7 @@ import weakref
 import priyom.model
 
 import teapot.forms
+import teapot.html
 
 __all__ = [
     "TransmissionFormatForm",
@@ -34,58 +35,22 @@ class TransmissionFormatRow(teapot.forms.Row):
             for child in txnode.children)
         return instance
 
-    @teapot.forms.field
-    def order(self, value):
-        if not value:
-            return None
-        return int(value)
+    order = teapot.html.IntField()
+    duplicity = teapot.html.EnumField(
+        options=[
+            (priyom.model.TransmissionFormatNode.DUPLICITY_ONE, "Exactly one"),
+            (priyom.model.TransmissionFormatNode.DUPLICITY_ONE_OR_MORE, "One or more"),
+            (priyom.model.TransmissionFormatNode.DUPLICITY_ZERO_OR_MORE, "Zero or more"),
+            (priyom.model.TransmissionFormatNode.DUPLICITY_FIXED, "Fixed amount"),
+        ],
+        default=priyom.model.TransmissionFormatNode.DUPLICITY_ONE)
 
-    @order.default
-    def order(self):
-        return 0
-
-    @teapot.forms.field
-    def duplicity(self, value):
-        if value not in priyom.model.TransmissionFormatNode.DUPLICITY_TEMPLATES:
-            raise ValueError("Invalid duplicity: {!s}".format(value))
-        return value
-
-    @teapot.forms.boolfield
-    def saved(self, value):
-        return bool(value)
-
-    @teapot.forms.field
-    def count(self, value):
-        if not value:
-            return None
-        value = int(value)
-        if not value:
-            return None
-        if value < 0:
-            raise ValueError("Count must be a non-negative integer")
-        return value
-
-    @teapot.forms.field
-    def content_match(self, value):
-        if not value:
-            return None
-        return str(value)
-
-    @teapot.forms.field
-    def key(self, value):
-        if not value:
-            return None
-        return str(value)
-
-    @teapot.forms.boolfield
-    def join(self, value):
-        return bool(value)
-
-    @teapot.forms.field
-    def comment(self, value):
-        if not value:
-            return ""
-        return str(value)
+    saved = teapot.html.CheckboxField()
+    count = teapot.html.IntField(min=0)
+    content_match = teapot.html.TextField(default=None)
+    key = teapot.html.TextField(default=None)
+    join = teapot.html.CheckboxField()
+    comment = teapot.html.TextField()
 
     def to_database_object(self):
         obj = priyom.model.TransmissionFormatNode(
@@ -101,7 +66,7 @@ class TransmissionFormatRow(teapot.forms.Row):
             obj.children.append(child.to_database_object())
         return obj
 
-    children = teapot.forms.rows(None)
+    children = teapot.forms.Rows(None)
 
 class TransmissionFormatForm(TransmissionFormatRow):
     @classmethod
@@ -112,17 +77,7 @@ class TransmissionFormatForm(TransmissionFormatRow):
         instance.description = txformat.description
         return instance
 
-    @teapot.forms.field
-    def display_name(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        return value
-
-    @teapot.forms.field
-    def description(self, value):
-        if not value:
-            return ""
-        return value
+    display_name = teapot.html.TextField()
 
     def to_database_object(self, destination=None):
         tree = super().to_database_object()
