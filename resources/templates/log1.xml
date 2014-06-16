@@ -8,27 +8,27 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Log transmission</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>pages = arguments['pages']</exec:code>
     <exec:code>pageidx = arguments['pageidx']</exec:code>
     <exec:code>page = pages[pageidx]</exec:code>
     <exec:code>stations = arguments['stations']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Log transmission</h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
         <h6 class="ym-fbox-heading">Station selection</h6>
-        <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+        <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox">
-          <label form:for="station_id">Station</label>
-          <select form:field="station_id">
-            <tea:for-each tea:bind="station" tea:from="stations">
+          <label form:for="station">Station</label>
+          <select form:field="station">
+            <tea:for-each bind="station" from="stations">
               <option exec:value="station.id"
-                      exec:selected="'selected' if page.station_id == station.id else None">
+                      exec:selected="'selected' if page.station is station else None">
                 <exec:text>station</exec:text>
               </option>
             </tea:for-each>
@@ -36,8 +36,7 @@
         </div>
         <div class="ym-fbox">
           <label form:for="timestamp">Timestamp</label>
-          <input type="datetime"
-                 form:field="timestamp" />
+          <input form:field="timestamp" />
         </div>
         <div class="ym-fbox">
           <p>Timestamp formats:</p>
@@ -48,7 +47,7 @@
           </ul>
           <p>All formats with Z are also supported without.</p>
         </div>
-        <tea:call tea:src="log_library.xml" tea:name="footer" />
+        <tea:call src="log_library.xml" name="footer" />
       </form>
     </main>
   </body>

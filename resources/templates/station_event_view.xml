@@ -27,7 +27,7 @@
       <th>Actions</th>
     </thead>
     <tbody>
-      <tea:for-each tea:bind="event" tea:from="recent_events">
+      <tea:for-each bind="event" from="recent_events">
         <tr>
           <td><exec:text>event.id</exec:text></td>
           <td><exec:text>event.modified</exec:text></td>
@@ -41,7 +41,7 @@
           </td>
           <td><exec:text>event.start_time</exec:text></td>
           <td class="tx-content">
-            <tea:call tea:src="library.xml" tea:name="event_contents">
+            <tea:call src="library.xml" name="event_contents">
               <tea:pass name="event">event</tea:pass>
             </tea:call>
           </td>

@@ -8,9 +8,9 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Log transmission</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>pages = arguments['pages']</exec:code>
@@ -19,12 +19,12 @@
     <exec:code>events = list(arguments['events'])</exec:code>
     <exec:code>modes = list(arguments['modes'])</exec:code>
     <exec:code>frequencies = arguments['frequencies']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Log transmission</h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
         <h6 class="ym-fbox-heading">Broadcast information</h6>
-        <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+        <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   class="ym-button ym-reload"
@@ -33,21 +33,21 @@
         <fieldset>
           <legend class="ym-fbox-check">
             <input type="radio"
-                   form:field="broadcast_source"
-                   form:id="broadcast_source_new"
+                   form:field="event_source"
+                   id="event_source_new"
                    value="'new'" />
-            <label for="broadcast_source_new">Create new broadcast</label>
+            <label for="event_source_new">Create new event</label>
           </legend>
           <div class="ym-fbox">
             <p>For a new transmission event, you have to fill in the
             frequencies which were used during the transmission.</p>
           </div>
           <exec:code>rows = page.frequencies</exec:code>
-          <tea:call tea:src="library.xml" tea:name="frequency_list_input">
+          <tea:call src="library.xml" name="frequency_list_input">
             <tea:pass name="rows">rows</tea:pass>
             <tea:pass name="existing_frequencies">frequencies</tea:pass>
           </tea:call>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'frequencies'</tea:pass>
           </tea:call>
         </fieldset>
@@ -56,14 +56,14 @@
             <fieldset>
               <legend class="ym-fbox-check">
                 <input type="radio"
-                       form:field="broadcast_source"
-                       form:id="broadcast_source_existing"
+                       form:field="event_source"
+                       form:id="event_source_existing"
                        value="'existing'" />
-                <label for="broadcast_source_existing">Append to existing broadcast</label>
+                <label for="event_source_existing">Append to existing event</label>
               </legend>
               <div class="ym-fbox">
-                <select form:field="broadcast_id">
-                  <tea:for-each tea:bind="event" tea:from="events">
+                <select form:field="event_id">
+                  <tea:for-each bind="event" from="events">
                     <option exec:value="event.id">
                       <exec:text>event</exec:text>
                     </option>
@@ -80,7 +80,7 @@
             </p>
           </tea:default>
         </tea:switch>
-        <tea:call tea:src="log_library.xml" tea:name="footer" />
+        <tea:call src="log_library.xml" name="footer" />
       </form>
     </main>
   </body>

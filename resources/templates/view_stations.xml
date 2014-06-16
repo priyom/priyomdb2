@@ -8,16 +8,16 @@
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
   <head>
     <title>View stations</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>view_stations = arguments['view_stations']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>delete_station = arguments['delete_station']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Stations</h2>
       <aside class="sidebar"><div class="sbox">
@@ -34,7 +34,7 @@
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
               <h3>Filters</h3>
-              <tea:call tea:src="library.xml" tea:name="filters">
+              <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_stations</tea:pass>
               </tea:call>
@@ -42,7 +42,7 @@
           </div></div>
         </div>
       </div></aside>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_stations</tea:pass>
       </tea:call>
@@ -68,8 +68,8 @@
           </tr>
         </thead>
         <tbody>
-          <tea:for-each tea:bind="id, modified, enigma_id, priyom_id, nickname, events"
-                        tea:from="view">
+          <tea:for-each bind="id, modified, enigma_id, priyom_id, nickname, events"
+                        from="view">
             <tr>
               <td><exec:text>id</exec:text></td>
               <td><exec:text>modified</exec:text></td>
@@ -93,7 +93,7 @@
           </tea:for-each>
         </tbody>
       </priyom:sortable-table>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_stations</tea:pass>
       </tea:call>

@@ -7,19 +7,19 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Edit station</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit station</h2>
         <form class="ym-form" method="POST" name="format" form:form="form">
           <h6 class="ym-fbox-heading">Station properties</h6>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">None</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -28,7 +28,7 @@
                    placeholder="e.g. S28"
                    form:field="enigma_id"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'enigma_id'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -36,7 +36,7 @@
             <input type="text" id="priyom-id"
                    form:field="priyom_id"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'priyom_id'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -44,14 +44,14 @@
             <input type="text" id="nickname"
                    form:field="nickname"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'nickname'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
             <label for="description">Description</label>
             <textarea id="description" form:field="description"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'description'</tea:pass>
           </tea:call>
           <div class="ym-fbox-footer ym-fbox-button">
@@ -62,7 +62,7 @@
           </div>
         </form>
         <tea:if exec:eval="form.id">
-          <tea:include tea:source="station_event_view.xml" />
+          <tea:include src="station_event_view.xml" />
         </tea:if>
       </div></div>
     </main>

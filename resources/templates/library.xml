@@ -4,7 +4,7 @@
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
     xmlns:form="https://xmlns.zombofant.net/xsltea/form"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
-  <tea:def tea:name="page">
+  <tea:def name="page">
     <tea:arg name="page" mode="lazy" default="page" />
     <tea:arg name="view" mode="lazy" default="view" />
     <tea:arg name="pageno" mode="lazy" default="pageno" />
@@ -12,7 +12,7 @@
       <a exec:href="context.href(view, view=page.at_page(pageno))"><exec:text>pageno</exec:text></a>
     </li>
   </tea:def>
-  <tea:def tea:name="pagination">
+  <tea:def name="pagination">
     <tea:arg name="page" />
     <tea:arg name="view" />
     <exec:code>total_pages = page.total_pages</exec:code>
@@ -42,20 +42,20 @@ pagerange = range(start_at, end_at+1)</exec:code>
           <a exec:href="context.href(view, view=page.at_page(page.get_pageno()-1))">« prev</a>
         </li>
       </tea:if>
-      <tea:call tea:name="page">
+      <tea:call name="page">
         <tea:pass name="pageno">1</tea:pass>
       </tea:call>
       <tea:if exec:eval="skip_before">
         <li><div class="fakebutton">…</div></li>
       </tea:if>
-      <tea:for-each tea:bind="pageno" tea:from="pagerange">
-        <tea:call tea:name="page" />
+      <tea:for-each bind="pageno" from="pagerange">
+        <tea:call name="page" />
       </tea:for-each>
       <tea:if exec:eval="skip_after">
         <li><div class="fakebutton">…</div></li>
       </tea:if>
       <tea:if exec:eval="page.total_pages &gt; 1">
-        <tea:call tea:name="page">
+        <tea:call name="page">
           <tea:pass name="pageno">total_pages</tea:pass>
         </tea:call>
       </tea:if>
@@ -66,12 +66,12 @@ pagerange = range(start_at, end_at+1)</exec:code>
       </tea:if>
     </ul>
   </tea:def>
-  <tea:def tea:name="filters">
+  <tea:def name="filters">
     <tea:arg name="page" />
     <tea:arg name="view" />
     <exec:code>filters = page.f</exec:code>
     <ul>
-      <tea:for-each tea:bind="row" tea:from="filters">
+      <tea:for-each bind="row" from="filters">
         <li>
           <exec:text>row.f</exec:text>
           <exec:text>' '</exec:text>
@@ -84,7 +84,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <a class="ym-button ym-warning ym-delete"
        exec:href="context.href(view, view=page.without_filters())">Clear all filters</a>
   </tea:def>
-  <tea:def tea:name="errors">
+  <tea:def name="errors">
     <tea:arg name="form" mode="lazy" default="default_form" />
     <tea:arg name="field" />
     <exec:code>field = getattr(type(form), field) if field is not None and field != 'None' else None
@@ -93,7 +93,7 @@ errors = form.errors.get(field, [])</exec:code>
       <div class="ym-fbox">
         <div class="form-errors">
           <ul>
-            <tea:for-each tea:bind="error" tea:from="errors">
+            <tea:for-each bind="error" from="errors">
               <li><exec:text>context.i18n(error.err)</exec:text></li>
             </tea:for-each>
           </ul>
@@ -101,16 +101,16 @@ errors = form.errors.get(field, [])</exec:code>
       </div>
     </tea:if>
   </tea:def>
-  <tea:def tea:name="event_contents">
+  <tea:def name="event_contents">
     <tea:arg name="event" mode="lazy" default="event" />
     <exec:code>rows = event.contents</exec:code>
-    <tea:for-each tea:bind="row" tea:from="rows">
+    <tea:for-each bind="row" from="rows">
       <tea:if exec:eval="row.parent_contents is None">
         <div><exec:text>row.short_str(max_len=69)</exec:text></div>
       </tea:if>
     </tea:for-each>
   </tea:def>
-  <tea:def tea:name="frequency_list_input">
+  <tea:def name="frequency_list_input">
     <tea:arg name="default_form" mode="lazy" default="default_form" />
     <tea:arg name="rows" />
     <tea:arg name="existing_frequencies" />
@@ -127,22 +127,22 @@ errors = form.errors.get(field, [])</exec:code>
         <th>Actions</th>
       </thead>
       <tbody>
-        <tea:for-each tea:bind="row" tea:from="rows">
+        <tea:for-each bind="row" from="rows">
           <tr form:form="row">
             <td>
               <div class="ym-fbox">
                 <input type="text"
                        form:field="frequency" />
               </div>
-              <tea:call tea:name="errors">
+              <tea:call name="errors">
                 <tea:pass name="field">'frequency'</tea:pass>
               </tea:call>
             </td>
             <td>
               <div class="ym-fbox">
                 <select form:field="mode_id">
-                  <tea:for-each tea:bind="mode"
-                                tea:from="modes">
+                  <tea:for-each bind="mode"
+                                from="modes">
                     <option exec:value="mode.id"
                             exec:selected="'selected' if mode.id == row.mode_id else None">
                       <exec:text>mode</exec:text>
@@ -169,8 +169,8 @@ errors = form.errors.get(field, [])</exec:code>
               <select form:field="existing_broadcast_frequency_id">
                 <option value="0">Select known frequency or hit add to
                 create a new one</option>
-                <tea:for-each tea:bind="event_frequency"
-                              tea:from="existing_frequencies">
+                <tea:for-each bind="event_frequency"
+                              from="existing_frequencies">
                   <option exec:value="event_frequency.id">
                     <exec:text>event_frequency</exec:text>
                   </option>
@@ -187,13 +187,13 @@ errors = form.errors.get(field, [])</exec:code>
       </tbody>
     </table>
   </tea:def>
-  <tea:def tea:name="transcriptdata">
+  <tea:def name="transcriptdata">
     <tea:arg name="row" mode="lazy" default="row" />
     <tea:arg name="alphabets" mode="lazy" default="alphabets" />
     <div class="ym-fbox" form:form="row">
       <label form:for-field="alphabet_id">Alphabet</label>
       <select form:field="alphabet_id">
-        <tea:for-each tea:bind="alphabet" tea:from="alphabets">
+        <tea:for-each bind="alphabet" from="alphabets">
           <option exec:value="alphabet.id"
                   exec:selected="'selected' if row.alphabet_id == alphabet.id else None">
             <exec:text>alphabet.display_name</exec:text>
@@ -208,14 +208,14 @@ errors = form.errors.get(field, [])</exec:code>
                 class="transmission"/>
     </div>
   </tea:def>
-  <tea:def tea:name="transcriptmetadata">
+  <tea:def name="transcriptmetadata">
     <tea:arg name="row" mode="lazy" default="row" />
     <div class="ym-fbox" form:form="row">
       <label form:for-field="attribution">Attribution</label>
       <textarea form:field="attribution" />
     </div>
   </tea:def>
-  <tea:def tea:name="contents_list_input">
+  <tea:def name="contents_list_input">
     <tea:arg name="default_form" mode="lazy" default="default_form" />
     <tea:arg name="rows" />
     <tea:arg name="alphabets" mode="lazy" default="alphabets" />
@@ -230,13 +230,13 @@ errors = form.errors.get(field, [])</exec:code>
         <th>Actions and Metadata</th>
       </thead>
       <tbody>
-        <tea:for-each tea:bind="row" tea:from="rows">
+        <tea:for-each bind="row" from="rows">
           <tr form:form="row">
             <td>
               <div class="ym-fbox">
                 <label form:for-field="format_id">Format</label>
                 <select form:field="format_id">
-                  <tea:for-each tea:bind="format" tea:from="formats">
+                  <tea:for-each bind="format" from="formats">
                     <option exec:value="format.id"
                             exec:selected="'selected' if row.format_id == format.id else None">
                       <exec:text>format.display_name</exec:text>
@@ -244,11 +244,11 @@ errors = form.errors.get(field, [])</exec:code>
                   </tea:for-each>
                 </select>
               </div>
-              <tea:call tea:name="transcriptdata" />
+              <tea:call name="transcriptdata" />
             </td>
             <td>
               <h6 class="ym-fbox-heading">Metadata</h6>
-              <tea:call tea:name="transcriptmetadata" />
+              <tea:call name="transcriptmetadata" />
               <h6 class="ym-fbox-heading">Actions</h6>
               <div class="ym-fbox ym-fbox-button">
                 <button type="submit"
@@ -263,17 +263,17 @@ errors = form.errors.get(field, [])</exec:code>
             </td>
           </tr>
           <exec:code>transcripts = row.transcripts</exec:code>
-          <tea:for-each tea:bind="subrow" tea:from="transcripts">
+          <tea:for-each bind="subrow" from="transcripts">
             <tr form:form="subrow">
               <td>
                 <h6 class="ym-fbox-heading">Transcript</h6>
-                <tea:call tea:name="transcriptdata">
+                <tea:call name="transcriptdata">
                   <tea:pass name="row">subrow</tea:pass>
                 </tea:call>
               </td>
               <td>
                 <h6 class="ym-fbox-heading">Transcript metadata</h6>
-                <tea:call tea:name="transcriptmetadata">
+                <tea:call name="transcriptmetadata">
                   <tea:pass name="row">subrow</tea:pass>
                 </tea:call>
                 <h6 class="ym-fbox-heading">Transcript actions</h6>

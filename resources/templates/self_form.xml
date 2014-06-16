@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+  <head>
+    <title><i18n:_>myaccount.title</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>form = arguments['form']</exec:code>
+    <tea:include src="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2><i18n:_>myaccount.title</i18n:_></h2>
+        <form class="ym-form" method="POST" name="format" form:form="form">
+          <div class="ym-fbox">
+            <label form:for-field="email"><i18n:_>account.email</i18n:_></label>
+            <input type="text"
+                   form:field="email" />
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'email'</tea:pass>
+            </tea:call>
+          </div>
+          <h6 class="ym-fbox-heading"><i18n:_>account.change_password.title</i18n:_></h6>
+          <p class="ym-fbox">
+            <i18n:_>account.change_password.hint</i18n:_>
+          </p>
+          <div class="ym-fbox">
+            <label form:for-field="password_current"><i18n:_>account.password_current</i18n:_></label>
+            <input form:field="password_current"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'password_current'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox">
+            <label form:for-field="new_password"><i18n:_>account.password</i18n:_></label>
+            <input form:field="new_password"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'new_password'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox">
+            <label form:for-field="new_password_confirm"><i18n:_>account.password_confirm</i18n:_></label>
+            <input form:field="new_password_confirm"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'new_password_confirm'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox-footer ym-fbox-button">
+            <button class="ym-button ym-success ym-save"
+                    type="submit">
+              <i18n:_>forms.save</i18n:_>
+            </button>
+          </div>
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>

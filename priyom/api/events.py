@@ -9,6 +9,7 @@ import teapot
 import teapot.forms
 
 import priyom.model
+import priyom.logic.fields
 
 from .auth import *
 from .dbview import *
@@ -70,66 +71,35 @@ class EventForm(teapot.forms.Form):
                 self.contents.append(EventTopLevelContentsRow(
                     from_contents=content))
 
-    @teapot.forms.field
-    def station_id(self, value):
-        return int(value)
+    station = priyom.logic.fields.ObjectRefField(
+        priyom.model.Station,
+        allow_none=False)
 
-    @teapot.forms.field
-    def start_time(self, value):
-        return parse_datetime(value)
+    start_time = teapot.html.DateTimeField(
+        teapot.html.DateTimeMode.Full & teapot.html.DateTimeMode.Minute,
+        "datetime")
 
-    @start_time.default
-    def start_time(self):
-        return datetime.utcnow().replace(microsecond=0, second=0)
+    end_time = teapot.html.DateTimeField(
+        teapot.html.DateTimeMode.Full & teapot.html.DateTimeMode.Minute,
+        "datetime",
+        allow_none=True)
 
-    @teapot.forms.field
-    def end_time(self, value):
-        if not value:
-            return None
-        return parse_datetime(value)
+    event_class = priyom.logic.fields.ObjectRefField(
+        priyom.model.EventClass,
+        allow_none=True)
 
-    @end_time.default
-    def end_time(self):
-        return None
+    submitter = priyom.logic.fields.ObjectRefField(
+        priyom.model.User,
+        allow_none=True)
 
-    @teapot.forms.field
-    def event_class_id(self, value):
-        if not value:
-            return None
-        return int(value)
+    approved = teapot.html.CheckboxField(default=True)
 
-    @event_class_id.default
-    def event_class_id(self):
-        return None
+    existing_event_frequency = priyom.logic.fields.ObjectRefField(
+        priyom.model.EventFrequency,
+        allow_none=True)
 
-    @teapot.forms.field
-    def submitter_id(self, value):
-        if not value:
-            return None
-        return int(value)
-
-    @submitter_id.default
-    def submitter_id(self):
-        return None
-
-    @teapot.forms.boolfield
-    def approved(self, value):
-        return value
-
-    @approved.default
-    def approved(self):
-        return True
-
-    @teapot.forms.field
-    def existing_broadcast_frequency_id(self, value):
-        return int(value)
-
-    @existing_broadcast_frequency_id.default
-    def existing_broadcast_frequency_id(self):
-        return 0
-
-    frequencies = teapot.forms.rows(EventFrequencyRow)
-    contents = teapot.forms.rows(EventTopLevelContentsRow)
+    frequencies = teapot.forms.Rows(EventFrequencyRow)
+    contents = teapot.forms.Rows(EventTopLevelContentsRow)
 
     def postvalidate(self, request):
         super().postvalidate(request)

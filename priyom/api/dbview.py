@@ -2,10 +2,12 @@ import abc
 import copy
 import functools
 import operator
-from datetime import datetime, timedelta
 
 import teapot.routing.selectors
 import teapot.forms
+import teapot.html
+
+from datetime import datetime, timedelta
 
 __all__ = [
     "dbview",
@@ -17,52 +19,6 @@ datetime_formats = [
     "%Y-%m-%dT%H:%MZ",
     "%Y-%m-%dT%H:%M",
 ]
-
-def parse_isodate_full(s):
-    if s.endswith("Z"):
-        s = s[:-1]
-    date, sep, milliseconds = s.rpartition(".")
-    if sep is not None:
-        fracseconds = float(sep+milliseconds)
-    date = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S")
-    return date.replace(
-        microsecond=int(fracseconds*1000000))
-
-def parse_datetime(s):
-    # format with milliseconds
-    try:
-        return parse_isodate_full(s)
-    except ValueError:
-        pass
-
-    for fmt in datetime_formats:
-        try:
-            return datetime.strptime(s, fmt)
-        except ValueError:
-            continue
-    else:
-        raise ValueError("Not a valid UTC timestamp".format(s))
-
-def validate_datetime(self, value):
-    if value is None:
-        return value
-    return parse_datetime(value)
-
-def validate_generic(type_, self, value):
-    if value is None:
-        return None
-    return type_(value)
-
-def validate_bool(self, value):
-    if value is None:
-        return None
-    elif value is True or value.lower() in {"1", "true", "on", "yes"}:
-        return True
-    else:
-        return False
-
-def formatter_datetime(value):
-    return value.strftime("%Y-%m-%dT%H:%M:%S.{:06d}Z").format(value.microsecond)
 
 operators = {
     "endswith": "ends with",
@@ -85,45 +41,31 @@ order_operators = {
 
 type_mapping = {
     datetime: (
-        validate_datetime,
-        None,
-        order_operators | {"in_", "notin_"},
-        formatter_datetime),
+        lambda **kwargs: teapot.html.DateTimeField(
+            teapot.html.DateTimeMode.Full,
+            "datetime",
+            **kwargs),
+        order_operators),
     int: (
-        functools.partial(
-            validate_generic,
-            int),
-        None,
-        frozenset(operators),
-        str),
+        lambda **kwargs: teapot.html.IntField(**kwargs),
+        order_operators),
     str: (
-        functools.partial(
-            validate_generic,
-            str),
-        None,
-        frozenset(operators),
-        str),
+        lambda **kwargs: teapot.html.TextField(**kwargs),
+        frozenset(operators) - {"notin_", "in_"}),
     bool: (
-        validate_bool,
-        None,
-        {"__eq__", "__ne__"},
-        str)
+        lambda **kwargs: teapot.html.CheckboxField(**kwargs),
+        {"__eq__", "__ne__"}),
 }
 
-def descriptor_for_type(name, python_type, default_func=None):
+def descriptor_for_type(name, python_type, **kwargs):
     try:
-        validator, default, operators, formatter = type_mapping[python_type]
+        field_constructor, operators = type_mapping[python_type]
     except KeyError:
         raise ValueError("python type {} not mapped; provide an entry in the"
                          " priyom.api.dbview.type_mapping"
                          " dict".format(python_type))
 
-    default = default_func or default
-
-    validator.__name__ = name
-    descriptor = teapot.forms.field(validator)
-    if default is not None:
-        descriptor.default(default)
+    descriptor = field_constructor(**kwargs)
     return descriptor, operators
 
 def one_of_descriptor(fieldname,
@@ -133,34 +75,26 @@ def one_of_descriptor(fieldname,
     if error is None:
         error = "Not a valid value. Use one of {}".format(
             ", ".join(str(value) for value in sorted(valid_values)))
-    def validator(self, value):
-        if value is None:
-            return None
-        if value not in valid_values:
-            print(repr(value))
-            raise ValueError(error)
-        return value
-    validator.__name__ = fieldname
 
-    descriptor = teapot.forms.field(validator)
-    if default is not None:
-        descriptor.default(lambda x: default)
+    descriptor = teapot.html.EnumField(
+        options=list(valid_values),
+        default=default)
     return descriptor
 
-class dynamic_rows(teapot.forms.abstract_rows):
+class dynamic_rows(teapot.forms.CustomRows):
     def __init__(self, fieldname_key, fieldclasses):
         super().__init__()
         self._fieldname_key = fieldname_key
         self._fieldclasses = fieldclasses
 
-    def get_row_instance(self, post_data):
+    def get_row_instance(self, request, subdata):
         try:
-            fieldname = post_data[self._fieldname_key][0]
+            fieldname = subdata[self._fieldname_key][0]
             fieldclass = self._fieldclasses[fieldname]
         except (IndexError, KeyError):
             return None
 
-        return fieldclass(post_data=post_data)
+        return fieldclass(request=request, post_data=subdata)
 
 class RowBase(teapot.forms.Row):
     pass
@@ -260,6 +194,7 @@ class View(teapot.forms.Form):
             setattr(result, self.dbview._orderfield_key, new_fieldname)
         if new_direction is not None:
             setattr(result, self.dbview._orderdir_key, new_direction)
+
         return result
 
     def without_filters(self):
@@ -357,7 +292,7 @@ class dbview(teapot.routing.selectors.Selector):
             pageno_key: descriptor_for_type(
                 pageno_key,
                 int,
-                default_func=lambda x: 1)[0],
+                default=1)[0],
             filter_key: dynamic_rows(
                 self.FIELDNAME_KEY, fieldclasses),
         }
@@ -374,9 +309,9 @@ class dbview(teapot.routing.selectors.Selector):
     def select(self, request):
         dbsession = request.original_request.dbsession
         view = self.ViewForm(dbsession,
-                              self,
-                              request=request.original_request,
-                              post_data=request.query_data)
+                             self,
+                             request=request.original_request,
+                             post_data=request.query_data)
 
 
         request.kwargs[self._destarg] = view
@@ -402,8 +337,9 @@ class dbview(teapot.routing.selectors.Selector):
             dest[prefix+self.OPERATOR_KEY] = [
                 str(getattr(row, self.OPERATOR_KEY))]
             value = getattr(row, self.VALUE_KEY)
-            _, _, _, formatter = type_mapping[type(value)]
-            dest[prefix+self.VALUE_KEY] = [formatter(value)]
+            dest[prefix+self.VALUE_KEY] = [
+                getattr(type(row), self.VALUE_KEY).to_field_value(row, "text")
+            ]
 
     def __call__(self, callable):
         result = super().__call__(callable)

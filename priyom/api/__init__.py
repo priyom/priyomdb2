@@ -14,6 +14,7 @@ from . import alphabets
 from . import modes
 from . import dash
 from . import login
+from . import users
 
 mimetypes = {
     ".ttf": teapot.mime.Type("application", "x-font-ttf"),
@@ -83,6 +84,10 @@ user_sitemap.new(
     log.log,
     label="Log TX",
     svgicon=svgicon.SVGIcon("icon-microphone"))
+user_sitemap.new(
+    users.edit_self,
+    label="My account",
+    svgicon=svgicon.SVGIcon("icon-user"))
 user_sitemap.new(
     login.logout,
     label="Sign out",

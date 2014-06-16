@@ -9,8 +9,8 @@
         <div class="ym-fbox">
           <label form:for-field="duplicity">Duplicity</label>
           <select form:field="duplicity">
-            <tea:for-each tea:bind="value, name"
-                          tea:from="(
+            <tea:for-each bind="value, name"
+                          from="(
                                     ('1', 'one'),
                                     ('+', 'one or more'),
                                     ('*', 'zero or more'),

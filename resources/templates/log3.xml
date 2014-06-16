@@ -8,9 +8,9 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Log transmission</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>pages = arguments['pages']</exec:code>
@@ -18,21 +18,21 @@
     <exec:code>page = pages[pageidx]</exec:code>
     <exec:code>formats = arguments['formats']</exec:code>
     <exec:code>alphabets = arguments['alphabets']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Log transmission</h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
-        <tea:call tea:src="log_library.xml" tea:name="shadow_pages" />
+        <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   class="ym-button ym-reload"
                   >Validate contents without submitting</button>
         </div>
         <exec:code>rows = page.contents</exec:code>
-        <tea:call tea:src="library.xml" tea:name="contents_list_input">
+        <tea:call src="library.xml" name="contents_list_input">
           <tea:pass name="rows">rows</tea:pass>
         </tea:call>
-        <tea:call tea:src="log_library.xml" tea:name="footer" />
+        <tea:call src="log_library.xml" name="footer" />
       </form>
     </main>
   </body>

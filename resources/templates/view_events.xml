@@ -9,16 +9,16 @@
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
   <head>
     <title>View events</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>view_events = arguments['view_events']</exec:code>
     <exec:code>edit_event = arguments['edit_event']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Events</h2>
       <aside class="sidebar"><div class="sbox">
@@ -28,7 +28,7 @@
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
               <h3>Filters</h3>
-              <tea:call tea:src="library.xml" tea:name="filters">
+              <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_events</tea:pass>
               </tea:call>
@@ -36,7 +36,7 @@
           </div></div>
         </div>
       </div></aside>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_events</tea:pass>
       </tea:call>
@@ -62,8 +62,8 @@
           </tr>
         </thead>
         <tbody>
-          <tea:for-each tea:bind="event, id, modified, _, station_obj, station, submitter_id, submitter, start_time"
-                        tea:from="view">
+          <tea:for-each bind="event, id, modified, _, station_obj, station, submitter_id, submitter, start_time"
+                        from="view">
             <tr>
               <td><exec:text>id</exec:text></td>
               <td><i18n:datetime>modified</i18n:datetime></td>
@@ -77,7 +77,7 @@
               </td>
               <td><i18n:datetime>start_time</i18n:datetime></td>
               <td class="tx-content">
-                <tea:call tea:src="library.xml" tea:name="event_contents">
+                <tea:call src="library.xml" name="event_contents">
                   <tea:pass name="event">event</tea:pass>
                 </tea:call>
               </td>
@@ -97,7 +97,7 @@
           </tea:for-each>
         </tbody>
       </priyom:sortable-table>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_events</tea:pass>
       </tea:call>

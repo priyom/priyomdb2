@@ -7,13 +7,13 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Station not found</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>station_id = arguments['station_id']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>View station</h2>

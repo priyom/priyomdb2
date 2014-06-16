@@ -7,13 +7,13 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Edit format</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:def tea:name="subtree">
+    <tea:def name="subtree">
       <tea:arg name="node" />
       <tea:arg name="level" default="0" />
       <tr form:form="node">
@@ -29,18 +29,18 @@
                    form:field="key" />
           </div>
         </td>
-        <tea:include tea:source="format_form_controls_column.xml"/>
+        <tea:include src="format_form_controls_column.xml"/>
       </tr>
       <exec:code>children = node.children</exec:code>
       <exec:code>child_level = level + 1</exec:code>
-      <tea:for-each tea:bind="child" tea:from="children">
-        <tea:call tea:name="subtree">
+      <tea:for-each bind="child" from="children">
+        <tea:call name="subtree">
           <tea:pass name="node">child</tea:pass>
           <tea:pass name="level">child_level</tea:pass>
         </tea:call>
       </tea:for-each>
     </tea:def>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Edit transmission format</h2>
       <tea:if exec:eval="arguments['has_users']">
@@ -80,7 +80,7 @@
             </tr>
           </thead>
           <tbody>
-            <tea:call tea:name="subtree">
+            <tea:call name="subtree">
               <tea:pass name="node">form</tea:pass>
             </tea:call>
           </tbody>

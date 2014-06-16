@@ -2,17 +2,29 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "account.change_password.title"
+msgstr "Change password"
+
+msgid "account.change_password.hint"
+msgstr "To change your password, supply the current password and a new passwort, including confirmation. If you do not want to change your password, leave any of the password fields blank."
+
+msgid "account.email"
+msgstr "Email address"
+
 msgid "account.loginname"
 msgstr "Login name"
 
 msgid "account.loginname.hint"
 msgstr "The login name must be unique, including normalization (for example, ² is converted to 2). When displaying, your original login name is used (without normalization)."
 
-msgid "account.email"
-msgstr "Email address"
-
 msgid "account.password"
 msgstr "Password"
+
+msgid "account.password_confirm"
+msgstr "Password (confirm)"
+
+msgid "account.password_current"
+msgstr "Current password"
 
 msgid "account.password.hint1"
 msgstr "Password strength criteria:"
@@ -23,8 +35,8 @@ msgstr "At least 8 characters length and"
 msgid "account.password.hint3"
 msgstr "either one letter, one special character and one number or, for each group missing from that list, 8 additional characters"
 
-msgid "account.password_confirm"
-msgstr "Password (confirm)"
+msgid "myaccount.title"
+msgstr "My account"
 
 msgid "signup.title"
 msgstr "Sign up"

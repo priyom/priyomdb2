@@ -8,9 +8,9 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Edit event</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
@@ -22,19 +22,19 @@
     <exec:code>modes = arguments['modes']</exec:code>
     <exec:code>alphabets = arguments['alphabets']</exec:code>
     <exec:code>formats = arguments['formats']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit event</h2>
         <form class="ym-form" method="POST" name="format" form:form="form">
           <h6 class="ym-fbox-heading">Event properties</h6>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">None</tea:pass>
           </tea:call>
           <div class="ym-fbox">
             <label form:for-field="station_id">Station</label>
             <select form:field="station_id">
-              <tea:for-each tea:bind="station" tea:from="stations">
+              <tea:for-each bind="station" from="stations">
                 <option exec:value="station.id"
                         exec:selected="'selected' if form.station_id == station.id else None">
                   <exec:text>station</exec:text>
@@ -42,7 +42,7 @@
               </tea:for-each>
             </select>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'station_id'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -50,7 +50,7 @@
             <input type="datetime"
                    form:field="start_time"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'start_time'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -58,7 +58,7 @@
             <input type="datetime"
                    form:field="end_time"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'end_time'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -66,7 +66,7 @@
             <select form:field="event_class_id">
               <option value=""
                       exec:selected="'selected' if not form.event_class_id else None">Plain transmission</option>
-              <tea:for-each tea:bind="event_class" tea:from="event_classes">
+              <tea:for-each bind="event_class" from="event_classes">
                 <option exec:value="event_class.id"
                         exec:selected="'selected' if form.event_class_id == event_class.id else None">
                   <exec:text>str(event_class)</exec:text>
@@ -74,7 +74,7 @@
               </tea:for-each>
             </select>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'event_class_id'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
@@ -84,7 +84,7 @@
                 <select form:field="submitter_id">
                   <option value=""
                           exec:selected="'selected' if not form.submitter_id else None">Anonymous / External submitter</option>
-                  <tea:for-each tea:bind="user" tea:from="users">
+                  <tea:for-each bind="user" from="users">
                     <option exec:value="user.id"
                             exec:selected="'selected' if form.submitter_id == user.id else None">
                       <exec:text>str(user)</exec:text>
@@ -99,7 +99,7 @@
               </tea:default>
             </tea:switch>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'event_class_id'</tea:pass>
           </tea:call>
           <div class="ym-fbox ym-fbox-check">
@@ -116,16 +116,16 @@
           </div>
           <h6 class="ym-fbox-heading">Frequencies and Modes</h6>
           <exec:code>rows = form.frequencies</exec:code>
-          <tea:call tea:src="library.xml" tea:name="frequency_list_input">
+          <tea:call src="library.xml" name="frequency_list_input">
             <tea:pass name="rows">rows</tea:pass>
             <tea:pass name="existing_frequencies">existing_frequencies</tea:pass>
           </tea:call>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'frequencies'</tea:pass>
           </tea:call>
           <h6 class="ym-fbox-heading">Contents</h6>
           <exec:code>content_rows = form.contents</exec:code>
-          <tea:call tea:src="library.xml" tea:name="contents_list_input">
+          <tea:call src="library.xml" name="contents_list_input">
             <tea:pass name="rows">content_rows</tea:pass>
           </tea:call>
           <div class="ym-fbox-footer ym-fbox-button">

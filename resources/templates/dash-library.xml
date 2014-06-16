@@ -6,7 +6,7 @@
     xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
 
-  <tea:def tea:name="recent-entries">
+  <tea:def name="recent-entries">
     <tea:arg name="recents" mode="lazy" default="recents" />
     <tea:arg name="view_station" mode="lazy" default="view_station" />
     <tea:arg name="view_event" mode="lazy" default="view_event" />
@@ -27,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        <tea:for-each tea:bind="event" tea:from="recents">
+        <tea:for-each bind="event" from="recents">
           <tr>
             <td>
               <tea:switch>
@@ -62,7 +62,7 @@
     </table>
   </tea:def>
 
-  <tea:def tea:name="mine">
+  <tea:def name="mine">
     <tea:arg name="mine" mode="lazy" default="mine" />
     <h3>My logs</h3>
     <table>
@@ -81,13 +81,13 @@
         </tr>
       </thead>
       <tbody>
-        <tea:for-each tea:bind="event" tea:from="mine">
+        <tea:for-each bind="event" from="mine">
           <tr>
             <td><exec:text>event.id</exec:text></td>
             <td><exec:text>event.station</exec:text></td>
             <td><exec:text>event.modified</exec:text></td>
             <td class="tx-content">
-              <tea:call tea:src="library.xml" tea:name="event_contents">
+              <tea:call src="library.xml" name="event_contents">
                 <tea:pass name="event">event</tea:pass>
               </tea:call>
             </td>
@@ -97,7 +97,7 @@
     </table>
   </tea:def>
 
-  <tea:def tea:name="unapproved">
+  <tea:def name="unapproved">
     <tea:arg name="unapproved" mode="lazy" default="unapproved" />
     <tea:arg name="view_station" mode="lazy" default="view_station" />
     <tea:arg name="view_event" mode="lazy" default="view_event" />
@@ -120,7 +120,7 @@
             </tr>
           </thead>
           <tbody>
-            <tea:for-each tea:bind="event" tea:from="unapproved">
+            <tea:for-each bind="event" from="unapproved">
               <tr>
                 <td><exec:text>event.id</exec:text></td>
                 <td>

@@ -7,13 +7,13 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Edit mode</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit mode</h2>
@@ -25,7 +25,7 @@
                    placeholder="e.g. USB"
                    form:field="display_name"/>
           </div>
-          <tea:call tea:src="library.xml" tea:name="errors">
+          <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'display_name'</tea:pass>
           </tea:call>
           <div class="ym-fbox-footer ym-fbox-button">

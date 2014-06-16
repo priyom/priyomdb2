@@ -4,7 +4,7 @@
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
     xmlns:form="https://xmlns.zombofant.net/xsltea/form">
-  <tea:def tea:name="shadow_pages">
+  <tea:def name="shadow_pages">
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
     <input type="hidden" name="currpage" exec:value="pageidx" />
@@ -19,29 +19,29 @@
     <tea:if exec:eval="pageidx != 1">
       <exec:code>default_form = pages[1]</exec:code>
       <input type="hidden"
-             form:field="broadcast_source" />
+             form:field="event_source" />
       <input type="hidden"
-             form:field="broadcast_id" />
+             form:field="event" />
       <exec:code>rows = pages[1].frequencies</exec:code>
-      <tea:for-each tea:bind="row" tea:from="rows">
+      <tea:for-each bind="row" from="rows">
         <input type="hidden"
                form:form="row"
                form:field="frequency" />
         <input type="hidden"
                form:form="row"
-               form:field="mode_id" />
+               form:field="mode" />
       </tea:for-each>
     </tea:if>
     <tea:if exec:eval="pageidx != 2">
       <exec:code>default_form = pages[2]</exec:code>
       <exec:code>rows = pages[2].contents</exec:code>
-      <tea:for-each tea:bind="row" tea:from="rows">
+      <tea:for-each bind="row" from="rows">
         <input type="hidden"
                form:form="row"
-               form:field="format_id" />
+               form:field="format" />
         <input type="hidden"
                form:form="row"
-               form:field="alphabet_id" />
+               form:field="alphabet" />
         <input type="hidden"
                form:form="row"
                form:field="contents" />
@@ -49,10 +49,10 @@
                form:form="row"
                form:field="attribution" />
         <exec:code>transcripts = row.transcripts</exec:code>
-        <tea:for-each tea:bind="subrow" tea:from="transcripts">
+        <tea:for-each bind="subrow" from="transcripts">
           <input type="hidden"
                  form:form="subrow"
-                 form:field="alphabet_id" />
+                 form:field="alphabet" />
           <input type="hidden"
                  form:form="subrow"
                  form:field="contents" />
@@ -63,7 +63,7 @@
       </tea:for-each>
     </tea:if>
   </tea:def>
-  <tea:def tea:name="footer">
+  <tea:def name="footer">
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
     <div class="ym-fbox-footer ym-fbox-button">

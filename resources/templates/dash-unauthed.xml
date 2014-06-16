@@ -7,9 +7,9 @@
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title>Radio Dash</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>recents = arguments['recents']</exec:code>
@@ -20,19 +20,19 @@
     <exec:code>view_event = arguments['view_event']</exec:code>
     <exec:code>signup_form = arguments['signup_form']</exec:code>
     <exec:code>signup = arguments['signup']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Radio dash</h2>
       <div class="ym-grid linearize-level-2">
         <div class="ym-gl ym-g60"><div class="ym-gbox">
-          <tea:call tea:src="dash-library.xml" tea:name="recent-entries" />
+          <tea:call src="dash-library.xml" name="recent-entries" />
         </div></div>
         <div class="ym-gr ym-g40"><div class="ym-gbox">
           <h3>Activities</h3>
           <h4>Sign up</h4>
           <p>Register with the Priyom.org database to be able to log
           transmissions and get full access to the data.</p>
-          <tea:include tea:source="signup-form.xml" />
+          <tea:include src="signup-form.xml" />
           <h4>Already have an account?</h4>
           <p>Log into the Priyom.org database with your existing account.</p>
           <p>

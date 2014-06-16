@@ -106,33 +106,12 @@ class StationForm(teapot.forms.Form):
             self.status = from_station.status or ""
             self.location = from_station.location or ""
 
-    @teapot.forms.field
-    def enigma_id(self, value):
-        if not value:
-            return ""
-        return str(value)
-
-    @teapot.forms.field
-    def priyom_id(self, value):
-        if not value:
-            return ""
-        return str(value)
-
-    @teapot.forms.field
-    def nickname(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def description(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def status(self, value):
-        return str(value)
-
-    @teapot.forms.field
-    def location(self, value):
-        return str(value)
+    enigma_id = teapot.html.TextField()
+    priyom_id = teapot.html.TextField()
+    nickname = teapot.html.TextField()
+    description = teapot.html.TextField()
+    status = teapot.html.TextField()
+    location = teapot.html.TextField()
 
     def postvalidate(self, request):
         super().postvalidate(request)

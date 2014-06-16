@@ -1,5 +1,6 @@
 import sqlalchemy.exc
 
+import teapot.html
 import teapot.request
 
 import priyom.model
@@ -11,11 +12,7 @@ from .dbview import *
 from .shared import *
 
 class ModeForm(teapot.forms.Form):
-    @teapot.forms.field
-    def display_name(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        return value
+    display_name = teapot.html.TextField()
 
 @require_capability(Capability.VIEW_MODE)
 @dbview(priyom.model.Mode,

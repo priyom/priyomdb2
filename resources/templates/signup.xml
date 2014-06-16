@@ -7,17 +7,17 @@
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
     <title><i18n:_>signup.title</i18n:_></title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>signup_form = arguments['signup_form']</exec:code>
     <exec:code>signup = arguments['signup']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2><i18n:_>signup.title</i18n:_></h2>
-      <tea:include tea:source="signup-form-full.xml" />
+      <tea:include src="signup-form-full.xml" />
     </main>
   </body>
 </html>

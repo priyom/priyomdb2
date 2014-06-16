@@ -8,9 +8,9 @@
       xmlns:form="https://xmlns.zombofant.net/xsltea/form">
   <head>
     <title>Manage alphabets</title>
-    <tea:include tea:source="stylesheets.xml"
-                 tea:xpath="h:link"
-                 tea:nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
     <exec:code>view_alphabets = arguments['view_alphabets']</exec:code>
@@ -18,7 +18,7 @@
     <exec:code>delete_alphabet = arguments['delete_alphabet']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:include tea:source="nav.xml" />
+    <tea:include src="nav.xml" />
     <main>
       <h2>Alphabets</h2>
       <aside class="sidebar"><div class="sbox">
@@ -49,7 +49,7 @@
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
               <h3>Filters</h3>
-              <tea:call tea:src="library.xml" tea:name="filters">
+              <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_alphabets</tea:pass>
               </tea:call>
@@ -57,7 +57,7 @@
           </div></div>
         </div>
       </div></aside>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_alphabets</tea:pass>
       </tea:call>
@@ -79,7 +79,7 @@
           </tr>
         </thead>
         <tbody>
-          <tea:for-each tea:bind="id, short_name, display_name, user_count" tea:from="arguments['alphabets']">
+          <tea:for-each bind="id, short_name, display_name, user_count" from="arguments['alphabets']">
             <tr>
               <td><exec:text>id</exec:text></td>
               <td><exec:text>short_name or ''</exec:text></td>
@@ -102,7 +102,7 @@
           </tea:for-each>
         </tbody>
       </priyom:sortable-table>
-      <tea:call tea:src="library.xml" tea:name="pagination">
+      <tea:call src="library.xml" name="pagination">
         <tea:pass name="page">view</tea:pass>
         <tea:pass name="view">view_alphabets</tea:pass>
       </tea:call>

@@ -2,6 +2,7 @@ from sqlalchemy import func
 import sqlalchemy.exc
 
 import teapot.forms
+import teapot.html
 import teapot.request
 
 import priyom.model
@@ -11,17 +12,8 @@ from .dbview import *
 from .shared import *
 
 class AlphabetForm(teapot.forms.Form):
-    @teapot.forms.field
-    def short_name(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        return value
-
-    @teapot.forms.field
-    def display_name(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        return value
+    short_name = teapot.html.TextField()
+    display_name = teapot.html.TextField()
 
 @require_capability(Capability.VIEW_ALPHABET)
 @dbview(priyom.model.Alphabet,

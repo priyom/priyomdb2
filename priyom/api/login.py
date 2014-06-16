@@ -11,6 +11,8 @@ import priyom.model
 import priyom.model.user
 import priyom.model.saslprep
 
+import priyom.logic.fields
+
 from .auth import *
 from .shared import *
 
@@ -31,76 +33,10 @@ class SignupForm(teapot.forms.Form):
         return ValueError("Login name is malformed, contains invalid "
                           "characters or is already taken")
 
-    @teapot.forms.field
-    def loginname(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-
-        value = str(value)
-
-        try:
-            prepped = priyom.model.saslprep.saslprep(
-                value,
-                allow_unassigned=False)
-        except ValueError:
-            raise self._loginname_error() from None
-
-        if len(prepped) > priyom.model.User.loginname.type.length:
-            raise ValueError("Login name too long")
-
-        return value
-
-    @teapot.forms.field
-    def email(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-
-        value = str(value)
-
-        if len(value) > priyom.model.User.email.type.length:
-            raise ValueError("Email too long")
-
-        return value
-
-    @teapot.forms.field
-    def password(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-
-        try:
-            value = priyom.model.saslprep.saslprep(
-                str(value),
-                allow_unassigned=False)
-        except ValueError:
-            raise ValueError("Password is malformed or contains invalid"
-                             " characters")
-
-        classes = set(
-            unicodedata.category(c)[0]
-            for c in value)
-
-        tradeoff = (len(self.required_unicode_major_classes - classes)
-                    * self.tradeoff_per_missing_class)
-
-        if len(value) < tradeoff + self.minimum_password_length:
-            raise ValueError("Password violates the strength criteria")
-
-        return value
-
-    @teapot.forms.field
-    def password_confirm(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-
-        try:
-            value = priyom.model.saslprep.saslprep(
-                str(value),
-                allow_unassigned=False)
-        except ValueError:
-            raise ValueError("Password is malformed or contains invalid"
-                             " characters")
-
-        return value
+    loginname = priyom.logic.fields.LoginNameField()
+    email = priyom.logic.fields.EmailField()
+    password = priyom.logic.fields.PasswordSetField()
+    password_confirm = priyom.logic.fields.PasswordConfirmField(password)
 
     def postvalidate(self, request):
         dbsession = request.dbsession
@@ -168,9 +104,10 @@ def signup_POST(request: teapot.request.Request):
                 SignupForm._loginname_error(),
                 SignupForm.loginname,
                 form).register()
-
-        anon_group.add_user(new_user)
-        dbsession.commit()
+            dbsession.rollback()
+        else:
+            anon_group.add_user(new_user)
+            dbsession.commit()
 
     if form.errors:
         yield "signup.xml"
@@ -191,26 +128,11 @@ def signup_POST(request: teapot.request.Request):
 
 class LoginForm(teapot.forms.Form):
     @staticmethod
-    def _login_failed():
+    def opaque_error():
         return ValueError("Unknown login name or invalid password")
 
-    @teapot.forms.field
-    def loginname(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        try:
-            value = priyom.model.saslprep.saslprep(
-                str(value), allow_unassigned=True)
-        except ValueError:
-            raise ValueError("Login name is malformed or contains invalid "
-                             "characters")
-        return value
-
-    @teapot.forms.field
-    def password(self, value):
-        if not value:
-            raise ValueError("Must not be empty")
-        return str(value)
+    loginname = priyom.logic.fields.LoginNameField()
+    password = priyom.logic.fields.PasswordVerifyField()
 
     def postvalidate(self, request):
         dbsession = request.dbsession
@@ -227,7 +149,7 @@ class LoginForm(teapot.forms.Form):
                 fake_verifier,
                 self.password)
             teapot.forms.ValidationError(
-                self._login_failed(),
+                self.opaque_error(),
                 LoginForm.loginname,
                 self).register()
         else:
@@ -235,7 +157,7 @@ class LoginForm(teapot.forms.Form):
                     user.password_verifier,
                     self.password):
                 teapot.forms.ValidationError(
-                    self._login_failed(),
+                    self.opaque_error(),
                     LoginForm.loginname,
                     self).register()
 
@@ -261,7 +183,6 @@ def login_POST(request: teapot.request.Request):
     form = LoginForm(request=request)
 
     if form.errors:
-        del form.password
         yield teapot.response.Response(None)
         yield {
             "form": form
