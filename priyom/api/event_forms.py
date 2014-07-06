@@ -66,18 +66,19 @@ class EventFrequencyRow(teapot.forms.Row):
         super().__init__(*args, **kwargs)
         if reference is not None:
             self.frequency = reference.frequency
-            self.mode_id = reference.mode_id
+            self.mode = reference.mode
 
     frequency = priyom.logic.fields.FrequencyField()
     mode = priyom.logic.fields.ObjectRefField(
         priyom.model.Mode,
-        allow_none=False)
+        allow_none=False,
+        provide_options=True)
 
 class EventContentsRow(teapot.forms.Row):
     def __init__(self, from_contents=None, **kwargs):
         super().__init__(**kwargs)
         if from_contents is not None:
-            self.alphabet_id = from_contents.alphabet_id
+            self.alphabet = from_contents.alphabet
             # this will crash for raw contents -- which are not fully supported
             # yet!
             self.contents = from_contents.unparse() # AttributeError here? see above
@@ -102,17 +103,11 @@ class EventContentsRow(teapot.forms.Row):
                                              EventContentsRow.contents,
                                              self).register()
 
-        alphabet = dbsession.query(priyom.model.Alphabet).get(self.alphabet_id)
-        if not alphabet:
-            teapot.forms.ValidationError("Not a valid alphabet",
-                                         EventContentsRow.alphabet_id,
-                                         self).register()
-
 class EventTopLevelContentsRow(EventContentsRow):
     def __init__(self, from_contents=None, with_children=True, **kwargs):
         super().__init__(from_contents=from_contents, **kwargs)
         if from_contents is not None:
-            self.format_id = from_contents.format_id
+            self.format = from_contents.format
             if with_children:
                 for child in from_contents.children:
                     if not child.is_transcribed:
@@ -127,19 +122,6 @@ class EventTopLevelContentsRow(EventContentsRow):
         priyom.model.TransmissionFormat)
 
     def get_format(self, request):
-        dbsession = request.dbsession
-        fmt = dbsession.query(
-            priyom.model.TransmissionFormat
-        ).get(self.format_id)
-        return fmt
-
-    def postvalidate(self, request):
-        fmt = self.get_format(request)
-        if fmt is None:
-            teapot.forms.ValidationError("Not a valid transmission format",
-                                         EventTopLevelContentsRow.format_id,
-                                         self).register()
-
-        super().postvalidate(request)
+        return self.format
 
     transcripts = teapot.forms.Rows(EventContentsRow)

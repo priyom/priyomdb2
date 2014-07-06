@@ -140,15 +140,7 @@ errors = form.errors.get(field, [])</exec:code>
             </td>
             <td>
               <div class="ym-fbox">
-                <select form:field="mode_id">
-                  <tea:for-each bind="mode"
-                                from="modes">
-                    <option exec:value="mode.id"
-                            exec:selected="'selected' if mode.id == row.mode_id else None">
-                      <exec:text>mode</exec:text>
-                    </option>
-                  </tea:for-each>
-                </select>
+                <select form:field="mode" />
               </div>
             </td>
             <td>
@@ -163,15 +155,15 @@ errors = form.errors.get(field, [])</exec:code>
         <tr>
           <td colspan="3">
             <div class="ym-fbox">
-              <label form:for-field="existing_broadcast_frequency_id">
+              <label form:for-field="existing_event_frequency">
                 Add another frequency
               </label>
-              <select form:field="existing_broadcast_frequency_id">
+              <select form:field="existing_event_frequency">
                 <option value="0">Select known frequency or hit add to
                 create a new one</option>
                 <tea:for-each bind="event_frequency"
                               from="existing_frequencies">
-                  <option exec:value="event_frequency.id">
+                  <option exec:value="event_frequency">
                     <exec:text>event_frequency</exec:text>
                   </option>
                 </tea:for-each>
@@ -191,11 +183,11 @@ errors = form.errors.get(field, [])</exec:code>
     <tea:arg name="row" mode="lazy" default="row" />
     <tea:arg name="alphabets" mode="lazy" default="alphabets" />
     <div class="ym-fbox" form:form="row">
-      <label form:for-field="alphabet_id">Alphabet</label>
-      <select form:field="alphabet_id">
+      <label form:for-field="alphabet">Alphabet</label>
+      <select form:field="alphabet">
         <tea:for-each bind="alphabet" from="alphabets">
           <option exec:value="alphabet.id"
-                  exec:selected="'selected' if row.alphabet_id == alphabet.id else None">
+                  exec:selected="'selected' if row.alphabet == alphabet else None">
             <exec:text>alphabet.display_name</exec:text>
           </option>
         </tea:for-each>
@@ -234,11 +226,11 @@ errors = form.errors.get(field, [])</exec:code>
           <tr form:form="row">
             <td>
               <div class="ym-fbox">
-                <label form:for-field="format_id">Format</label>
-                <select form:field="format_id">
+                <label form:for-field="format">Format</label>
+                <select form:field="format">
                   <tea:for-each bind="format" from="formats">
                     <option exec:value="format.id"
-                            exec:selected="'selected' if row.format_id == format.id else None">
+                            exec:selected="'selected' if row.format == format else None">
                       <exec:text>format.display_name</exec:text>
                     </option>
                   </tea:for-each>

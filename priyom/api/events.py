@@ -56,11 +56,11 @@ class EventForm(teapot.forms.Form):
     def __init__(self, from_event=None, **kwargs):
         super().__init__(**kwargs)
         if from_event is not None:
-            self.station_id = from_event.station_id
+            self.station = from_event.station
             self.start_time = from_event.start_time
             self.end_time = from_event.end_time
-            self.event_class_id = from_event.event_class_id
-            self.submitter_id = from_event.submitter_id
+            self.event_class = from_event.event_class
+            self.submitter = from_event.submitter
             self.approved = from_event.approved
             for freq in from_event.frequencies:
                 self.frequencies.append(EventFrequencyRow(
@@ -100,38 +100,6 @@ class EventForm(teapot.forms.Form):
 
     frequencies = teapot.forms.Rows(EventFrequencyRow)
     contents = teapot.forms.Rows(EventTopLevelContentsRow)
-
-    def postvalidate(self, request):
-        super().postvalidate(request)
-        dbsession = request.dbsession
-        if self.submitter_id is not None:
-            submitter = dbsession.query(
-                priyom.model.User
-            ).get(self.submitter_id)
-            if submitter is None:
-                teapot.forms.ValidationError(
-                    "Invalid user",
-                    EventForm.submitter_id,
-                    self).register()
-
-        station = dbsession.query(
-            priyom.model.Station
-        ).get(self.station_id)
-        if station is None:
-            teapot.forms.ValidationError(
-                "Invalid station",
-                EventForm.station_id,
-                self).register()
-
-        if self.event_class_id is not None:
-            event_class = dbsession.query(
-                priyom.model.EventClass
-            ).get(self.event_class_id)
-            if event_class is None:
-                teapot.forms.ValidationError(
-                    "Invalid event class",
-                    EventForm.event_class_id,
-                    self).register()
 
 def default_response(request, event, form):
     yield teapot.response.Response(None)
@@ -175,12 +143,12 @@ def edit_event_POST(event_id, request: teapot.request.Request):
         reference = dbsession.query(
             priyom.model.EventFrequency
         ).get(
-            form.existing_broadcast_frequency_id
+            form.existing_event_frequency
         )
 
         if reference is None:
             row = EventFrequencyRow()
-            row.mode_id = next(iter(mode_picker_options(dbession)))
+            row.mode = next(iter(mode_picker_options(dbession)))
             row.frequency = "0"
         else:
             row = EventFrequencyRow(reference=reference)
@@ -206,14 +174,14 @@ def edit_event_POST(event_id, request: teapot.request.Request):
         revalidate.postvalidate(form, request)
 
     if not form.errors and action == "save":
-        event.station_id = form.station_id
+        event.station = form.station
         event.start_time = form.start_time
         event.end_time = form.end_time
-        if request.auth.user.has_capability("moderator"):
+        if request.auth.has_capability(Capability.REVIEW_LOG):
             event.approved = form.approved
-        if request.auth.user.has_capability("admin"):
-            event.submitter_id = form.submitter_id
-        event.event_class_id = form.event_class_id
+        if request.auth.has_capability(Capability.REASSIGN_EVENT):
+            event.submitter = form.submitter
+        event.event_class = form.event_class
 
         for existing in event.contents:
             dbsession.delete(existing)
@@ -222,12 +190,12 @@ def edit_event_POST(event_id, request: teapot.request.Request):
             fmt = contentrow.get_format(request)
             content = fmt.parse(contentrow.contents)
             content.attribution = contentrow.attribution
-            content.alphabet_id = contentrow.alphabet_id
+            content.alphabet = contentrow.alphabet
             for transcriptrow in contentrow.transcripts:
                 transcribed = fmt.parse(transcriptrow.contents)
                 transcribed.is_transcribed = True
                 transcribed.attribution = transcriptrow.attribution
-                transcribed.alphabet_id = transcriptrow.alphabet_id
+                transcribed.alphabet = transcriptrow.alphabet
                 transcribed.parent_contents = content
                 event.contents.append(transcribed)
             event.contents.append(content)

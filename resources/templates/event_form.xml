@@ -32,18 +32,18 @@
             <tea:pass name="field">None</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="station_id">Station</label>
-            <select form:field="station_id">
+            <label form:for-field="station">Station</label>
+            <select form:field="station">
               <tea:for-each bind="station" from="stations">
                 <option exec:value="station.id"
-                        exec:selected="'selected' if form.station_id == station.id else None">
+                        exec:selected="'selected' if form.station == station else None">
                   <exec:text>station</exec:text>
                 </option>
               </tea:for-each>
             </select>
           </div>
           <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'station_id'</tea:pass>
+            <tea:pass name="field">'station'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
             <label form:for-field="start_time">Start time</label>
@@ -62,31 +62,31 @@
             <tea:pass name="field">'end_time'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="event_class_id">Event class</label>
-            <select form:field="event_class_id">
+            <label form:for-field="event_class">Event class</label>
+            <select form:field="event_class">
               <option value=""
-                      exec:selected="'selected' if not form.event_class_id else None">Plain transmission</option>
+                      exec:selected="'selected' if not form.event_class else None">Plain transmission</option>
               <tea:for-each bind="event_class" from="event_classes">
                 <option exec:value="event_class.id"
-                        exec:selected="'selected' if form.event_class_id == event_class.id else None">
+                        exec:selected="'selected' if form.event_class == event_class else None">
                   <exec:text>str(event_class)</exec:text>
                 </option>
               </tea:for-each>
             </select>
           </div>
           <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'event_class_id'</tea:pass>
+            <tea:pass name="field">'event_class'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="submitter_id">Submitter</label>
+            <label form:for-field="submitter">Submitter</label>
             <tea:switch>
               <tea:case auth:cap="REASSIGN_EVENT">
-                <select form:field="submitter_id">
+                <select form:field="submitter">
                   <option value=""
-                          exec:selected="'selected' if not form.submitter_id else None">Anonymous / External submitter</option>
+                          exec:selected="'selected' if not form.submitter else None">Anonymous / External submitter</option>
                   <tea:for-each bind="user" from="users">
                     <option exec:value="user.id"
-                            exec:selected="'selected' if form.submitter_id == user.id else None">
+                            exec:selected="'selected' if form.submitter == user else None">
                       <exec:text>str(user)</exec:text>
                     </option>
                   </tea:for-each>
@@ -94,13 +94,13 @@
               </tea:case>
               <tea:default>
                 <input type="hidden"
-                       form:field="submitter_id" />
+                       form:field="submitter" />
                 <div><exec:text>event.submitter</exec:text></div>
               </tea:default>
             </tea:switch>
           </div>
           <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'event_class_id'</tea:pass>
+            <tea:pass name="field">'submitter'</tea:pass>
           </tea:call>
           <div class="ym-fbox ym-fbox-check">
             <div class="ym-label">Moderator approval (without, the Event and its contents will not be shown in queries)</div>

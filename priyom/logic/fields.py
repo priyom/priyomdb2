@@ -9,13 +9,23 @@ import priyom.model
 
 class ObjectRefField(teapot.forms.CustomField,
                      teapot.html.fields.HTMLField):
-    def __init__(self, class_, *, allow_none=True, **kwargs):
+    def __init__(self, class_, *,
+                 allow_none=True,
+                 provide_options=False,
+                 **kwargs):
         super().__init__(**kwargs)
         self._class = class_
-        self._allow_none = allow_none
+        self.allow_none = allow_none
+        self.provide_options = provide_options
 
     def get_options(self, instance, request):
-        return []
+        if self.provide_options:
+            return (
+                (str(obj.id), str(obj))
+                for obj in request.dbsession.query(self._class)
+            )
+        else:
+            return []
 
     def get_default(self, instance):
         return None
@@ -25,12 +35,13 @@ class ObjectRefField(teapot.forms.CustomField,
             value = None
         else:
             try:
-                value = request.dbsession.get(self._class, int(value))
+                value = request.dbsession.query(self._class).get(int(value))
             except ValueError as err:
-                raise ValueError("Must be a valid object reference") from None
+                yield ValueError("Is not a valid object reference")
+                value = None
 
-        if value is None and not self._allow_none:
-            raise ValueError("Must not be empty")
+        if value is None and not self.allow_none:
+            yield ValueError("Is a null object")
 
         return value
 
