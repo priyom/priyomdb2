@@ -127,6 +127,9 @@ class View(teapot.forms.Form):
             query = query.filter(
                 getattr(field, filterrow.o)(filterrow.v))
 
+        if dbview._custom_filter is not None:
+            query = dbview._custom_filter(query)
+
         total = query.count()
         if dbview._itemsperpage > 0:
             total_pages = (total+(dbview._itemsperpage-1)) // dbview._itemsperpage
@@ -245,6 +248,7 @@ class dbview(teapot.routing.selectors.Selector):
                  default_orderfield=None,
                  default_orderdir="asc",
                  provide_primary_object=False,
+                 custom_filter=None,
                  **kwargs):
         super().__init__(**kwargs)
         self._primary_object = primary_object
@@ -264,6 +268,7 @@ class dbview(teapot.routing.selectors.Selector):
         self._orderfield_key = orderfield_key
         self._orderdir_key = orderdir_key
         self._filter_key = filter_key
+        self._custom_filter = custom_filter
 
         filterable_fields = list(filter(
             lambda x: x[2] or (hasattr(x[1], "type") and
