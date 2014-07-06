@@ -105,7 +105,7 @@ class View(teapot.forms.Form):
 
         fields = []
         fieldmap = {}
-        joins = [("join", obj) for obj in dbview._supplemental_objects]
+        joins = [("outerjoin", obj) for obj in dbview._supplemental_objects]
         for fieldname, field, typehint in dbview._fields:
             if isinstance(field, lazy_node):
                 subquery = field._evaluate(dbsession).subquery()
