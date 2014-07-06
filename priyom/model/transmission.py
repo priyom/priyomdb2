@@ -396,7 +396,11 @@ class TransmissionContents(Base):
                                    foreign_keys=[parent_contents_id],
                                    remote_side=[id])
 
-    event = relationship(Event, backref=backref("contents"))
+    event = relationship(Event,
+                         backref=backref(
+                             "contents",
+                             cascade="all, delete-orphan",
+                             passive_deletes=True))
     alphabet = relationship(Alphabet)
 
     __mapper_args__ = {
@@ -499,8 +503,9 @@ class TransmissionContentNode(Base):
     children = relationship(
         "TransmissionContentNode",
         backref=backref("parent",
-                        remote_side=[id],
-                        passive_deletes=True),
+                        remote_side=[id]),
+        passive_deletes=True,
+        cascade="all, delete-orphan",
         lazy="joined",
         join_depth=4
     )

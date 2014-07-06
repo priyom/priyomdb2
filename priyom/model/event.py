@@ -71,7 +71,10 @@ class Event(TopLevel):
                            order_by=start_time)
     event_class = relationship(EventClass)
     frequencies = relationship("EventFrequency",
-                               order_by="EventFrequency.frequency")
+                               backref=backref("event"),
+                               order_by="EventFrequency.frequency",
+                               cascade="all, delete-orphan",
+                               passive_deletes=True)
     submitter = relationship(User,
                              backref=backref("submitted_events"))
 
@@ -91,7 +94,10 @@ class EventFrequency(Base):
     __tablename__ = 'event_frequencies'
 
     id = Column(Integer, primary_key=True)
-    event_id = Column(Integer, ForeignKey(Event.id), nullable=False)
+    event_id = Column(Integer,
+                      ForeignKey(Event.id,
+                                 ondelete="CASCADE"),
+                      nullable=False)
     frequency = Column(BigInteger, nullable=False)
     mode_id = Column(Integer, ForeignKey(Mode.id), nullable=False)
 
