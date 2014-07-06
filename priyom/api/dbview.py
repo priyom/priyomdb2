@@ -87,14 +87,14 @@ class dynamic_rows(teapot.forms.CustomRows):
         self._fieldname_key = fieldname_key
         self._fieldclasses = fieldclasses
 
-    def get_row_instance(self, request, subdata):
+    def instanciate_row(self, rows, request, subdata):
         try:
             fieldname = subdata[self._fieldname_key][0]
             fieldclass = self._fieldclasses[fieldname]
         except (IndexError, KeyError):
             return None
 
-        return fieldclass(request=request, post_data=subdata)
+        rows.append(fieldclass(request=request, post_data=subdata))
 
 class RowBase(teapot.forms.Row):
     pass
