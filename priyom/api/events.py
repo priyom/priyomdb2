@@ -35,7 +35,7 @@ from .utils import *
         ],
         default_orderfield="modified",
         default_orderdir="desc",
-        supplemental_objects=[priyom.model.Station],
+        supplemental_objects=[priyom.model.Station, priyom.model.User],
         provide_primary_object=True)
 @router.route("/event",
               methods={teapot.request.Method.GET})
