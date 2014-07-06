@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+  <head>
+    <title>Event not found</title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>event_id = arguments['event_id']</exec:code>
+    <tea:include src="nav.xml" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2>View event</h2>
+        <p class="box error">
+          <strong>Event not found: </strong>
+          An event with the ID <exec:text>event_id</exec:text> does not
+          exist.
+        </p>
+      </div></div>
+    </main>
+  </body>
+</html>

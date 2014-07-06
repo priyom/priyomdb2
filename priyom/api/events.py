@@ -119,12 +119,18 @@ def default_response(request, event, form):
 @require_capability(Capability.EDIT_EVENT)
 @router.route("/event/{event_id:d}/edit",
               methods={teapot.request.Method.GET})
-@xsltea_site.with_template("event_form.xml")
+@xsltea_site.with_variable_template()
 def edit_event(event_id, request: teapot.request.Request):
     event = request.dbsession.query(priyom.model.Event).get(event_id)
-    form = EventForm(from_event=event)
 
-    yield from default_response(request, event, form)
+    if event is None:
+        yield "event_not_found.xml"
+        yield teapot.response.Response(None, response_code=404)
+        yield {"event_id": event_id}, {}
+    else:
+        yield "event_form.xml"
+        form = EventForm(from_event=event)
+        yield from default_response(request, event, form)
 
 @require_capability(Capability.EDIT_EVENT)
 @router.route("/event/{event_id:d}/edit",
@@ -133,6 +139,12 @@ def edit_event(event_id, request: teapot.request.Request):
 def edit_event_POST(event_id, request: teapot.request.Request):
     dbsession = request.dbsession
     event = dbsession.query(priyom.model.Event).get(event_id)
+    if event is None:
+        raise teapot.make_redirect_response(
+            request,
+            edit_event,
+            event_id=event_id)
+
     form = EventForm(request=request)
 
     revalidate = None
