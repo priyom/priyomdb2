@@ -221,6 +221,93 @@ def edit_event_POST(event_id, request: teapot.request.Request):
 
     yield from default_response(request, event, form)
 
+class ApproveForm(teapot.forms.Form):
+    event = priyom.logic.fields.ObjectRefField(
+        priyom.model.Event,
+        allow_none=False)
+
+def filter_unapproved(query):
+    return query.filter(priyom.model.Event.approved == False)
+
+@require_capability(Capability.REVIEW_LOG)
+@dbview(priyom.model.Event,
+        [
+            ("id", priyom.model.Event.id, None),
+            ("created", priyom.model.Event.created, None),
+            ("modified", priyom.model.Event.modified, None),
+            ("station_id", priyom.model.Station.id, None),
+            ("station_obj", priyom.model.Station, None),
+            ("station",
+             priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
+             str),
+            ("submitter_id",
+             priyom.model.User.id, None),
+            ("submitter",
+             priyom.model.User.loginname, None)
+        ],
+        default_orderfield="created",
+        default_orderdir="asc",
+        supplemental_objects=[priyom.model.Station, priyom.model.User],
+        custom_filter=filter_unapproved,
+        provide_primary_object=True)
+@router.route("/review",
+              methods={teapot.request.Method.GET})
+@xsltea_site.with_template("review.xml")
+def review(request: teapot.request.Request, view):
+    from .stations import get_station_viewer
+
+    yield teapot.response.Response(None)
+    yield {
+        "view_station": get_station_viewer(request),
+        "view": view,
+        "view_event": get_event_viewer(request),
+        "review": review,
+        "approve_form": ApproveForm(),
+    }, {}
+
+@require_capability(Capability.REVIEW_LOG)
+@dbview(priyom.model.Event,
+        [
+            ("id", priyom.model.Event.id, None),
+            ("created", priyom.model.Event.created, None),
+            ("modified", priyom.model.Event.modified, None),
+            ("station_id", priyom.model.Station.id, None),
+            ("station_obj", priyom.model.Station, None),
+            ("station",
+             priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
+             str),
+            ("submitter_id",
+             priyom.model.User.id, None),
+            ("submitter",
+             priyom.model.User.loginname, None)
+        ],
+        default_orderfield="created",
+        default_orderdir="asc",
+        supplemental_objects=[priyom.model.Station, priyom.model.User],
+        custom_filter=filter_unapproved,
+        provide_primary_object=True)
+@router.route("/review",
+              methods={teapot.request.Method.POST})
+@xsltea_site.with_template("review.xml")
+def review_POST(request: teapot.request.Request, view):
+    dbsession = request.dbsession
+    form = ApproveForm(request=request)
+
+    if not form.errors and not form.event.approved:
+        _, action = form.find_action(request.post_data)
+        if action == "approve":
+            form.event.approved = True
+            dbsession.commit()
+        elif action == "delete":
+            dbsession.delete(form.event)
+            dbsession.commit()
+
+    raise teapot.make_redirect_response(
+        request,
+        review,
+        view=view)
+
+
 def get_event_viewer(request):
     """
     Return an event viewer call suitable for the logged-in user.

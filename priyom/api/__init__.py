@@ -109,7 +109,7 @@ admin_sitemap.new(
 
 moderator_sitemap.label = "Moderator activities"
 moderator_sitemap.new(
-    dash.dash,
+    events.review,
     label="Review queue",
     svgicon=svgicon.SVGIcon("icon-eye"))
 

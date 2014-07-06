@@ -18,6 +18,7 @@
     <exec:code>unapproved = arguments['unapproved']</exec:code>
     <exec:code>mine = arguments['mine']</exec:code>
     <exec:code>log_tx = arguments['log_tx']</exec:code>
+    <exec:code>review = arguments['review']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view_event = arguments['view_event']</exec:code>
     <tea:include src="nav.xml" />
@@ -40,7 +41,7 @@
           </a></h4>
           <p>Log a new transmission into the database.</p>
           <tea:if auth:cap="REVIEW_LOG">
-            <h4><a href="#" class="ym-button ym-next">
+            <h4><a exec:href="context.href(review)" class="ym-button ym-next">
               Review logs
             </a></h4>
             <p>Review entries created by unprivilegued users.</p>

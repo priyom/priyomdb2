@@ -60,6 +60,7 @@ def dash(request: teapot.request.Request):
         "sign_in": login.login,
         "view_station": stations.get_station_viewer(request),
         "view_event": events.get_event_viewer(request),
+        "review": events.review
     })
 
     yield (template_args, transform_args)
