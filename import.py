@@ -13,12 +13,9 @@ import lxml.etree as etree
 
 import teapot.timeutils
 
-import priyom.config
-priyom.config.base_path = "/var/www/docroot/horazont/projects/priyomdb2"
-priyom.config.recalc_paths()
-
 import priyom.api.initializer
 import priyom.model
+import priyom.config
 
 from datetime import timedelta, datetime
 from xsltea.namespaces import NamespaceMeta
@@ -27,7 +24,7 @@ class pxmlns(metaclass=NamespaceMeta):
     xmlns = "http://api.priyom.org/priyomdb"
 
 dbengine = sqlalchemy.create_engine(
-    "mysql+mysqlconnector://priyom2@localhost/priyom2?charset=utf8",
+    priyom.config.database_url,
     echo=False,
     encoding="utf8",
     convert_unicode=True)

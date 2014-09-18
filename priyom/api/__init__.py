@@ -27,7 +27,7 @@ mimetypes = {
 
 @teapot.file_from_directory(
     "/css/",
-    priyom.config.css_path,
+    priyom.config.get_data_path("css"),
     "f",
     filterfunc=lambda x: x.endswith(".css"))
 @router.route(methods={teapot.request.Method.GET})
@@ -39,7 +39,7 @@ def css_file(f):
 
 @teapot.file_from_directory(
     "/img/",
-    priyom.config.img_path,
+    priyom.config.get_data_path("img"),
     "f")
 @router.route(methods={teapot.request.Method.GET})
 def img_file(f):

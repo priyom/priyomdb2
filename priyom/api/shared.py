@@ -28,12 +28,12 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 source = teapot.templating.FileSystemSource(
-    "/var/www/docroot/horazont/projects/priyomdb2/resources/templates/")
+    priyom.config.get_data_path("templates"))
 
 # setup localization support
 
 textdb = i18n.TextDB(fallback_locale="en_GB")
-textdb.load_all(priyom.config.l10n_path)
+textdb.load_all(priyom.config.get_data_path("l10n"))
 
 # setup sitemap root
 
@@ -98,7 +98,7 @@ del _xsltea_website_output
 del _xsltea_loader
 
 _dbengine = sqlalchemy.create_engine(
-    "mysql+mysqlconnector://priyom2@localhost/priyom2?charset=utf8",
+    priyom.config.database_url,
     echo=False,
     encoding="utf8",
     convert_unicode=True)
