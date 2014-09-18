@@ -88,8 +88,8 @@ def create_password_verifier(plaintext, iterations, salt, hashfun, length=None):
     return b"$".join([
         hashfun.encode("ascii"),
         str(iterations).encode("ascii"),
-        binascii.b2a_base64(salt),
-        binascii.b2a_base64(hashed)])
+        binascii.b2a_base64(salt).strip(),
+        binascii.b2a_base64(hashed).strip()])
 
 def create_default_password_verifier(plaintext, salt):
     return create_password_verifier(
