@@ -112,6 +112,3 @@ moderator_sitemap.new(
     events.review,
     label="Review queue",
     svgicon=svgicon.SVGIcon("icon-eye"))
-
-from . import initializer
-initializer.create_base_data(Session())

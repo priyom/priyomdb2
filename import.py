@@ -13,7 +13,6 @@ import lxml.etree as etree
 
 import teapot.timeutils
 
-import priyom.api.initializer
 import priyom.model
 import priyom.config
 
@@ -23,17 +22,12 @@ from xsltea.namespaces import NamespaceMeta
 class pxmlns(metaclass=NamespaceMeta):
     xmlns = "http://api.priyom.org/priyomdb"
 
-dbengine = sqlalchemy.create_engine(
+_dbengine = sqlalchemy.create_engine(
     priyom.config.database_url,
     echo=False,
     encoding="utf8",
     convert_unicode=True)
-priyom.model.Base.metadata.create_all(dbengine)
-dbsession = sqlalchemy.orm.sessionmaker(bind=dbengine)()
-
-priyom.api.initializer.create_base_data(dbsession)
-rootuser = dbsession.query(priyom.model.User).filter(
-    priyom.model.User.loginname == "root").one()
+dbsession = sqlalchemy.orm.sessionmaker(bind=_dbengine)()
 
 def convert_station(node):
     id = node.find(pxmlns.ID).text

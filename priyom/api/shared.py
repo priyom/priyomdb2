@@ -105,7 +105,6 @@ _dbengine = sqlalchemy.create_engine(
     echo=False,
     encoding="utf8",
     convert_unicode=True)
-priyom.model.Base.metadata.create_all(_dbengine)
 Session = sqlalchemy.orm.sessionmaker(bind=_dbengine)
 del _dbengine
 

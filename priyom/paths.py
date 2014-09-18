@@ -28,6 +28,15 @@ def set_paths(pathdict):
     global _pathdict
     _pathdict = pathdict
 
+def get_code_path(realm=None):
+    global _pathdict
+    if realm is None:
+        realm = "_code"
+    try:
+        return _pathdict[realm]
+    except KeyError:
+        return os.path.join(_pathdict["_code"], realm)
+
 def get_data_path(realm):
     global _pathdict
     try:
