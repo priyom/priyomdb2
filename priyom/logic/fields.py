@@ -135,36 +135,7 @@ class LoginNameField(teapot.html.TextField):
         return value
         yield None
 
-class PasswordFieldBase(teapot.html.TextField):
-    @property
-    def field_type(self):
-        return "password"
-
-    def get_default(self, instance):
-        return ""
-
-    def _tag_error(self, instance, original_value, error):
-        """
-        This overrides the default implementation on
-        :meth:`teapot.forms.CustomField._tag_error`, to prevent the original
-        value to be sent back to the client (this is generally not desirable for
-        password fields).
-        """
-
-        if isinstance(error, teapot.forms.ValidationError):
-            error.field = self
-            error.instance = instance
-            return
-
-        return teapot.forms.ValidationError(
-            error,
-            self,
-            instance)
-
-    def to_field_value(self, instance, view_type):
-        return ""
-
-class PasswordVerifyField(PasswordFieldBase):
+class PasswordVerifyField(teapot.html.fields.PasswordField):
     """
     A field type which can be used for password inputs where a users password
     is validated (as opposed to being set), e.g. in login forms.
@@ -186,7 +157,7 @@ class PasswordVerifyField(PasswordFieldBase):
         return value
         yield None
 
-class PasswordSetField(PasswordFieldBase):
+class PasswordSetField(teapot.html.PasswordField):
     """
     A field type which can be used for password inputs where a users password is
     set (as opposed to being validated), e.g. in sign-up forms.
@@ -222,7 +193,7 @@ class PasswordSetField(PasswordFieldBase):
 
         return value
 
-class PasswordConfirmField(PasswordFieldBase):
+class PasswordConfirmField(teapot.html.PasswordField):
     def __init__(self, primary_field, **kwargs):
         super().__init__(**kwargs)
         self.primary_field = primary_field
