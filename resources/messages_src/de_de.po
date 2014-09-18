@@ -8,6 +8,15 @@ msgstr "Passwort ändern"
 msgid "account.change_password.hint"
 msgstr "Um dein Passwort zu ändern, gebe das aktuelle Passwort und ein neues Passwort an, inklusive Bestätigung. Wenn du dein Passwort nicht ändern willst, lasse die Passwortfelder leer."
 
+msgid "account.languageetc.title"
+msgstr "Regionale Einstellungen"
+
+msgid "account.languageetc.locale"
+msgstr "Sprache"
+
+msgid "account.languageetc.timezone"
+msgstr "Zeitzone"
+
 msgid "account.email"
 msgstr "E-Mail-Adresse"
 
@@ -58,3 +67,51 @@ msgstr "Weiter zum Login"
 
 msgid "Password violates strength criteria"
 msgstr "Passwort verletzt Stärkekriterien"
+
+msgid "tzinfo.region:Europe"
+msgstr "Europa"
+
+msgid "tzinfo.region:America"
+msgstr "Amerika"
+
+msgid "tzinfo.region:Africa"
+msgstr "Afrika"
+
+msgid "tzinfo.region:US"
+msgstr "USA"
+
+msgid "tzinfo.region:Brazil"
+msgstr "Brasilien"
+
+msgid "tzinfo.region:Australia"
+msgstr "Australien"
+
+msgid "tzinfo.region:Mexico"
+msgstr "Mexiko"
+
+msgid "tzinfo.region:Antarctica"
+msgstr "Antarktis"
+
+msgid "tzinfo.region:Chile"
+msgstr "Chile"
+
+msgid "tzinfo.region:Canada"
+msgstr "Kanada"
+
+msgid "tzinfo.region:Asia"
+msgstr "Asien"
+
+msgid "tzinfo.region:Atlantic"
+msgstr "Atlantik"
+
+msgid "tzinfo.region:Pacific"
+msgstr "Pazifik"
+
+msgid "tzinfo.region:Indian"
+msgstr "Indien"
+
+msgid "tzinfo.region:Arctic"
+msgstr "Arktis"
+
+msgid "tzinfo.region:Etc"
+msgstr "Sonstige"

@@ -1,11 +1,36 @@
 import re
 import unicodedata
 
+import babel
+
+import pytz
+
 import teapot.html
 import teapot.html.fields
 import teapot.forms
 
+from xsltea.namespaces import xhtml_ns
+
 import priyom.model
+
+import lxml.etree as etree
+
+def _extract_tz_groups(tz_list):
+    groups = {}
+    for tz in tz_list:
+        try:
+            prefix, item = tz.split("/", 1)
+        except ValueError:
+            continue
+        groups.setdefault(prefix, list()).append(tz)
+
+    groups = [
+        (key, {pytz.timezone(tzname) for tzname in tznames})
+        for key, tznames in groups.items()
+    ]
+    groups.sort(key=lambda x: x[0] if x[0] != "Etc" else "ZZZZZZZZZ")
+
+    return groups
 
 class ObjectRefField(teapot.forms.CustomField,
                      teapot.html.fields.HTMLField):
@@ -220,4 +245,85 @@ class EmailField(teapot.html.TextField):
         if len(value) > priyom.model.User.email.type.length:
             yield ValueError("Email is too long")
 
+        return value
+
+
+class TimezoneField(teapot.forms.StaticDefaultField,
+                    teapot.html.fields.HTMLField):
+    TZ_GROUPS = _extract_tz_groups(pytz.common_timezones)
+
+    def __init__(self, *, default="Etc/UTC", **kwargs):
+        super().__init__(default=default, **kwargs)
+
+    def get_html_options(self, instance, context, elem):
+        current_value = self.__get__(instance, type(instance))
+        for group, tzs in self.TZ_GROUPS:
+            optgroup = etree.SubElement(
+                elem,
+                xhtml_ns.optgroup)
+            optgroup.set("label", context.i18n("tzinfo.region:"+group))
+
+            tz_processed = [
+                (tz.zone, context.i18n.get_timezone_name(tz.zone, 'full'))
+                for tz in tzs
+            ]
+            tz_processed.sort(key=lambda x: x[1])
+
+            for key, text in tz_processed:
+                option = etree.SubElement(
+                    optgroup,
+                    xhtml_ns.option)
+                if key == current_value:
+                    option.set("selected", "selected")
+                option.set("value", key)
+                option.text = text
+
+        optgroup = etree.SubElement(
+            elem,
+            xhtml_ns.optgroup)
+        optgroup.set("label", context.i18n("tzinfo.region:Etc"))
+        etczones = ["Etc/UTC"] + [
+            "Etc/GMT" + ("{:+d}".format(offset) if offset != 0 else "")
+            for offset in range(-14, 13)
+        ]
+        for key in etczones:
+            text = key.split("/", 1)[1]
+            option = etree.SubElement(
+                optgroup,
+                xhtml_ns.option)
+            if key == current_value:
+                option.set("selected", "selected")
+            option.set("value", key)
+            option.text = text
+
+
+    def input_validate(self, request, value):
+        if value not in pytz.all_timezones_set:
+            yield ValueError("Not a known time zone")
+        return value
+
+class LocaleField(teapot.forms.StaticDefaultField,
+                  teapot.html.fields.HTMLField):
+    VALID_LOCALES = set(babel.localedata.locale_identifiers())
+
+    def __init__(self, *, default="en_GB", **kwargs):
+        super().__init__(default=default, **kwargs)
+
+    def get_html_options(self, instance, context, elem):
+        current_value = self.__get__(instance, type(instance)).lower()
+        textdb = context.i18n.textdb
+        for locale in textdb:
+            localestr = teapot.accept.format_locale((locale[0], locale[1].upper()))
+            option = etree.SubElement(
+                elem,
+                xhtml_ns.option)
+            if localestr.lower() == current_value:
+                option.set("selected", "selected")
+            option.set("value", localestr)
+            localeobj = babel.Locale(*localestr.split("_"))
+            option.text = localeobj.get_display_name()
+
+    def input_validate(self, request, value):
+        if value not in self.VALID_LOCALES:
+            yield ValueError("Not a known locale")
         return value

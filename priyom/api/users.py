@@ -1,5 +1,7 @@
 import logging
 
+import pytz
+
 import sqlalchemy.exc
 import sqlalchemy.orm.exc
 
@@ -21,12 +23,16 @@ class SelfForm(teapot.forms.Form):
         super().__init__(**kwargs)
         if user is not None:
             self.email = user.email
+            self.timezone = user.timezone
+            self.locale = user.locale
 
     email = priyom.logic.fields.EmailField()
     password_current = priyom.logic.fields.PasswordVerifyField()
     new_password = priyom.logic.fields.PasswordSetField()
     new_password_confirm = priyom.logic.fields.PasswordConfirmField(
         new_password)
+    timezone = priyom.logic.fields.TimezoneField()
+    locale = priyom.logic.fields.LocaleField()
 
     def postvalidate(self, request):
         if not self.password_current or not self.new_password:
@@ -75,6 +81,14 @@ def edit_self(request: teapot.request.Request):
         user.email = form.email
         if form.password_current and form.new_password:
             user.set_password_from_plaintext(form.new_password)
+        user.timezone = form.timezone
+        user.locale = form.locale
+        # update localizer :)
+        from .shared import textdb
+        request.localizer = textdb.get_localizer(
+            user.locale,
+            pytz.timezone(user.timezone))
+
         request.dbsession.commit()
 
         raise teapot.make_redirect_response(request, edit_self)
