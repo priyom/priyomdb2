@@ -229,7 +229,7 @@ class User(Base):
 
     def set_password_from_plaintext(self,
                                     plaintext,
-                                    saltbytes=32):
+                                    saltbytes=18):
         salt = _secure_random.getrandbits(saltbytes*8).to_bytes(
             saltbytes, "big")
         self.password_verifier = create_default_password_verifier(
