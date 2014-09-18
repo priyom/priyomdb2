@@ -1,6 +1,8 @@
 import binascii
 import logging
 
+import pytz
+
 import sqlalchemy
 import sqlalchemy.orm
 
@@ -153,6 +155,11 @@ class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
     def pre_route_hook(self, request):
         super().pre_route_hook(request)
         request.auth = self._reauth(request)
+
+        if request.auth.user is not None:
+            request.localizer = textdb.get_localizer(
+                request.auth.user.locale,
+                pytz.timezone(request.auth.user.timezone))
 
         class Foo:
             auth = request.auth

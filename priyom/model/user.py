@@ -179,6 +179,12 @@ class User(Base):
     loginname_displayed = Column(Unicode(length=63), nullable=False)
     email = Column(Unicode(length=255), nullable=False)
     password_verifier = Column(Binary(length=1023), nullable=False)
+    timezone = Column(Unicode(length=127),
+                      nullable=False,
+                      server_default="Etc/UTC")
+    locale = Column(Unicode(length=31),
+                    nullable=False,
+                    server_default="en_GB")
 
     groups = relationship(
         Group,
