@@ -21,7 +21,7 @@
     <exec:code>review = arguments['review']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view_event = arguments['view_event']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Radio dash</h2>
       <p><i18n:_

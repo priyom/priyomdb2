@@ -18,7 +18,7 @@
     <exec:code>edit_event = arguments['edit_event']</exec:code>
     <exec:code>view_station = arguments['view_station']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Events</h2>
       <aside class="sidebar"><div class="sbox">

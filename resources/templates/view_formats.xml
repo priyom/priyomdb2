@@ -11,7 +11,7 @@
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_formats = arguments['view_formats']</exec:code>
     <main>

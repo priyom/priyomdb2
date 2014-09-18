@@ -18,7 +18,7 @@
     <exec:code>page = pages[pageidx]</exec:code>
     <exec:code>formats = arguments['formats']</exec:code>
     <exec:code>alphabets = arguments['alphabets']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Log transmission</h2>
       <form class="ym-form" method="POST" name="log" form:form="page">

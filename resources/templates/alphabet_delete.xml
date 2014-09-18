@@ -14,7 +14,7 @@
   <body>
     <exec:code>form = arguments['form']</exec:code>
     <exec:code>alphabet_id = arguments['alphabet_id']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <tea:switch>
         <tea:case exec:eval="form.errors">

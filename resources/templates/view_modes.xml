@@ -18,7 +18,7 @@
     <exec:code>delete_mode = arguments['delete_mode']</exec:code>
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Modes and Modes</h2>
       <aside class="sidebar"><div class="sbox">

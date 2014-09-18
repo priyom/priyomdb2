@@ -22,7 +22,7 @@
     <exec:code>modes = arguments['modes']</exec:code>
     <exec:code>alphabets = arguments['alphabets']</exec:code>
     <exec:code>formats = arguments['formats']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit event</h2>

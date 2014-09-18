@@ -14,7 +14,7 @@
   <body>
     <exec:code>loginname = arguments['loginname']</exec:code>
     <exec:code>login = arguments['login']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2><i18n:_>signup.success.title</i18n:_></h2>
       <p class="box success">

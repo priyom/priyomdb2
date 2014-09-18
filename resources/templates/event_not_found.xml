@@ -13,7 +13,7 @@
   </head>
   <body>
     <exec:code>event_id = arguments['event_id']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>View event</h2>

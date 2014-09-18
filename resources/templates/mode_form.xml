@@ -13,7 +13,7 @@
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
         <h2>Edit mode</h2>

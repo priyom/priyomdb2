@@ -11,7 +11,7 @@
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
   <body>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-grid linearize-level-1">
         <div class="ym-gl ym-g33"><div class="ym-gbox">&#160;</div></div>

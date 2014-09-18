@@ -40,7 +40,7 @@
         </tea:call>
       </tea:for-each>
     </tea:def>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Edit transmission format</h2>
       <tea:if exec:eval="arguments['has_users']">

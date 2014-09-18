@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<footer xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+        xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+  <exec:code>import priyom.model</exec:code>
+  <exec:code>event_count = context.request.dbsession.query(priyom.model.Event).count()</exec:code>
+  <div class="ym-wrapper"><div class="ym-wbox">
+    <p>
+      <i18n:_>A <a i18n:id="priyom" href="http://priyom.org">priyom.org</a> project</i18n:_> •
+      <i18n:_>hacked together by Horrorcat</i18n:_> •
+      <i18n:_>using <a i18n:id="yaml" href="http://yaml.de">yaml CSS framework</a></i18n:_> •
+      <i18n:n exec:n="event_count" exec:count="event_count">{count} <i18n:p s="event">events</i18n:p> in database</i18n:n>
+    </p>
+  </div></div>
+</footer>

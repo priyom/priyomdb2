@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<misc xmlns:tea="https://xmlns.zombofant.net/xsltea/processors">
+  <tea:include src="nav.xml" />
+  <tea:include src="footer.xml" />
+</misc>

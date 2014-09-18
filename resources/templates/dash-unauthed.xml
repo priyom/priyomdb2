@@ -20,7 +20,7 @@
     <exec:code>view_event = arguments['view_event']</exec:code>
     <exec:code>signup_form = arguments['signup_form']</exec:code>
     <exec:code>signup = arguments['signup']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Radio dash</h2>
       <div class="ym-grid linearize-level-2">

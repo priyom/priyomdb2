@@ -19,7 +19,7 @@
     <exec:code>events = list(arguments['events'])</exec:code>
     <exec:code>modes = list(arguments['modes'])</exec:code>
     <exec:code>frequencies = arguments['frequencies']</exec:code>
-    <tea:include src="nav.xml" />
+    <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2>Log transmission</h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
