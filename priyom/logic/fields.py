@@ -18,11 +18,11 @@ class ObjectRefField(teapot.forms.CustomField,
         self.allow_none = allow_none
         self.provide_options = provide_options
 
-    def get_options(self, instance, request):
+    def get_options(self, instance, context):
         if self.provide_options:
             return (
                 (str(obj.id), str(obj))
-                for obj in request.dbsession.query(self._class)
+                for obj in context.request.dbsession.query(self._class)
             )
         else:
             return []
