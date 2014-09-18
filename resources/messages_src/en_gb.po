@@ -1,117 +1,215 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
 msgid ""
 msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2014-09-18 19:13+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-msgid "account.change_password.title"
+#: resources/templates/signup-form-full.xml:35
+#, fuzzy
+msgid ""
+"<xml id='p'>Password strength criteria:</xml><xml id='li1'>At least 8 "
+"characters length and</xml><xml id='li2'>either one letter, one special "
+"character and one number or, for each group missing from that list, 8 "
+"additional characters</xml>"
+msgstr ""
+"<xml id='p'>Password strength criteria:</xml><xml id='ul'><xml id='li1'>At "
+"least 8 characters length and</xml><xml id='li2'>either one letter, one "
+"special character and one number or, for each group missing from that list, "
+"8 additional characters</xml></xml>"
+
+#: resources/templates/footer.xml:6
+msgid "A <xml id='priyom'>priyom.org</xml> project"
+msgstr "A <xml id='priyom'>priyom.org</xml> project"
+
+#: resources/templates/self_form.xml:45
+msgid "Change password"
 msgstr "Change password"
 
-msgid "account.change_password.hint"
-msgstr "To change your password, supply the current password and a new passwort, including confirmation. If you do not want to change your password, leave any of the password fields blank."
+#: resources/templates/signup-success.xml:21
+msgid ""
+"Congratulation, {loginname}! Your account has been created. You can log in "
+"immediately."
+msgstr ""
+"Congratulation, {loginname}! Your account has been created. You can log in "
+"immediately."
 
-msgid "account.languageetc.title"
-msgstr "Regional settings"
-
-msgid "account.languageetc.locale"
-msgstr "Language"
-
-msgid "account.languageetc.timezone"
-msgstr "Timezone"
-
-msgid "account.email"
-msgstr "Email address"
-
-msgid "account.loginname"
-msgstr "Login name"
-
-msgid "account.loginname.hint"
-msgstr "The login name must be unique, including normalization (for example, ² is converted to 2). When displaying, your original login name is used (without normalization)."
-
-msgid "account.password"
-msgstr "Password"
-
-msgid "account.password_confirm"
-msgstr "Password (confirm)"
-
-msgid "account.password_current"
+#: resources/templates/self_form.xml:52
+msgid "Current password"
 msgstr "Current password"
 
-msgid "account.password.hint1"
-msgstr "Password strength criteria:"
+#: resources/templates/signup-form.xml:19
+msgid "Email address"
+msgstr "Email address"
 
-msgid "account.password.hint2"
-msgstr "At least 8 characters length and"
+#: resources/templates/self_form.xml:32
+msgid "Language"
+msgstr "Language"
 
-msgid "account.password.hint3"
-msgstr "either one letter, one special character and one number or, for each group missing from that list, 8 additional characters"
+#: resources/templates/signup-form.xml:12
+msgid "Login name"
+msgstr "Login name"
 
-msgid "myaccount.title"
+#: resources/templates/view_user.xml:22
+msgid "Main data"
+msgstr "Main data"
+
+#: resources/templates/self_form.xml:10
+msgid "My account"
 msgstr "My account"
 
-msgid "forms.save"
+#: resources/templates/self_form.xml:59
+msgid "New password"
+msgstr "New Password"
+
+#: resources/templates/self_form.xml:66
+msgid "New password (confirm)"
+msgstr "New password (confirm)"
+
+#: resources/templates/signup-form.xml:26
+msgid "Password"
+msgstr "Password"
+
+#: resources/templates/signup-form.xml:33
+msgid "Password (confirm)"
+msgstr "Password (confirm)"
+
+#: resources/templates/signup-success.xml:27
+msgid "Proceed to sign in"
+msgstr "Proceed to sign in"
+
+#: resources/templates/dash-authed.xml:11
+msgid "Radio Dash"
+msgstr "Radio Dash"
+
+#: resources/templates/self_form.xml:30
+msgid "Regional settings"
+msgstr "Regional settings"
+
+#: resources/templates/review.xml:12
+msgid "Review event submissions"
+msgstr "Review event submissions"
+
+#: resources/templates/self_form.xml:75
+msgid "Save"
 msgstr "Save"
 
-msgid "signup.title"
+#: resources/templates/signup.xml:9
+msgid "Sign up"
 msgstr "Sign up"
 
-msgid "signup.submit"
+#: resources/templates/signup-form.xml:43
+msgid "Sign up for Priyom.org DB"
 msgstr "Sign up for Priyom.org DB"
 
-msgid "signup.success.title"
+#: resources/templates/signup-success.xml:9
+msgid "Successfully signed up"
 msgstr "Successfully signed up"
 
-msgid "signup.success.message"
-msgstr "Congratulation, {loginname}! Your account has been created. You can log in immediately."
+#: resources/templates/signup-form-full.xml:14
+msgid ""
+"The login name must be unique, including normalization (for example, <xml "
+"id='sup'>2</xml> is converted to 2). When displaying, your original login "
+"name is used (without normalization)."
+msgstr ""
+"The login name must be unique, including normalization (for example, <xml "
+"id='sup'>2</xml> is converted to 2). When displaying, your original login "
+"name is used (without normalization)."
 
-msgid "signup.success.signin"
-msgstr "Proceed to sign in"
+#: resources/templates/self_form.xml:39
+msgid "Time zone"
+msgstr "Time zone"
+
+#: resources/templates/self_form.xml:47
+msgid ""
+"To change your password, supply the current password and a new password, "
+"including confirmation. If you do not want to change your password, leave "
+"any of the password fields blank."
+msgstr ""
+"To change your password, supply the current password and a new password, "
+"including confirmation. If you do not want to change your password, leave "
+"any of the password fields blank."
+
+#: resources/templates/view_user.xml:11
+msgid "User \"{user}\""
+msgstr "User “{user}”"
+
+#: resources/templates/dash-authed.xml:28
+msgid "Welcome, {username}."
+msgstr "Welcome, {username}."
+
+#: resources/templates/footer.xml:7
+msgid "hacked together by Horrorcat"
+msgstr "hacked together by Horrorcat"
+
+#: resources/templates/footer.xml:8
+msgid "using <xml id='yaml'>yaml CSS framework</xml>"
+msgstr "using <xml id='yaml'>yaml CSS framework</xml>"
+
+#: resources/templates/footer.xml:9
+msgid "{count} event in database"
+msgid_plural "{count} events in database"
+msgstr[0] "{count} event in database"
+msgstr[1] "{count} events in database"
+
+msgid "Anonymous"
+msgstr "Anonymous"
+
+msgid "Europe"
+msgstr "Europe"
+
+msgid "America"
+msgstr "America"
+
+msgid "Africa"
+msgstr "Africa"
+
+msgid "US"
+msgstr "US"
+
+msgid "Brazil"
+msgstr "Brazil"
+
+msgid "Australia"
+msgstr "Australia"
+
+msgid "Mexico"
+msgstr "Mexico"
+
+msgid "Antarctica"
+msgstr "Antarctica"
+
+msgid "Chile"
+msgstr "Chile"
+
+msgid "Canada"
+msgstr "Canada"
+
+msgid "Asia"
+msgstr "Asia"
+
+msgid "Atlantic"
+msgstr "Atlantic"
+
+msgid "Pacific"
+msgstr "Pacific"
+
+msgid "Indian"
+msgstr "Indian"
+
+msgid "Arctic"
+msgstr "Arctic"
+
+msgid "Etc"
+msgstr "Static"
 
 msgid "Password violates strength criteria"
 msgstr "Password violates strength criteria"
-
-msgid "tzinfo.region:Europe"
-msgstr "Europe"
-
-msgid "tzinfo.region:America"
-msgstr "America"
-
-msgid "tzinfo.region:Africa"
-msgstr "Africa"
-
-msgid "tzinfo.region:US"
-msgstr "US"
-
-msgid "tzinfo.region:Brazil"
-msgstr "Brazil"
-
-msgid "tzinfo.region:Australia"
-msgstr "Australia"
-
-msgid "tzinfo.region:Mexico"
-msgstr "Mexico"
-
-msgid "tzinfo.region:Antarctica"
-msgstr "Antarctica"
-
-msgid "tzinfo.region:Chile"
-msgstr "Chile"
-
-msgid "tzinfo.region:Canada"
-msgstr "Canada"
-
-msgid "tzinfo.region:Asia"
-msgstr "Asia"
-
-msgid "tzinfo.region:Atlantic"
-msgstr "Atlantic"
-
-msgid "tzinfo.region:Pacific"
-msgstr "Pacific"
-
-msgid "tzinfo.region:Indian"
-msgstr "Indian"
-
-msgid "tzinfo.region:Arctic"
-msgstr "Arctic"
-
-msgid "tzinfo.region:Etc"
-msgstr "Misc"

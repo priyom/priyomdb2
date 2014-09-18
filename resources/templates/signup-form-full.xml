@@ -11,15 +11,17 @@
   <div class="ym-fbox">
     <div class="ym-grid linearize-level-1">
       <div class="ym-gr ym-g50"><div class="ym-gbox">
-        <p><i18n:_>account.loginname.hint</i18n:_></p>
+        <p><i18n:_>The login name must be unique, including normalization (for
+        example, <sup i18n:id="sup">2</sup> is converted to 2). When displaying,
+        your original login name is used (without normalization).</i18n:_></p>
       </div></div>
       <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <label form:for-field="loginname"><i18n:_>account.loginname</i18n:_></label>
+        <label form:for-field="loginname"><i18n:_>Login name</i18n:_></label>
         <input type="text" form:field="loginname" />
         <tea:call src="library.xml" name="errors">
           <tea:pass name="field">'loginname'</tea:pass>
         </tea:call>
-        <label form:for-field="email"><i18n:_>account.email</i18n:_></label>
+        <label form:for-field="email"><i18n:_>Email address</i18n:_></label>
         <input type="text" form:field="email" />
         <tea:call src="library.xml" name="errors">
           <tea:pass name="field">'email'</tea:pass>
@@ -30,19 +32,21 @@
   <div class="ym-fbox">
     <div class="ym-grid linearize-level-1">
       <div class="ym-gr ym-g50"><div class="ym-gbox">
-        <p><i18n:_>account.password.hint1</i18n:_></p>
-        <ul>
-          <li><i18n:_>account.password.hint2</i18n:_></li>
-          <li><i18n:_>account.password.hint3</i18n:_></li>
-        </ul>
+        <i18n:_>
+          <p i18n:id="p">Password strength criteria:</p>
+          <ul>
+            <li i18n:id="li1">At least 8 characters length and</li>
+            <li i18n:id="li2">either one letter, one special character and one number or, for each group missing from that list, 8 additional characters</li>
+          </ul>
+        </i18n:_>
       </div></div>
       <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <label form:for-field="password"><i18n:_>account.password</i18n:_></label>
+        <label form:for-field="password"><i18n:_>Password</i18n:_></label>
         <input type="password" form:field="password" />
         <tea:call src="library.xml" name="errors">
           <tea:pass name="field">'password'</tea:pass>
         </tea:call>
-        <label form:for-field="password_confirm"><i18n:_>account.password_confirm</i18n:_></label>
+        <label form:for-field="password_confirm"><i18n:_>Password (confirm)</i18n:_></label>
         <input type="password" form:field="password_confirm" />
         <tea:call src="library.xml" name="errors">
           <tea:pass name="field">'password_confirm'</tea:pass>
@@ -54,7 +58,7 @@
     <button type="submit"
             form:action="signup"
             class="ym-button ym-primary ym-success ym-large">
-      <i18n:_>signup.submit</i18n:_>
+      <i18n:_>Sign up for Priyom.org DB</i18n:_>
     </button>
   </div>
 </form>

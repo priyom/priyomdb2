@@ -6,7 +6,7 @@
       xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
-    <title><i18n:_>signup.title</i18n:_></title>
+    <title><i18n:_>Sign up</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -16,7 +16,7 @@
     <exec:code>signup = arguments['signup']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2><i18n:_>signup.title</i18n:_></h2>
+      <h2><i18n:_>Sign up</i18n:_></h2>
       <tea:include src="signup-form-full.xml" />
     </main>
   </body>

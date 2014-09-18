@@ -9,7 +9,7 @@
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
   <head>
-    <title>View events</title>
+    <title><i18n:_>Review event submissions</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -22,7 +22,7 @@
     <exec:code>approve_form = arguments['approve_form']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Review event submissions</h2>
+      <h2><i18n:_>Review event submissions</i18n:_></h2>
       <tea:switch>
         <tea:case exec:eval="view.total > 0">
           <tea:call src="library.xml" name="pagination">

@@ -1,0 +1,53 @@
+msgid "Anonymous"
+msgstr ""
+
+msgid "Europe"
+msgstr ""
+
+msgid "America"
+msgstr ""
+
+msgid "Africa"
+msgstr ""
+
+msgid "US"
+msgstr ""
+
+msgid "Brazil"
+msgstr ""
+
+msgid "Australia"
+msgstr ""
+
+msgid "Mexico"
+msgstr ""
+
+msgid "Antarctica"
+msgstr ""
+
+msgid "Chile"
+msgstr ""
+
+msgid "Canada"
+msgstr ""
+
+msgid "Asia"
+msgstr ""
+
+msgid "Atlantic"
+msgstr ""
+
+msgid "Pacific"
+msgstr ""
+
+msgid "Indian"
+msgstr ""
+
+msgid "Arctic"
+msgstr ""
+
+msgid "Etc"
+msgstr ""
+
+msgid "Password violates strength criteria"
+msgstr ""

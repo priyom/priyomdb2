@@ -8,7 +8,7 @@
       xmlns:svgicon="https://api.priyom.org/xmlns/svgicon"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
-    <title>Radio Dash</title>
+    <title><i18n:_>Radio Dash</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -23,9 +23,9 @@
     <exec:code>view_event = arguments['view_event']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Radio dash</h2>
+      <h2><i18n:_>Radio Dash</i18n:_></h2>
       <p><i18n:_
-             exec:username="context.request.auth.user if context.request.auth.user is not None else 'Anonymous'">Welcome, {username}.</i18n:_></p>
+             exec:username="context.request.auth.user if context.request.auth.user is not None else context.i18n('Anonymous')">Welcome, {username}.</i18n:_></p>
       <div class="ym-grid linearize-level-2">
         <div class="ym-gl ym-g60"><div class="ym-gbox">
           <tea:if auth:cap="REVIEW_LOG">
