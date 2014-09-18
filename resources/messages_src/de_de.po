@@ -2,6 +2,12 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "account.change_password.title"
+msgstr "Passwort ändern"
+
+msgid "account.change_password.hint"
+msgstr "Um dein Passwort zu ändern, gebe das aktuelle Passwort und ein neues Passwort an, inklusive Bestätigung. Wenn du dein Passwort nicht ändern willst, lasse die Passwortfelder leer."
+
 msgid "account.email"
 msgstr "E-Mail-Adresse"
 
@@ -14,6 +20,9 @@ msgstr "Der Benutzername muss eindeutig sein, inklusive Normalisierung (zum Beis
 msgid "account.password"
 msgstr "Passwort"
 
+msgid "account.password_current"
+msgstr "Aktuelles Passwort"
+
 msgid "account.password.hint1"
 msgstr "Kriterien für die Passwortstärke:"
 
@@ -25,6 +34,12 @@ msgstr "entweder ein Buchstabe, ein Sonderzeichen und eine Ziffer, oder, 8 zusä
 
 msgid "account.password_confirm"
 msgstr "Passwort (Bestätigung)"
+
+msgid "myaccount.title"
+msgstr "Mein Konto"
+
+msgid "forms.save"
+msgstr "Speichern"
 
 msgid "signup.title"
 msgstr "Registrieren"

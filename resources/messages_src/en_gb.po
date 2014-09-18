@@ -38,6 +38,9 @@ msgstr "either one letter, one special character and one number or, for each gro
 msgid "myaccount.title"
 msgstr "My account"
 
+msgid "forms.save"
+msgstr "Save"
+
 msgid "signup.title"
 msgstr "Sign up"
 

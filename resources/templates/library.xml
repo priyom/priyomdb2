@@ -84,6 +84,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <a class="ym-button ym-warning ym-delete"
        exec:href="context.href(view, view=page.without_filters())">Clear all filters</a>
   </tea:def>
+
   <tea:def name="errors">
     <tea:arg name="form" mode="lazy" default="default_form" />
     <tea:arg name="field" />
@@ -94,13 +95,14 @@ errors = form.errors.get(field, [])</exec:code>
         <div class="form-errors">
           <ul>
             <tea:for-each bind="error" from="errors">
-              <li><exec:text>context.i18n(error.err)</exec:text></li>
+              <li><exec:text>context.i18n(str(error.err))</exec:text></li>
             </tea:for-each>
           </ul>
         </div>
       </div>
     </tea:if>
   </tea:def>
+
   <tea:def name="event_contents">
     <tea:arg name="event" mode="lazy" default="event" />
     <exec:code>rows = event.contents</exec:code>

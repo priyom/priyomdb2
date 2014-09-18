@@ -9,6 +9,7 @@ import teapot.forms
 import teapot.request
 
 import priyom.model
+import priyom.model.user
 import priyom.logic.fields
 
 from .auth import *
@@ -35,6 +36,17 @@ class SelfForm(teapot.forms.Form):
             self.errors.pop(SelfForm.new_password, None)
             self.errors.pop(SelfForm.new_password_confirm, None)
 
+        if self.password_current and not self.errors:
+            user = request.auth.user
+            if not priyom.model.user.verify_password(
+                    user.password_verifier,
+                    self.password_current):
+                teapot.forms.ValidationError(
+                    ValueError("Incorrect password"),
+                    SelfForm.password_current,
+                    self).register()
+
+
 @require_capability(Capability.EDIT_SELF)
 @router.route("/self",
               methods={teapot.request.Method.GET})
@@ -58,9 +70,16 @@ def edit_self(request: teapot.request.Request):
 def edit_self(request: teapot.request.Request):
     user = request.auth.user
 
-    yield teapot.response.Response(None)
-
     form = SelfForm(request=request)
+    if not form.errors:
+        user.email = form.email
+        if form.password_current and form.new_password:
+            user.set_password_from_plaintext(form.new_password)
+        request.dbsession.commit()
+
+        raise teapot.make_redirect_response(request, edit_self)
+
+    yield teapot.response.Response(None)
 
     yield ({
         "user": user,
