@@ -10,11 +10,12 @@ import teapot.sqlalchemy
 import teapot.templating
 
 import xsltea
+import xsltea.i18n
 
 import priyom.config
 import priyom.model
 
-from . import sitemap, sortable_table, auth, i18n, svgicon
+from . import sitemap, sortable_table, auth, svgicon
 
 __all__ = [
     "xsltea_site",
@@ -32,7 +33,9 @@ source = teapot.templating.FileSystemSource(
 
 # setup localization support
 
-textdb = i18n.TextDB(fallback_locale="en_GB")
+textdb = xsltea.i18n.TextDatabase(
+    fallback_locale="en_GB",
+    fallback_mode="key")
 textdb.load_all(priyom.config.get_data_path("l10n"))
 
 # setup sitemap root
@@ -66,7 +69,7 @@ _xsltea_loader.loader.add_processor(auth.AuthProcessor())
 _xsltea_loader.loader.add_processor(svgicon.SVGIconProcessor(
     sprites,
     default_viewbox="0 0 32 32"))
-_xsltea_loader.loader.add_processor(i18n.I18NProcessor(
+_xsltea_loader.loader.add_processor(xsltea.i18n.I18NProcessor(
     textdb,
     safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
