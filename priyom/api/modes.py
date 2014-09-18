@@ -2,31 +2,34 @@ import sqlalchemy.exc
 
 import teapot.html
 import teapot.request
+import teapot.sqlalchemy
 
 import priyom.model
 
 from sqlalchemy import func
 
 from .auth import *
-from .dbview import *
 from .shared import *
 
 class ModeForm(teapot.forms.Form):
     display_name = teapot.html.TextField()
 
 @require_capability(Capability.VIEW_MODE)
-@dbview(priyom.model.Mode,
-        [
-            ("id", priyom.model.Mode.id, None),
-            ("display_name", priyom.model.Mode.display_name, None),
-            ("user_count",
-             subquery(priyom.model.EventFrequency, func.count('*').label("user_count")
-                  ).group_by(
-                      priyom.model.EventFrequency.mode_id),
-             int)
-        ],
-        itemsperpage=25,
-        default_orderfield="display_name")
+@teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
+    priyom.model.Mode,
+    [
+        ("id", priyom.model.Mode.id, None),
+        ("display_name", priyom.model.Mode.display_name, None),
+        ("user_count",
+         teapot.sqlalchemy.dbview.subquery(
+             priyom.model.EventFrequency, func.count('*').label("user_count")
+         ).group_by(
+             priyom.model.EventFrequency.mode_id
+         ),
+         int)
+    ],
+    itemsperpage=25,
+    default_orderfield="display_name"))
 @router.route("/mode", order=0, methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_modes.xml")
 def view_modes(request: teapot.request.Request, view):

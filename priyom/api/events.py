@@ -7,36 +7,39 @@ from sqlalchemy.orm import Session
 
 import teapot
 import teapot.forms
+import teapot.sqlalchemy
 
 import priyom.model
 import priyom.logic.fields
 
 from .auth import *
-from .dbview import *
 from .event_forms import *
 from .shared import *
 from .utils import *
 
+events_view_form = teapot.sqlalchemy.dbview.make_form(
+    priyom.model.Event,
+    [
+        ("id", priyom.model.Event.id, None),
+        ("modified", priyom.model.Event.modified, None),
+        ("station_id", priyom.model.Station.id, None),
+        ("station",
+         priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
+         str),
+        ("submitter_id",
+         priyom.model.User.id, None),
+        ("submitter",
+         priyom.model.User.loginname, None),
+        ("start_time", priyom.model.Event.start_time, None)
+    ],
+    default_orderfield="modified",
+    default_orderdir="desc",
+    supplemental_objects=[priyom.model.Station,
+                          ("outerjoin", priyom.model.User)],
+    objects="primary")
+
 @require_capability(Capability.VIEW_EVENT)
-@dbview(priyom.model.Event,
-        [
-            ("id", priyom.model.Event.id, None),
-            ("modified", priyom.model.Event.modified, None),
-            ("station_id", priyom.model.Station.id, None),
-            ("station_obj", priyom.model.Station, None),
-            ("station",
-             priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
-             str),
-            ("submitter_id",
-             priyom.model.User.id, None),
-            ("submitter",
-             priyom.model.User.loginname, None),
-            ("start_time", priyom.model.Event.start_time, None)
-        ],
-        default_orderfield="modified",
-        default_orderdir="desc",
-        supplemental_objects=[priyom.model.Station, priyom.model.User],
-        provide_primary_object=True)
+@teapot.sqlalchemy.dbview.dbview(events_view_form)
 @router.route("/event",
               methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_events.xml")
@@ -230,26 +233,25 @@ def filter_unapproved(query):
     return query.filter(priyom.model.Event.approved == False)
 
 @require_capability(Capability.REVIEW_LOG)
-@dbview(priyom.model.Event,
-        [
-            ("id", priyom.model.Event.id, None),
-            ("created", priyom.model.Event.created, None),
-            ("modified", priyom.model.Event.modified, None),
-            ("station_id", priyom.model.Station.id, None),
-            ("station_obj", priyom.model.Station, None),
-            ("station",
-             priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
-             str),
-            ("submitter_id",
-             priyom.model.User.id, None),
-            ("submitter",
-             priyom.model.User.loginname, None)
-        ],
-        default_orderfield="created",
-        default_orderdir="asc",
-        supplemental_objects=[priyom.model.Station, priyom.model.User],
-        custom_filter=filter_unapproved,
-        provide_primary_object=True)
+@teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
+    priyom.model.Event,
+    [
+        ("id", priyom.model.Event.id, None),
+        ("created", priyom.model.Event.created, None),
+        ("modified", priyom.model.Event.modified, None),
+        ("station",
+         priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
+         str),
+        ("submitter_id",
+         priyom.model.User.id, None),
+        ("submitter",
+         priyom.model.User.loginname, None)
+    ],
+    default_orderfield="created",
+    default_orderdir="asc",
+    supplemental_objects=[priyom.model.Station, priyom.model.User],
+    custom_filter=filter_unapproved,
+    objects="primary"))
 @router.route("/review",
               methods={teapot.request.Method.GET})
 @xsltea_site.with_template("review.xml")
@@ -266,30 +268,10 @@ def review(request: teapot.request.Request, view):
     }, {}
 
 @require_capability(Capability.REVIEW_LOG)
-@dbview(priyom.model.Event,
-        [
-            ("id", priyom.model.Event.id, None),
-            ("created", priyom.model.Event.created, None),
-            ("modified", priyom.model.Event.modified, None),
-            ("station_id", priyom.model.Station.id, None),
-            ("station_obj", priyom.model.Station, None),
-            ("station",
-             priyom.model.Station.enigma_id + ' / ' + priyom.model.Station.priyom_id,
-             str),
-            ("submitter_id",
-             priyom.model.User.id, None),
-            ("submitter",
-             priyom.model.User.loginname, None)
-        ],
-        default_orderfield="created",
-        default_orderdir="asc",
-        supplemental_objects=[priyom.model.Station, priyom.model.User],
-        custom_filter=filter_unapproved,
-        provide_primary_object=True)
 @router.route("/review",
               methods={teapot.request.Method.POST})
 @xsltea_site.with_template("review.xml")
-def review_POST(request: teapot.request.Request, view):
+def review_POST(request: teapot.request.Request):
     dbsession = request.dbsession
     form = ApproveForm(request=request)
 

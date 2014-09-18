@@ -4,11 +4,11 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 import teapot
+import teapot.sqlalchemy
 
 import priyom.model
 
 from .auth import *
-from .dbview import *
 from .shared import *
 
 def get_recent_events(station):
@@ -35,24 +35,25 @@ def get_event_view(station):
     return view
 
 @require_capability(Capability.VIEW_STATION)
-@dbview(priyom.model.Station,
-        [
-            ("id", priyom.model.Station.id, None),
-            ("modified", priyom.model.Station.modified, None),
-            ("enigma_id", priyom.model.Station.enigma_id, None),
-            ("priyom_id", priyom.model.Station.priyom_id, None),
-            ("nickname", priyom.model.Station.nickname, None),
-            ("events",
-             subquery(
-                 priyom.model.Event,
-                 func.count('*').label("events")
-             ).with_labels().group_by(
-                 priyom.model.Event.station_id
-             ),
-             int)
-        ],
-        itemsperpage=25,
-        default_orderfield="enigma_id")
+@teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
+    priyom.model.Station,
+    [
+        ("id", priyom.model.Station.id, None),
+        ("modified", priyom.model.Station.modified, None),
+        ("enigma_id", priyom.model.Station.enigma_id, None),
+        ("priyom_id", priyom.model.Station.priyom_id, None),
+        ("nickname", priyom.model.Station.nickname, None),
+        ("events",
+         teapot.sqlalchemy.dbview.subquery(
+             priyom.model.Event,
+             func.count('*').label("events")
+         ).with_labels().group_by(
+             priyom.model.Event.station_id
+         ),
+         int)
+    ],
+    itemsperpage=25,
+    default_orderfield="enigma_id"))
 @router.route("/station", methods={teapot.request.Method.GET})
 @xsltea_site.with_template("view_stations.xml")
 def view_stations(request: teapot.request.Request, view):

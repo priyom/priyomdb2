@@ -15,7 +15,6 @@ import priyom.model.user
 import priyom.logic.fields
 
 from .auth import *
-from .dbview import *
 from .shared import *
 
 class SelfForm(teapot.forms.Form):

@@ -2,6 +2,7 @@ import logging
 import sqlalchemy.exc
 
 import teapot
+import teapot.sqlalchemy
 
 import priyom.logic
 import priyom.model
@@ -9,7 +10,6 @@ import priyom.model
 from sqlalchemy import func
 
 from .auth import *
-from .dbview import *
 from .shared import *
 
 def mdzhb_format():
@@ -51,20 +51,22 @@ def mdzhb_format():
     return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
 
 @require_capability(Capability.VIEW_FORMAT)
-@dbview(priyom.model.TransmissionFormat,
-        [
-            ("id", priyom.model.TransmissionFormat.id, None),
-            ("modified", priyom.model.TransmissionFormat.modified, None),
-            ("display_name", priyom.model.TransmissionFormat.display_name, None),
-            ("user_count",
-             subquery(priyom.model.TransmissionStructuredContents,
-                      func.count('*').label("user_count")
-                  ).with_labels().group_by(
-                      priyom.model.TransmissionStructuredContents.format_id
-                  ),
-             int)
-        ],
-        default_orderfield="display_name")
+@teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
+    priyom.model.TransmissionFormat,
+    [
+        ("id", priyom.model.TransmissionFormat.id, None),
+        ("modified", priyom.model.TransmissionFormat.modified, None),
+        ("display_name", priyom.model.TransmissionFormat.display_name, None),
+        ("user_count",
+         teapot.sqlalchemy.dbview.subquery(
+             priyom.model.TransmissionStructuredContents,
+             func.count('*').label("user_count")
+         ).with_labels().group_by(
+             priyom.model.TransmissionStructuredContents.format_id
+         ),
+         int)
+    ],
+    default_orderfield="display_name"))
 @router.route("/format", order=0)
 @xsltea_site.with_template("view_formats.xml")
 def view_formats(request: teapot.request.Request, view):
