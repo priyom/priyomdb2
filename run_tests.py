@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import priyom.config
+
 class Colors(object):
     # HEADER = '\033[95m'
 
