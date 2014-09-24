@@ -158,6 +158,9 @@ class Group(Base):
     def add_user(self, user):
         self.users.append(user)
 
+    def __str__(self):
+        return self.name
+
 user_groups = Table(
     "user_groups",
     Base.metadata,
@@ -240,6 +243,17 @@ class User(Base):
             saltbytes, "big")
         self.password_verifier = create_default_password_verifier(
             plaintext, salt)
+
+    def get_stats(self):
+        from . import event
+
+        session = Session.object_session(self)
+        if not session:
+            raise ValueError("Cannot retrieve stats for non-persisted user")
+        stats = {}
+        stats["events"] = session.query(event.Event).filter(
+            event.Event.submitter == self).count()
+        return stats
 
     def __str__(self):
         return self.loginname_displayed

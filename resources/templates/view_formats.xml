@@ -3,9 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>View transmission formats</title>
+    <title><i18n:_>Manage transmission formats</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -15,18 +16,18 @@
     <exec:code>view = arguments['view']</exec:code>
     <exec:code>view_formats = arguments['view_formats']</exec:code>
     <main>
-      <h2>Transmission formats</h2>
+      <h2><i18n:_>Transmission formats</i18n:_></h2>
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
-            <h3>Activities</h3>
+            <h3><i18n:_>Activities</i18n:_></h3>
             <ul class="navlist">
-              <li><a exec:href="context.href(arguments['add_format'], format_id=0)" class="ym-button ym-success ym-add">New format</a></li>
+              <li><a exec:href="context.href(arguments['add_format'], format_id=0)" class="ym-button ym-success ym-add"><i18n:_>New format</i18n:_></a></li>
             </ul>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
-              <h3>Filters</h3>
+              <h3><i18n:_>Filters</i18n:_></h3>
               <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_formats</tea:pass>
@@ -50,14 +51,15 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Modified</th>
-            <th>Display name</th>
-            <th>User count</th>
-            <th>Actions</th>
+            <th><i18n:_>Modified</i18n:_></th>
+            <th><i18n:_>Display name</i18n:_></th>
+            <th><i18n:_>User count</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
           </tr>
         </thead>
         <tbody>
-          <tea:for-each bind="id, modified, display_name, user_count" from="arguments['formats']">
+          <tea:for-each bind="id, modified, display_name, user_count"
+                        from="arguments['formats']">
             <tr>
               <td><exec:text>id</exec:text></td>
               <td><exec:text>modified</exec:text></td>
@@ -65,7 +67,9 @@
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
                 <a exec:href="context.href(arguments['edit_format'], format_id=id)"
-                   class="ym-button ym-edit ym-primary">Edit</a>
+                   class="ym-button ym-edit ym-primary">
+                  <i18n:_>Edit</i18n:_>
+                </a>
               </td>
             </tr>
           </tea:for-each>

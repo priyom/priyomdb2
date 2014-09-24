@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Log transmission</title>
+    <title><i18n:_>Log transmission</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -21,26 +22,30 @@
     <exec:code>frequencies = arguments['frequencies']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Log transmission</h2>
+      <h2><i18n:_>Log transmission</i18n:_></h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
         <h6 class="ym-fbox-heading">Broadcast information</h6>
         <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   class="ym-button ym-reload"
-                  >Validate contents without submitting</button>
+                  >
+            <i18n:_>Validate contents without submitting</i18n:_>
+          </button>
         </div>
         <fieldset>
           <legend class="ym-fbox-check">
             <input type="radio"
                    form:field="event_source"
                    id="event_source_new"
-                   value="'new'" />
-            <label for="event_source_new">Create new event</label>
+                   value="new" />
+            <label for="event_source_new">
+              <i18n:_>Create new event</i18n:_>
+            </label>
           </legend>
           <div class="ym-fbox">
-            <p>For a new transmission event, you have to fill in the
-            frequencies which were used during the transmission.</p>
+            <p><i18n:_>For a new transmission event, you have to fill in the
+            frequencies which were used during the transmission.</i18n:_></p>
           </div>
           <exec:code>rows = page.frequencies</exec:code>
           <tea:call src="library.xml" name="frequency_list_input">
@@ -58,8 +63,10 @@
                 <input type="radio"
                        form:field="event_source"
                        form:id="event_source_existing"
-                       value="'existing'" />
-                <label for="event_source_existing">Append to existing event</label>
+                       value="existing" />
+                <label for="event_source_existing">
+                  <i18n:_>Append to existing event</i18n:_>
+                </label>
               </legend>
               <div class="ym-fbox">
                 <select form:field="event_id">
@@ -74,10 +81,12 @@
           </tea:case>
           <tea:default>
             <p class="box info">
-              <strong>Note: </strong>No related events were found for this
-              station at the given time. If you meant to append to an existing
-              event, go back and double-check the time and station.
+              <strong xml:space="preserve"><i18n:_>Note:</i18n:_> </strong>
+              <i18n:_>No related events were found for this station at the given
+              time. If you meant to append to an existing event, go back and
+              double-check the time and station.</i18n:_>
             </p>
+            <input type="hidden" form:field="event" />
           </tea:default>
         </tea:switch>
         <tea:call src="log_library.xml" name="footer" />

@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Log transmission</title>
+    <title><i18n:_>Log transmission</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -19,12 +20,12 @@
     <exec:code>stations = arguments['stations']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Log transmission</h2>
+      <h2><i18n:_>Log transmission</i18n:_></h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
         <h6 class="ym-fbox-heading">Station selection</h6>
         <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox">
-          <label form:for="station">Station</label>
+          <label form:for="station"><i18n:_>Station</i18n:_></label>
           <select form:field="station">
             <tea:for-each bind="station" from="stations">
               <option exec:value="station.id"
@@ -35,17 +36,19 @@
           </select>
         </div>
         <div class="ym-fbox">
-          <label form:for="timestamp">Timestamp</label>
+          <label form:for="timestamp"><i18n:_>Timestamp</i18n:_></label>
           <input form:field="timestamp" />
         </div>
         <div class="ym-fbox">
-          <p>Timestamp formats:</p>
+          <p><i18n:_>Timestamp formats:</i18n:_></p>
           <ul>
-            <li>YYYY-MM-DDThh:mmZ</li>
-            <li>YYYY-MM-DDThh:mm:ssZ</li>
-            <li>YYYY-MM-DDThh:mm:ss.nnnnnnZ (with ns being fractional seconds)</li>
+            <li><i18n:_>YYYY-MM-DDThh:mmZ</i18n:_></li>
+            <li><i18n:_>YYYY-MM-DDThh:mm:ssZ</i18n:_></li>
+            <li><i18n:_>YYYY-MM-DDThh:mm:ss.nnnnnnZ (with ns being fractional seconds)</i18n:_></li>
           </ul>
-          <p>All formats with Z are also supported without.</p>
+          <p><i18n:_>All formats with Z are also supported without. Without Z,
+          the timestamps refer to the timezone specified in your
+          profile.</i18n:_></p>
         </div>
         <tea:call src="log_library.xml" name="footer" />
       </form>

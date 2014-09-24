@@ -34,17 +34,17 @@
           <tea:call src="dash-library.xml" name="recent-entries" />
         </div></div>
         <div class="ym-gr ym-g40"><div class="ym-gbox">
-          <h3>Activities</h3>
+          <h3><i18n:_>Activities</i18n:_></h3>
           <h4><a exec:href="context.href(log_tx)"
                  class="ym-button ym-primary ym-add">
-            Log transmission
+            <i18n:_>Log transmission</i18n:_>
           </a></h4>
-          <p>Log a new transmission into the database.</p>
+          <p><i18n:_>Log a new transmission into the database.</i18n:_></p>
           <tea:if auth:cap="REVIEW_LOG">
             <h4><a exec:href="context.href(review)" class="ym-button ym-next">
-              Review logs
+              <i18n:_>Review logs</i18n:_>
             </a></h4>
-            <p>Review entries created by unprivilegued users.</p>
+            <p><i18n:_>Review entries created by unprivilegued users.</i18n:_></p>
           </tea:if>
         </div></div>
       </div>

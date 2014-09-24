@@ -21,13 +21,11 @@ class LogPage1_Station(teapot.forms.Form):
 
     def postvalidate(self, request):
         super().postvalidate(request)
-        if self.station_id != 0:
-            dbsession = request.dbsession
-            if not dbsession.query(priyom.model.Station).get(self.station_id):
-                teapot.forms.ValidationError(
-                    "Non-existant station selected",
-                    LogPage1_Station.station_id,
-                    self).register()
+        if self.station is None:
+            teapot.forms.ValidationError(
+                "Non-existant station selected",
+                LogPage1_Station.station,
+                self).register()
 
 class LogPage2_Event(teapot.forms.Form):
     event_source = teapot.html.EnumField(
@@ -69,8 +67,6 @@ def log(request: teapot.request.Request):
     dbsession = request.dbsession
 
     contents = LogPage3_Contents()
-    contents.contents.append(
-        EventTopLevelContentsRow())
 
     pages = [
         LogPage1_Station(),
@@ -137,7 +133,7 @@ def log_POST(request: teapot.request.Request):
         template_args["events"] = dbsession.query(
             priyom.model.Event
         ).filter(
-            priyom.model.Event.station_id == pages[0].station_id,
+            priyom.model.Event.station_id == pages[0].station.id,
             priyom.model.Event.event_class_id == None,
             priyom.model.Event.start_time >= start_time_min,
             priyom.model.Event.start_time <= start_time_max
@@ -194,7 +190,7 @@ def log_POST(request: teapot.request.Request):
         elif action == "save" and not any(page.errors for page in pages):
             if pages[1].event_source == "new":
                 event = priyom.model.Event()
-                event.station_id = pages[0].station_id
+                event.station_id = pages[0].station.id
                 event.start_time = pages[0].timestamp
                 event.end_time = pages[0].timestamp
                 event.approved = any(

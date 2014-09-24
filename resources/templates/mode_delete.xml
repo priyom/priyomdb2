@@ -4,9 +4,10 @@
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Delete mode</title>
+    <title><i18n:_>Delete broadcast mode</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -18,10 +19,10 @@
     <main>
       <tea:switch>
         <tea:case exec:eval="form.errors">
-          <h2>Deletion failed</h2>
+          <h2><i18n:_>Deletion failed</i18n:_></h2>
         </tea:case>
         <tea:default>
-          <h2>Delete mode</h2>
+          <h2><i18n:_>Delete broadcast mode</i18n:_></h2>
         </tea:default>
       </tea:switch>
       <form form:form="form" method="POST" class="ym-form">
@@ -33,7 +34,9 @@
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   form:action="delete"
-                  class="ym-button ym-danger ym-delete">Delete mode</button>
+                  class="ym-button ym-danger ym-delete">
+            <i18n:_>Delete broadcast mode</i18n:_>
+          </button>
         </div>
       </form>
     </main>

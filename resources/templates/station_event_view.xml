@@ -1,12 +1,13 @@
 <?xml version="1.0" ?>
 <div xmlns="http://www.w3.org/1999/xhtml"
      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
-     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+     xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <exec:code>view_events = arguments['view_events']</exec:code>
   <exec:code>event_view = arguments['event_view']</exec:code>
   <exec:code>view_event = arguments['view_event']</exec:code>
   <exec:code>recent_events = arguments['recent_events']</exec:code>
-  <h2>Most recent events</h2>
+  <h2><i18n:_>Most recent events</i18n:_></h2>
   <aside class="sidebar"><div class="sbox">
     <a exec:href="context.href(view_events, view=event_view)"
        class="ym-button ym-reply">View all</a>
@@ -20,25 +21,18 @@
     </colgroup>
     <thead>
       <th>#</th>
-      <th>Modified</th>
-      <th>Submitter</th>
-      <th>Timestamp</th>
-      <th>Contents</th>
-      <th>Actions</th>
+      <th><i18n:_>Modified</i18n:_></th>
+      <th><i18n:_>Submitter</i18n:_></th>
+      <th><i18n:_>Timestamp</i18n:_></th>
+      <th><i18n:_>Contents</i18n:_></th>
+      <th><i18n:_>Actions</i18n:_></th>
     </thead>
     <tbody>
       <tea:for-each bind="event" from="recent_events">
         <tr>
           <td><exec:text>event.id</exec:text></td>
           <td><exec:text>event.modified</exec:text></td>
-          <td>
-            <tea:switch>
-              <tea:case exec:eval="event.submitter">
-                <exec:text>event.submitter</exec:text>
-              </tea:case>
-              <tea:default>system generated</tea:default>
-            </tea:switch>
-          </td>
+          <td><tea:call src="library.xml" name="submitter" /></td>
           <td><exec:text>event.start_time</exec:text></td>
           <td class="tx-content">
             <tea:call src="library.xml" name="event_contents">
@@ -46,12 +40,9 @@
             </tea:call>
           </td>
           <td>
-            <exec:code>can_edit = context.request.auth.has_capability(Capability.EDIT_EVENT)</exec:code>
-            <a exec:class="'ym-button ym-primary '+
-                           ('ym-edit' if can_edit else '')"
-               exec:href="context.href(view_event, event_id=event.id) if view_event else '#'">
-              <exec:text>'Edit' if can_edit else 'View'</exec:text>
-            </a>
+            <tea:call src="library.xml" name="event_actions">
+              <tea:pass name="event_id">event.id</tea:pass>
+            </tea:call>
           </td>
         </tr>
       </tea:for-each>

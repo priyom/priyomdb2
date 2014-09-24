@@ -4,9 +4,10 @@
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Edit alphabet</title>
+    <title><i18n:_>Edit alphabet</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -16,22 +17,22 @@
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Edit alphabet</h2>
+        <h2><i18n:_>Edit alphabet</i18n:_></h2>
         <form class="ym-form" method="POST" name="format" form:form="form">
-          <h6 class="ym-fbox-heading">Alphabet properties</h6>
+          <h6 class="ym-fbox-heading"><i18n:_>Alphabet properties</i18n:_></h6>
           <tea:call src="library.xml" name="errors">
             <tea:pass name="field">None</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label for="enigma-id">Short name</label>
+            <label for="enigma-id"><i18n:_>Short name</i18n:_></label>
             <input type="text"
-                   placeholder="e.g. USB"
+                   i18n:placeholder="e.g. USB"
                    form:field="short_name"/>
           </div>
           <div class="ym-fbox">
-            <label for="enigma-id">Display name</label>
+            <label for="enigma-id"><i18n:_>Display name</i18n:_></label>
             <input type="text"
-                   placeholder="e.g. USB"
+                   i18n:placeholder="e.g. USB"
                    form:field="display_name"/>
           </div>
           <div class="ym-fbox-footer ym-fbox-button">

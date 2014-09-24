@@ -8,7 +8,7 @@
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
   <head>
-    <title>View events</title>
+    <title><i18n:_>View events</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -20,7 +20,7 @@
     <exec:code>view = arguments['view']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Events</h2>
+      <h2><i18n:_>Events</i18n:_></h2>
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
@@ -53,46 +53,36 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Modified</th>
-            <th>Station</th>
-            <th>Submitter</th>
-            <th>Start time</th>
-            <th>Contents</th>
-            <th>Actions</th>
+            <th><i18n:_>Modified</i18n:_></th>
+            <th><i18n:_>Station</i18n:_></th>
+            <th><i18n:_>Submitter</i18n:_></th>
+            <th><i18n:_>Start time</i18n:_></th>
+            <th><i18n:_>Contents</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
           </tr>
         </thead>
         <tbody>
-          <tea:for-each bind="event, id, modified, _, station_obj, station, submitter_id, submitter, start_time"
-                        from="view">
+          <tea:for-each bind="event" from="view">
             <tr>
-              <td><exec:text>id</exec:text></td>
-              <td><i18n:datetime>modified</i18n:datetime></td>
+              <td><exec:text>event.id</exec:text></td>
+              <td><i18n:datetime>event.modified</i18n:datetime></td>
               <td>
-                <a exec:href="context.href(view_station, station_id=station_obj.id)">
-                  <exec:text>station_obj</exec:text>
+                <a exec:href="context.href(view_station, station_id=event.station.id)">
+                  <exec:text>event.station</exec:text>
                 </a>
               </td>
-              <td>
-                <exec:text>submitter or 'system generated'</exec:text>
-              </td>
-              <td><i18n:datetime>start_time</i18n:datetime></td>
+              <td><tea:call src="library.xml" name="submitter" /></td>
+              <td><i18n:datetime>event.start_time</i18n:datetime></td>
               <td class="tx-content">
                 <tea:call src="library.xml" name="event_contents">
                   <tea:pass name="event">event</tea:pass>
                 </tea:call>
               </td>
               <td>
-                <exec:code>can_edit = context.request.auth.has_capability(Capability.EDIT_EVENT)</exec:code>
-                <a exec:href="context.href(edit_event, event_id=id) if edit_event is not None else '#'"
-                   exec:class="'ym-button ym-primary'+
-                               (' ym-edit' if can_edit else '')">
-                  <exec:text>'Edit' if can_edit else 'View'</exec:text>
-                </a>
-                <tea:if auth:cap="DELETE_EVENT">
-                  <a href="#"
-                     class="ym-button ym-danger ym-delete ym-small">Delete</a>
-                </tea:if>
-             </td>
+                <tea:call src="library.xml" name="event_actions">
+                  <tea:pass name="event_id">event.id</tea:pass>
+                </tea:call>
+              </td>
             </tr>
           </tea:for-each>
         </tbody>

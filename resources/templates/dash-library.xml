@@ -10,7 +10,7 @@
     <tea:arg name="recents" mode="lazy" default="recents" />
     <tea:arg name="view_station" mode="lazy" default="view_station" />
     <tea:arg name="view_event" mode="lazy" default="view_event" />
-    <h3>Recent entries</h3>
+    <h3><i18n:_>Recent entries</i18n:_></h3>
     <table>
       <colgroup>
         <col class="id" />
@@ -21,40 +21,23 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Submitter</th>
-          <th>Station</th>
-          <th>Timestamp</th>
+          <th><i18n:_>Submitter</i18n:_></th>
+          <th><i18n:_>Station</i18n:_></th>
+          <th><i18n:_>Timestamp</i18n:_></th>
         </tr>
       </thead>
       <tbody>
         <tea:for-each bind="event" from="recents">
           <tr>
             <td>
-              <tea:switch>
-                <tea:case exec:eval="view_event">
-                  <a exec:href="context.href(view_event, event_id=event.id)"><exec:text>event.id</exec:text></a>
-                </tea:case>
-                <tea:default>
-                  <exec:text>event.id</exec:text>
-                </tea:default>
-              </tea:switch>
+              <tea:call src="library.xml" name="event">
+                <tea:pass name="attr">"id"</tea:pass>
+              </tea:call>
             </td>
-            <td>
-              <tea:switch>
-                <tea:case exec:eval="event.submitter">
-                  <exec:text>event.submitter</exec:text>
-                </tea:case>
-                <tea:default>system generated</tea:default>
-              </tea:switch>
-            </td>
-            <td>
-              <tea:switch>
-                <tea:case exec:eval="view_station">
-                  <a exec:href="context.href(view_station, station_id=event.station.id)"><exec:text>event.station</exec:text></a>
-                </tea:case>
-                <tea:default><exec:text>event.station</exec:text></tea:default>
-              </tea:switch>
-            </td>
+            <td><tea:call src="library.xml" name="submitter" /></td>
+            <td><tea:call src="library.xml" name="station">
+              <tea:pass name="station">event.station</tea:pass>
+            </tea:call></td>
             <td><i18n:datetime>event.start_time</i18n:datetime></td>
           </tr>
         </tea:for-each>
@@ -64,7 +47,7 @@
 
   <tea:def name="mine">
     <tea:arg name="mine" mode="lazy" default="mine" />
-    <h3>My logs</h3>
+    <h3><i18n:_>My logs</i18n:_></h3>
     <table>
       <colgroup>
         <col class="id" />
@@ -75,16 +58,18 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Station</th>
-          <th>Timestamp</th>
-          <th>Contents / Event</th>
+          <th><i18n:_>Station</i18n:_></th>
+          <th><i18n:_>Timestamp</i18n:_></th>
+          <th><i18n:_>Contents / Event</i18n:_></th>
         </tr>
       </thead>
       <tbody>
         <tea:for-each bind="event" from="mine">
           <tr>
             <td><exec:text>event.id</exec:text></td>
-            <td><exec:text>event.station</exec:text></td>
+            <td><tea:call src="library.xml" name="station">
+              <tea:pass name="station">event.station</tea:pass>
+            </tea:call></td>
             <td><exec:text>event.modified</exec:text></td>
             <td class="tx-content">
               <tea:call src="library.xml" name="event_contents">
@@ -101,7 +86,7 @@
     <tea:arg name="unapproved" mode="lazy" default="unapproved" />
     <tea:arg name="view_station" mode="lazy" default="view_station" />
     <tea:arg name="view_event" mode="lazy" default="view_event" />
-    <h3>Log entry moderation queue</h3>
+    <h3><i18n:_>Log entry moderation queue</i18n:_></h3>
     <tea:switch>
       <tea:case exec:eval="unapproved.count() > 0">
         <table>
@@ -114,24 +99,19 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Submitter</th>
-              <th>Station</th>
-              <th>Timestamp</th>
+              <th><i18n:_>Submitter</i18n:_></th>
+              <th><i18n:_>Station</i18n:_></th>
+              <th><i18n:_>Timestamp</i18n:_></th>
             </tr>
           </thead>
           <tbody>
             <tea:for-each bind="event" from="unapproved">
               <tr>
                 <td><exec:text>event.id</exec:text></td>
-                <td>
-                  <tea:switch>
-                    <tea:case exec:eval="event.submitter">
-                      <exec:text>event.submitter</exec:text>
-                    </tea:case>
-                    <tea:default>system generated</tea:default>
-                  </tea:switch>
-                </td>
-                <td><exec:text>event.station</exec:text></td>
+                <td><tea:call src="library.xml" name="submitter" /></td>
+                <td><tea:call src="library.xml" name="station">
+                  <tea:pass name="station">event.station</tea:pass>
+                </tea:call></td>
                 <td><i18n:datetime>event.start_time</i18n:datetime></td>
               </tr>
             </tea:for-each>
@@ -139,7 +119,8 @@
         </table>
       </tea:case>
       <tea:default>
-        <p>Currently, there are no entries waiting for moderation.</p>
+        <p><i18n:_>Currently, there are no entries waiting for
+        moderation.</i18n:_></p>
       </tea:default>
     </tea:switch>
   </tea:def>

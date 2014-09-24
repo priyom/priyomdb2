@@ -4,9 +4,10 @@
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>View station</title>
+    <title><i18n:_>View station</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -15,28 +16,28 @@
     <exec:code>station = arguments['station']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>View station</h2>
-      <h6 class="ym-fbox-heading">Station properties</h6>
+      <h2><i18n:_>View station</i18n:_></h2>
+      <h6 class="ym-fbox-heading"><i18n:_>Station properties</i18n:_></h6>
       <div class="ym-form">
         <div class="ym-fbox">
-          <label for="enigma-id">Enigma Identifier</label>
+          <label for="enigma-id"><i18n:_>Enigma Identifier</i18n:_></label>
           <input type="text" id="enigma-id"
                  readonly="readonly"
                  exec:value="station.enigma_id or ''"/>
         </div>
         <div class="ym-fbox">
-          <label for="priyom-id">Priyom Identifier</label>
+          <label for="priyom-id"><i18n:_>Priyom Identifier</i18n:_></label>
           <input type="text" id="priyom-id"
                  readonly="readonly"
                  exec:value="station.priyom_id or ''"/>
         </div>
         <div class="ym-fbox">
-          <label for="nickname">Nickname</label>
+          <label for="nickname"><i18n:_>Nickname</i18n:_></label>
           <input type="text" id="nickname"
                  exec:value="station.nickname or ''"/>
         </div>
         <div class="ym-fbox">
-          <label for="description">Description</label>
+          <label for="description"><i18n:_>Description</i18n:_></label>
           <textarea id="description">
             <exec:text>station.description or ""</exec:text>
           </textarea>

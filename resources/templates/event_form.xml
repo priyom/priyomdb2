@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Edit event</title>
+    <title><i18n:_>Edit event</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -25,14 +26,16 @@
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>Edit event</h2>
+        <h2><i18n:_>Edit event</i18n:_></h2>
         <form class="ym-form" method="POST" name="format" form:form="form">
-          <h6 class="ym-fbox-heading">Event properties</h6>
+          <h6 class="ym-fbox-heading"><i18n:_>Event properties</i18n:_></h6>
           <tea:call src="library.xml" name="errors">
             <tea:pass name="field">None</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="station">Station</label>
+            <label form:for-field="station">
+              <i18n:_>Station</i18n:_>
+            </label>
             <select form:field="station">
               <tea:for-each bind="station" from="stations">
                 <option exec:value="station.id"
@@ -46,7 +49,9 @@
             <tea:pass name="field">'station'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="start_time">Start time</label>
+            <label form:for-field="start_time">
+              <i18n:_>Start time</i18n:_>
+            </label>
             <input type="datetime"
                    form:field="start_time"/>
           </div>
@@ -54,7 +59,9 @@
             <tea:pass name="field">'start_time'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="end_time">End time</label>
+            <label form:for-field="end_time">
+              <i18n:_>End time</i18n:_>
+            </label>
             <input type="datetime"
                    form:field="end_time"/>
           </div>
@@ -62,7 +69,9 @@
             <tea:pass name="field">'end_time'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="event_class">Event class</label>
+            <label form:for-field="event_class">
+              <i18n:_>Event class</i18n:_>
+            </label>
             <select form:field="event_class">
               <option value=""
                       exec:selected="'selected' if not form.event_class else None">Plain transmission</option>
@@ -78,12 +87,17 @@
             <tea:pass name="field">'event_class'</tea:pass>
           </tea:call>
           <div class="ym-fbox">
-            <label form:for-field="submitter">Submitter</label>
+            <label form:for-field="submitter">
+              <i18n:_>Submitter</i18n:_>
+            </label>
             <tea:switch>
               <tea:case auth:cap="REASSIGN_EVENT">
                 <select form:field="submitter">
                   <option value=""
-                          exec:selected="'selected' if not form.submitter else None">Anonymous / External submitter</option>
+                          exec:selected="'selected' if not form.submitter else
+                                         None">
+                    <i18n:_>Anonymous / External submitter</i18n:_>
+                  </option>
                   <tea:for-each bind="user" from="users">
                     <option exec:value="user.id"
                             exec:selected="'selected' if form.submitter == user else None">
@@ -103,18 +117,25 @@
             <tea:pass name="field">'submitter'</tea:pass>
           </tea:call>
           <div class="ym-fbox ym-fbox-check">
-            <div class="ym-label">Moderator approval (without, the Event and its contents will not be shown in queries)</div>
+            <div class="ym-label">
+              <i18n:_>
+                Moderator approval (without, the Event and its contents will not
+                be shown in queries)
+              </i18n:_>
+            </div>
             <input type="checkbox"
                    form:field="approved"
                    exec:disabled="None if context.request.auth.has_capability(Capability.REVIEW_LOG) else 'disabled'" />
-            <label form:for-field="approved">Approved</label>
+            <label form:for-field="approved"><i18n:_>Approved</i18n:_></label>
           </div>
           <div class="ym-fbox ym-fbox-button">
             <button type="submit"
                     class="ym-button ym-reload"
-                    form:action="validate">Validate without saving</button>
+                    form:action="validate">
+              <i18n:_>Validate without saving</i18n:_>
+            </button>
           </div>
-          <h6 class="ym-fbox-heading">Frequencies and Modes</h6>
+          <h6 class="ym-fbox-heading"><i18n:_>Frequencies and Modes</i18n:_></h6>
           <exec:code>rows = form.frequencies</exec:code>
           <tea:call src="library.xml" name="frequency_list_input">
             <tea:pass name="rows">rows</tea:pass>
@@ -123,7 +144,7 @@
           <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'frequencies'</tea:pass>
           </tea:call>
-          <h6 class="ym-fbox-heading">Contents</h6>
+          <h6 class="ym-fbox-heading"><i18n:_>Contents</i18n:_></h6>
           <exec:code>content_rows = form.contents</exec:code>
           <tea:call src="library.xml" name="contents_list_input">
             <tea:pass name="rows">content_rows</tea:pass>

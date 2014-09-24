@@ -5,13 +5,27 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-18 19:13+0200\n"
+"PO-Revision-Date: 2014-09-19 00:12+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: resources/templates/station_not_found.xml:23
+msgid "A station with the ID {station_id} does not exist."
+msgstr ""
+
+#: resources/templates/event_not_found.xml:23
+msgid "An event with the ID {event_id} does not exist."
+msgstr ""
+
+#: resources/templates/event_form.xml:121
+msgid ""
+"Moderator approval (without, the Event and its contents will not be shown in "
+"queries)"
+msgstr ""
 
 #: resources/templates/signup-form-full.xml:35
 #, fuzzy
@@ -26,13 +40,91 @@ msgstr ""
 "special character and one number or, for each group missing from that list, "
 "8 additional characters</xml></xml>"
 
-#: resources/templates/footer.xml:6
+#: resources/templates/footer.xml:9
 msgid "A <xml id='priyom'>priyom.org</xml> project"
 msgstr "A <xml id='priyom'>priyom.org</xml> project"
+
+#: resources/templates/view_formats.xml:57
+msgid "Actions"
+msgstr ""
+
+#: resources/templates/library.xml:278
+msgid "Actions and Metadata"
+msgstr ""
+
+#: resources/templates/view_formats.xml:23
+msgid "Activities"
+msgstr ""
+
+#: resources/templates/library.xml:209
+msgid "Add another frequency"
+msgstr ""
+
+#: resources/templates/library.xml:350
+msgid "Add another transmission"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:70
+msgid "Add child"
+msgstr ""
+
+#: resources/templates/library.xml:227
+msgid "Add frequency"
+msgstr ""
+
+#: resources/templates/library.xml:305
+msgid "Add transcript"
+msgstr ""
+
+#: resources/templates/log1.xml:49
+msgid ""
+"All formats with Z are also supported without. Without Z, the timestamps "
+"refer to the timezone specified in your profile."
+msgstr ""
+
+#: resources/templates/library.xml:240
+msgid "Alphabet"
+msgstr ""
+
+#: resources/templates/alphabet_form.xml:22
+msgid "Alphabet properties"
+msgstr ""
+
+#: resources/templates/view_alphabets.xml:24
+msgid "Alphabets"
+msgstr ""
+
+#: resources/templates/dash-unauthed.xml:36
+msgid "Already have an account?"
+msgstr ""
+
+#: resources/templates/event_form.xml:99
+msgid "Anonymous / External submitter"
+msgstr ""
+
+#: resources/templates/log2.xml:68
+msgid "Append to existing event"
+msgstr ""
+
+#: resources/templates/event_form.xml:129
+msgid "Approved"
+msgstr ""
+
+#: resources/templates/library.xml:261
+msgid "Attribution"
+msgstr ""
 
 #: resources/templates/self_form.xml:45
 msgid "Change password"
 msgstr "Change password"
+
+#: resources/templates/library.xml:130
+msgid "Clear all filters"
+msgstr ""
+
+#: resources/templates/format_form.xml:24
+msgid "Comment"
+msgstr ""
 
 #: resources/templates/signup-success.xml:21
 msgid ""
@@ -42,29 +134,280 @@ msgstr ""
 "Congratulation, {loginname}! Your account has been created. You can log in "
 "immediately."
 
+#: resources/templates/review.xml:117
+msgid "Congratulations!"
+msgstr ""
+
+#: resources/templates/event_form.xml:147
+msgid "Contents"
+msgstr ""
+
+#: resources/templates/dash-library.xml:63
+msgid "Contents / Event"
+msgstr ""
+
+#: resources/templates/format_form.xml:91
+msgid "Controls"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:31
+msgid "Count"
+msgstr ""
+
+#: resources/templates/log2.xml:43
+msgid "Create new event"
+msgstr ""
+
 #: resources/templates/self_form.xml:52
 msgid "Current password"
 msgstr "Current password"
+
+#: resources/templates/dash-library.xml:122
+msgid "Currently, there are no entries waiting for moderation."
+msgstr ""
+
+#: resources/templates/library.xml:199
+msgid "Delete"
+msgstr ""
+
+#: resources/templates/alphabet_delete.xml:10
+msgid "Delete alphabet"
+msgstr ""
+
+#: resources/templates/mode_delete.xml:10
+msgid "Delete broadcast mode"
+msgstr ""
+
+#: resources/templates/station_delete.xml:10
+msgid "Delete station"
+msgstr ""
+
+#: resources/templates/library.xml:336
+msgid "Delete transcript"
+msgstr ""
+
+#: resources/templates/alphabet_delete.xml:22
+msgid "Deletion failed"
+msgstr ""
+
+#: resources/templates/station_delete.xml:19
+msgid ""
+"Deletion of stations is not supported yet. Ask Horrorcat if you really, "
+"really need to delete a station."
+msgstr ""
+
+#: resources/templates/station_form.xml:56
+msgid "Description"
+msgstr ""
+
+#: resources/templates/mode_form.xml:24
+msgid "Display name"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:11
+msgid "Duplicity"
+msgstr ""
+
+#: resources/templates/alphabet_form.xml:10
+msgid "Edit alphabet"
+msgstr ""
+
+#: resources/templates/event_form.xml:11
+msgid "Edit event"
+msgstr ""
+
+#: resources/templates/format_form.xml:10
+msgid "Edit format"
+msgstr ""
+
+#: resources/templates/mode_form.xml:10
+msgid "Edit mode"
+msgstr ""
+
+#: resources/templates/station_form.xml:10
+#, fuzzy
+msgid "Edit station"
+msgstr "Station#"
+
+#: resources/templates/format_form.xml:50
+msgid "Edit transmission format"
+msgstr ""
 
 #: resources/templates/signup-form.xml:19
 msgid "Email address"
 msgstr "Email address"
 
+#: resources/templates/event_form.xml:63
+msgid "End time"
+msgstr ""
+
+#: resources/templates/view_stations.xml:64
+msgid "Enigma ID"
+msgstr ""
+
+#: resources/templates/station_form.xml:28
+msgid "Enigma Identifier"
+msgstr ""
+
+#: resources/templates/event_form.xml:73
+msgid "Event class"
+msgstr ""
+
+#: resources/templates/view_stations.xml:67
+msgid "Event count"
+msgstr ""
+
+#: resources/templates/event_not_found.xml:10
+msgid "Event not found"
+msgstr ""
+
+#: resources/templates/event_form.xml:31
+msgid "Event properties"
+msgstr ""
+
+#: resources/templates/view_events.xml:23
+msgid "Events"
+msgstr ""
+
+#: resources/templates/user_view.xml:41
+msgid "Events logged"
+msgstr ""
+
+#: resources/templates/view_formats.xml:30
+msgid "Filters"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:39
+msgid "Flags"
+msgstr ""
+
+#: resources/templates/log2.xml:47
+msgid ""
+"For a new transmission event, you have to fill in the frequencies which were "
+"used during the transmission."
+msgstr ""
+
+#: resources/templates/library.xml:285
+msgid "Format"
+msgstr ""
+
+#: resources/templates/format_form.xml:90
+msgid "Format node"
+msgstr ""
+
+#: resources/templates/event_form.xml:138
+msgid "Frequencies and Modes"
+msgstr ""
+
+#: resources/templates/library.xml:173
+msgid "Frequency"
+msgstr ""
+
+#: resources/templates/user_view.xml:31
+msgid "Group memberships"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:59
+msgid "Join / Match expression"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:52
+msgid "Join children"
+msgstr ""
+
+#: resources/templates/format_form.xml:31
+msgid "Key"
+msgstr ""
+
 #: resources/templates/self_form.xml:32
 msgid "Language"
 msgstr "Language"
+
+#: resources/templates/dash-authed.xml:42
+msgid "Log a new transmission into the database."
+msgstr ""
+
+#: resources/templates/dash-library.xml:89
+msgid "Log entry moderation queue"
+msgstr ""
+
+#: resources/templates/dash-unauthed.xml:37
+msgid "Log into the Priyom.org database with your existing account."
+msgstr ""
+
+#: resources/templates/log1.xml:11
+msgid "Log transmission"
+msgstr ""
 
 #: resources/templates/signup-form.xml:12
 msgid "Login name"
 msgstr "Login name"
 
-#: resources/templates/view_user.xml:22
+#: resources/templates/user_view.xml:24
 msgid "Main data"
 msgstr "Main data"
+
+#: resources/templates/view_alphabets.xml:11
+msgid "Manage alphabets"
+msgstr ""
+
+#: resources/templates/view_modes.xml:11
+msgid "Manage broadcast modes"
+msgstr ""
+
+#: resources/templates/view_formats.xml:9
+msgid "Manage transmission formats"
+msgstr ""
+
+#: resources/templates/library.xml:298
+#, fuzzy
+msgid "Metadata"
+msgstr "Main data"
+
+#: resources/templates/library.xml:174
+msgid "Mode"
+msgstr ""
+
+#: resources/templates/mode_form.xml:22
+msgid "Mode properties"
+msgstr ""
+
+#: resources/templates/view_formats.xml:54
+msgid "Modified"
+msgstr ""
+
+#: resources/templates/station_event_view.xml:10
+msgid "Most recent events"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:83
+msgid "Move down"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:78
+msgid "Move up"
+msgstr ""
 
 #: resources/templates/self_form.xml:10
 msgid "My account"
 msgstr "My account"
+
+#: resources/templates/dash-library.xml:50
+msgid "My logs"
+msgstr ""
+
+#: resources/templates/view_alphabets.xml:51
+msgid "New alphabet"
+msgstr ""
+
+#: resources/templates/view_formats.xml:25
+msgid "New format"
+msgstr ""
+
+#: resources/templates/view_modes.xml:42
+#, fuzzy
+msgid "New mode"
+msgstr "New Password"
 
 #: resources/templates/self_form.xml:59
 msgid "New password"
@@ -74,6 +417,29 @@ msgstr "New Password"
 msgid "New password (confirm)"
 msgstr "New password (confirm)"
 
+#: resources/templates/log_library.xml:83
+msgid "Next"
+msgstr ""
+
+#: resources/templates/station_form.xml:47
+msgid "Nickname"
+msgstr ""
+
+#: resources/templates/log2.xml:85
+msgid ""
+"No related events were found for this station at the given time. If you "
+"meant to append to an existing event, go back and double-check the time and "
+"station."
+msgstr ""
+
+#: resources/templates/log2.xml:84
+msgid "Note:"
+msgstr ""
+
+#: resources/templates/format_form.xml:83
+msgid "Parsing tree"
+msgstr ""
+
 #: resources/templates/signup-form.xml:26
 msgid "Password"
 msgstr "Password"
@@ -82,33 +448,123 @@ msgstr "Password"
 msgid "Password (confirm)"
 msgstr "Password (confirm)"
 
+#: resources/templates/log_library.xml:78
+msgid "Previous"
+msgstr ""
+
+#: resources/templates/view_stations.xml:65
+msgid "Priyom ID"
+msgstr ""
+
+#: resources/templates/station_form.xml:38
+msgid "Priyom Identifier"
+msgstr ""
+
 #: resources/templates/signup-success.xml:27
 msgid "Proceed to sign in"
 msgstr "Proceed to sign in"
 
-#: resources/templates/dash-authed.xml:11
+#: resources/templates/view_alphabets.xml:28
+msgid "Quick add"
+msgstr ""
+
+#: resources/templates/dash-unauthed.xml:9
 msgid "Radio Dash"
 msgstr "Radio Dash"
+
+#: resources/templates/dash-library.xml:13
+msgid "Recent entries"
+msgstr ""
 
 #: resources/templates/self_form.xml:30
 msgid "Regional settings"
 msgstr "Regional settings"
 
+#: resources/templates/dash-unauthed.xml:33
+msgid ""
+"Register with the Priyom.org database to be able to log transmissions and "
+"get full access to the data."
+msgstr ""
+
+#: resources/templates/dash-authed.xml:47
+msgid "Review entries created by unprivilegued users."
+msgstr ""
+
 #: resources/templates/review.xml:12
 msgid "Review event submissions"
 msgstr "Review event submissions"
 
-#: resources/templates/self_form.xml:75
+#: resources/templates/dash-authed.xml:45
+msgid "Review logs"
+msgstr ""
+
+#: resources/templates/mode_form.xml:36
 msgid "Save"
 msgstr "Save"
 
-#: resources/templates/signup.xml:9
+#: resources/templates/format_form.xml:111
+msgid "Save as copy"
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:45
+msgid "Save contents to db"
+msgstr ""
+
+#: resources/templates/format_form.xml:105
+msgid "Save to database"
+msgstr ""
+
+#: resources/templates/library.xml:213
+msgid "Select known frequency or hit add to create a new one"
+msgstr ""
+
+#: resources/templates/view_alphabets.xml:82
+#, fuzzy
+msgid "Short"
+msgstr "Login name"
+
+#: resources/templates/alphabet_form.xml:27
+#, fuzzy
+msgid "Short name"
+msgstr "Login name"
+
+#: resources/templates/dash-unauthed.xml:42
+#, fuzzy
+msgid "Sign in"
+msgstr "Sign up"
+
+#: resources/templates/dash-unauthed.xml:32
 msgid "Sign up"
 msgstr "Sign up"
 
 #: resources/templates/signup-form.xml:43
 msgid "Sign up for Priyom.org DB"
 msgstr "Sign up for Priyom.org DB"
+
+#: resources/templates/event_form.xml:53
+msgid "Start time"
+msgstr ""
+
+#: resources/templates/event_form.xml:37
+#, fuzzy
+msgid "Station"
+msgstr "Station#"
+
+#: resources/templates/station_not_found.xml:10
+msgid "Station not found"
+msgstr ""
+
+#: resources/templates/station_form.xml:22
+msgid "Station properties"
+msgstr ""
+
+#: resources/templates/user_view.xml:39
+msgid "Statistics"
+msgstr ""
+
+#: resources/templates/event_form.xml:91
+msgid "Submitter"
+msgstr ""
 
 #: resources/templates/signup-success.xml:9
 msgid "Successfully signed up"
@@ -124,9 +580,31 @@ msgstr ""
 "id='sup'>2</xml> is converted to 2). When displaying, your original login "
 "name is used (without normalization)."
 
+#: resources/templates/review.xml:118
+msgid "The review queue is empty."
+msgstr ""
+
+#: resources/templates/format_form.xml:54
+msgid ""
+"This format has users. This implies that you cannot modify it. You can, "
+"however, save a copy of the format."
+msgstr ""
+
+#: resources/templates/format_form_controls_column.xml:30
+msgid "This is unused if duplicity is anything but a custom, fixed amount."
+msgstr ""
+
 #: resources/templates/self_form.xml:39
 msgid "Time zone"
 msgstr "Time zone"
+
+#: resources/templates/log1.xml:39
+msgid "Timestamp"
+msgstr ""
+
+#: resources/templates/log1.xml:43
+msgid "Timestamp formats:"
+msgstr ""
 
 #: resources/templates/self_form.xml:47
 msgid ""
@@ -138,27 +616,126 @@ msgstr ""
 "including confirmation. If you do not want to change your password, leave "
 "any of the password fields blank."
 
-#: resources/templates/view_user.xml:11
+#: resources/templates/library.xml:321
+msgid "Transcript"
+msgstr ""
+
+#: resources/templates/library.xml:331
+msgid "Transcript actions"
+msgstr ""
+
+#: resources/templates/library.xml:327
+msgid "Transcript metadata"
+msgstr ""
+
+#: resources/templates/view_formats.xml:19
+msgid "Transmission formats"
+msgstr ""
+
+#: resources/templates/format_form.xml:71
+msgid ""
+"Until you click “Save to database” below, <xml id='em'>no</xml> changes are "
+"made to the entries in the database. Leaving the page without saving will "
+"make you lose all your changes!"
+msgstr ""
+
+#: resources/templates/station_form.xml:67
+msgid "Update"
+msgstr ""
+
+#: resources/templates/format_form.xml:80
+msgid "Update / Check for errors"
+msgstr ""
+
+#: resources/templates/user_view.xml:13
 msgid "User \"{user}\""
 msgstr "User “{user}”"
+
+#: resources/templates/view_formats.xml:56
+#, fuzzy
+msgid "User count"
+msgstr "My account"
+
+#: resources/templates/login.xml:24
+#, fuzzy
+msgid "User name"
+msgstr "Login name"
+
+#: resources/templates/log3.xml:31
+msgid "Validate contents without submitting"
+msgstr ""
+
+#: resources/templates/event_form.xml:135
+msgid "Validate without saving"
+msgstr ""
+
+#: resources/templates/event_not_found.xml:20
+msgid "View event"
+msgstr ""
+
+#: resources/templates/view_events.xml:11
+msgid "View events"
+msgstr ""
+
+#: resources/templates/station_not_found.xml:20
+#, fuzzy
+msgid "View station"
+msgstr "Station#"
+
+#: resources/templates/view_stations.xml:11
+#, fuzzy
+msgid "View stations"
+msgstr "Station#"
+
+#: resources/templates/format_form.xml:53
+msgid "Warning:"
+msgstr ""
 
 #: resources/templates/dash-authed.xml:28
 msgid "Welcome, {username}."
 msgstr "Welcome, {username}."
 
-#: resources/templates/footer.xml:7
+#: resources/templates/log1.xml:47
+msgid "YYYY-MM-DDThh:mm:ss.nnnnnnZ (with ns being fractional seconds)"
+msgstr ""
+
+#: resources/templates/log1.xml:46
+msgid "YYYY-MM-DDThh:mm:ssZ"
+msgstr ""
+
+#: resources/templates/log1.xml:45
+msgid "YYYY-MM-DDThh:mmZ"
+msgstr ""
+
+#: resources/templates/alphabet_form.xml:30
+msgid "e.g. USB"
+msgstr ""
+
+#: resources/templates/footer.xml:10
 msgid "hacked together by Horrorcat"
 msgstr "hacked together by Horrorcat"
 
-#: resources/templates/footer.xml:8
+#: resources/templates/library.xml:108
+msgid "next »"
+msgstr ""
+
+#: resources/templates/library.xml:16
+msgid "system generated"
+msgstr ""
+
+#: resources/templates/footer.xml:11
 msgid "using <xml id='yaml'>yaml CSS framework</xml>"
 msgstr "using <xml id='yaml'>yaml CSS framework</xml>"
 
-#: resources/templates/footer.xml:9
+#: resources/templates/footer.xml:12
 msgid "{count} event in database"
 msgid_plural "{count} events in database"
 msgstr[0] "{count} event in database"
 msgstr[1] "{count} events in database"
+
+#: resources/templates/library.xml:86
+msgid "« prev"
+msgstr ""
 
 msgid "Anonymous"
 msgstr "Anonymous"
@@ -213,3 +790,105 @@ msgstr "Static"
 
 msgid "Password violates strength criteria"
 msgstr "Password violates strength criteria"
+
+msgctxt "group"
+msgid "admins"
+msgstr "Administrators"
+
+msgctxt "group"
+msgid "moderators"
+msgstr "Moderators"
+
+msgctxt "group"
+msgid "registered"
+msgstr "Registered users"
+
+msgctxt "yesno"
+msgid "True"
+msgstr "yes"
+
+msgctxt "yesno"
+msgid "False"
+msgstr "no"
+
+msgctxt "operator"
+msgid "endswith"
+msgstr "ends with"
+
+msgctxt "operator"
+msgid "startswith"
+msgstr "starts with"
+
+msgctxt "operator"
+msgid "like"
+msgstr "is like"
+
+msgctxt "operator"
+msgid "contains"
+msgstr "contains"
+
+msgctxt "operator"
+msgid "notlike"
+msgstr "is not like"
+
+msgctxt "operator"
+msgid "notin_"
+msgstr "not in"
+
+msgctxt "operator"
+msgid "in_"
+msgstr "in"
+
+msgctxt "operator"
+msgid "__le__"
+msgstr "≤"
+
+msgctxt "operator"
+msgid "__lt__"
+msgstr "<"
+
+msgctxt "operator"
+msgid "__eq__"
+msgstr "="
+
+msgctxt "operator"
+msgid "__ne__"
+msgstr "≠"
+
+msgctxt "operator"
+msgid "__ge__"
+msgstr "≥"
+
+msgctxt "operator"
+msgid "__gt__"
+msgstr ">"
+
+msgctxt "field"
+msgid "station_id"
+msgstr "Station#"
+
+msgctxt "duplicity"
+msgid "one"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "one or more"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "zero or more"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "custom, fixed amount"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+#, fuzzy
+#~ msgid "Radio dash"
+#~ msgstr "Radio Dash"

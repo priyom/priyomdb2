@@ -51,3 +51,101 @@ msgstr ""
 
 msgid "Password violates strength criteria"
 msgstr ""
+
+msgctxt "group"
+msgid "admins"
+msgstr ""
+
+msgctxt "group"
+msgid "moderators"
+msgstr ""
+
+msgctxt "group"
+msgid "registered"
+msgstr ""
+
+msgctxt "yesno"
+msgid "True"
+msgstr ""
+
+msgctxt "yesno"
+msgid "False"
+msgstr ""
+
+msgctxt "operator"
+msgid "endswith"
+msgstr ""
+
+msgctxt "operator"
+msgid "startswith"
+msgstr ""
+
+msgctxt "operator"
+msgid "like"
+msgstr ""
+
+msgctxt "operator"
+msgid "contains"
+msgstr ""
+
+msgctxt "operator"
+msgid "notlike"
+msgstr ""
+
+msgctxt "operator"
+msgid "notin_"
+msgstr ""
+
+msgctxt "operator"
+msgid "in_"
+msgstr ""
+
+msgctxt "operator"
+msgid "__le__"
+msgstr ""
+
+msgctxt "operator"
+msgid "__lt__"
+msgstr ""
+
+msgctxt "operator"
+msgid "__eq__"
+msgstr ""
+
+msgctxt "operator"
+msgid "__ne__"
+msgstr ""
+
+msgctxt "operator"
+msgid "__ge__"
+msgstr ""
+
+msgctxt "operator"
+msgid "__gt__"
+msgstr ""
+
+msgctxt "field"
+msgid "station_id"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "one"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "one or more"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "zero or more"
+msgstr ""
+
+msgctxt "duplicity"
+msgid "custom, fixed amount"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "View"
+msgstr ""

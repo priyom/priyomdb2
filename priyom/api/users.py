@@ -98,3 +98,19 @@ def edit_self(request: teapot.request.Request):
         "user": user,
         "form": form
     }, {})
+
+@require_capability(Capability.VIEW_USER)
+@router.route("/user/{user_id:d}")
+@xsltea_site.with_template("user_view.xml")
+def view_user(request: teapot.request.Request, user_id):
+    user = request.dbsession.query(priyom.model.User).get(user_id)
+    if user is None:
+        raise teapot.make_error_response(404, "User not found")
+
+    yield teapot.response.Response(None)
+    yield ({
+        "user": user,
+        "recent_events": request.dbsession.query(priyom.model.Event).filter(
+            priyom.model.Event.submitter == user
+        ).order_by(priyom.model.Event.created.desc()).limit(25)
+    }, {})

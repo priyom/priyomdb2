@@ -4,9 +4,10 @@
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Station not found</title>
+    <title><i18n:_>Station not found</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -16,11 +17,12 @@
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <div class="ym-wrapper"><div class="ym-wbox">
-        <h2>View station</h2>
+        <h2><i18n:_>View station</i18n:_></h2>
         <p class="box error">
-          <strong>Station not found: </strong>
-          A station with the ID <exec:text>station_id</exec:text> does not
-          exist.
+          <strong><i18n:_>Station not found</i18n:_>: </strong>
+          <i18n:_ exec:station_id="station_id">
+            A station with the ID {station_id} does not exist.
+          </i18n:_>
         </p>
       </div></div>
     </main>

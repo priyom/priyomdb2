@@ -3,7 +3,9 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
-    xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+    xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+    xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+
   <tea:def name="shadow_pages">
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
@@ -11,7 +13,7 @@
     <tea:if exec:eval="pageidx != 0">
       <exec:code>default_form = pages[0]</exec:code>
       <input type="hidden"
-             form:field="station_id" />
+             form:field="station" />
       <input type="hidden"
              form:field="timestamp"
              form:mode="datetime" />
@@ -22,6 +24,8 @@
              form:field="event_source" />
       <input type="hidden"
              form:field="event" />
+      <input type="hidden"
+             form:field="existing_event_frequency" />
       <exec:code>rows = pages[1].frequencies</exec:code>
       <tea:for-each bind="row" from="rows">
         <input type="hidden"
@@ -63,6 +67,7 @@
       </tea:for-each>
     </tea:if>
   </tea:def>
+
   <tea:def name="footer">
     <tea:arg name="pageidx" mode="lazy" default="pageidx" />
     <tea:arg name="pages" mode="lazy" default="pages" />
@@ -70,19 +75,22 @@
       <tea:if exec:eval="pageidx > 0">
         <button type="submit"
                 class="ym-button ym-previous"
-                name="backward">Previous</button>
+                name="backward"><i18n:_>Previous</i18n:_></button>
       </tea:if>
       <tea:if exec:eval="pageidx &lt; len(pages)-1">
         <button type="submit"
                 class="ym-button ym-next ym-primary"
-                name="forward">Next</button>
+                name="forward"><i18n:_>Next</i18n:_></button>
       </tea:if>
       <tea:if exec:eval="pageidx == len(pages)-1">
         <exec:code>default_form = pages[pageidx]</exec:code>
         <button type="submit"
                 form:action="save"
-                class="ym-button ym-save ym-success">Save</button>
+                class="ym-button ym-save ym-success">
+          <i18n:_>Save</i18n:_>
+        </button>
       </tea:if>
     </div>
   </tea:def>
+
 </library>

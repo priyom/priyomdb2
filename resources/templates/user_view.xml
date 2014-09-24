@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+  <exec:code>user = arguments['user']</exec:code>
+  <exec:code>recent_events = arguments['recent_events']</exec:code>
+  <exec:code>stats = user.get_stats()</exec:code>
+  <head>
+    <title><i18n:_ exec:user="user">User "{user}"</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <tea:include src="aux.xml" xpath="/misc/*" />
+    <main>
+      <h2><i18n:_ exec:user="user">User "{user}"</i18n:_></h2>
+      <div class="ym-grid">
+        <div class="ym-gr ym-g38"><div class="ym-gbox">
+          <h5><i18n:_>Main data</i18n:_></h5>
+          <dl>
+            <dt><i18n:_>Login name</i18n:_></dt>
+            <dd><exec:text>user</exec:text></dd>
+            <dt><i18n:_>Email address</i18n:_></dt>
+            <dd><exec:text>user.email</exec:text></dd>
+          </dl>
+          <h6><i18n:_>Group memberships</i18n:_></h6>
+          <ul>
+            <tea:for-each from="user.groups" bind="group">
+              <li><exec:text>context.i18n(str(group), ctxt="group")</exec:text></li>
+            </tea:for-each>
+          </ul>
+        </div></div>
+        <div class="ym-gl ym-g62"><div class="ym-gbox">
+          <h5><i18n:_>Statistics</i18n:_></h5>
+          <dl>
+            <dt><i18n:_>Events logged</i18n:_></dt>
+            <dd><exec:text>stats["events"]</exec:text></dd>
+          </dl>
+        </div></div>
+      </div>
+      <table>
+        <colgroup>
+          <col />
+          <col />
+          <col />
+          <col />
+        </colgroup>
+        <thead>
+          <th>#</th>
+          <th>Approved</th>
+          <th>Station</th>
+          <th>Timestamp</th>
+          <th>Contents</th>
+          <th>Actions</th>
+        </thead>
+        <tbody>
+          <tea:for-each bind="event" from="recent_events">
+            <tr>
+              <td><exec:text>event.id</exec:text></td>
+              <td><exec:text>context.i18n(str(event.approved),
+                                          ctxt="yesno")</exec:text></td>
+              <td><exec:text>event.station</exec:text></td>
+              <td><exec:text>event.start_time</exec:text></td>
+              <td class="tx-content">
+                <tea:call src="library.xml" name="event_contents">
+                  <tea:pass name="event">event</tea:pass>
+                </tea:call>
+              </td>
+              <td>
+                <tea:call src="library.xml" name="event_actions">
+                  <tea:pass name="event_id">event.id</tea:pass>
+                </tea:call>
+              </td>
+            </tr>
+          </tea:for-each>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

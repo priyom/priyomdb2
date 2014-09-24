@@ -58,9 +58,7 @@
                       <exec:text>station_obj</exec:text>
                     </a>
                   </td>
-                  <td>
-                    <exec:text>submitter or 'system generated'</exec:text>
-                  </td>
+                  <td><tea:call src="library.xml" name="submitter" /></td>
                   <td>
                     <h6>Metadata</h6>
                     <dl>
@@ -101,11 +99,9 @@
                       </form>
                     </p>
                     <p>
-                      <a exec:href="context.href(view_event, event_id=id) if view_event is not None else '#'"
-                         exec:class="'ym-button ym-primary'+
-                                     (' ym-edit' if can_edit else '')">
-                        <exec:text>'Edit' if can_edit else 'View'</exec:text>
-                      </a>
+                      <tea:call src="library.xml" name="event_actions">
+                        <tea:pass name="event_id">event.id</tea:pass>
+                      </tea:call>
                     </p>
                   </td>
                 </tr>
@@ -118,8 +114,8 @@
           </tea:call>
         </tea:case>
         <tea:default>
-          <h6>Congratulations!</h6>
-          <p>The review queue is empty.</p>
+          <h6><i18n:_>Congratulations!</i18n:_></h6>
+          <p><i18n:_>The review queue is empty.</i18n:_></p>
         </tea:default>
       </tea:switch>
     </main>

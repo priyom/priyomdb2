@@ -114,7 +114,7 @@ class FrequencyField(teapot.forms.StaticDefaultField,
         return round(float(value) * factor)
 
     def to_field_value(self, instance, view_type):
-        value = self.__get__(instance, type(instance))
+        value = int(self.__get__(instance, type(instance)))
 
         prefixes = ["k", "M", "G", "T"]
 

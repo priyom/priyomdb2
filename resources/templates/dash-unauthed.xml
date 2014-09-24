@@ -6,7 +6,7 @@
       xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
   <head>
-    <title>Radio Dash</title>
+    <title><i18n:_>Radio Dash</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -22,22 +22,25 @@
     <exec:code>signup = arguments['signup']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Radio dash</h2>
+      <h2><i18n:_>Radio Dash</i18n:_></h2>
       <div class="ym-grid linearize-level-2">
         <div class="ym-gl ym-g60"><div class="ym-gbox">
           <tea:call src="dash-library.xml" name="recent-entries" />
         </div></div>
         <div class="ym-gr ym-g40"><div class="ym-gbox">
-          <h3>Activities</h3>
-          <h4>Sign up</h4>
-          <p>Register with the Priyom.org database to be able to log
-          transmissions and get full access to the data.</p>
+          <h3><i18n:_>Activities</i18n:_></h3>
+          <h4><i18n:_>Sign up</i18n:_></h4>
+          <p><i18n:_>Register with the Priyom.org database to be able to log
+          transmissions and get full access to the data.</i18n:_></p>
           <tea:include src="signup-form.xml" />
-          <h4>Already have an account?</h4>
-          <p>Log into the Priyom.org database with your existing account.</p>
+          <h4><i18n:_>Already have an account?</i18n:_></h4>
+          <p><i18n:_>Log into the Priyom.org database with your existing
+          account.</i18n:_></p>
           <p>
             <a exec:href="context.href(sign_in)"
-               class="ym-button ym-primary">Sign in</a>
+               class="ym-button ym-primary">
+              <i18n:_>Sign in</i18n:_>
+            </a>
           </p>
         </div></div>
       </div>

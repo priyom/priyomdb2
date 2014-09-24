@@ -4,9 +4,10 @@
       xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Edit format</title>
+    <title><i18n:_>Edit format</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -19,12 +20,16 @@
       <tr form:form="node">
         <td exec:style="'padding-left: {}px'.format(level*12)">
           <div class="ym-fbox">
-            <label form:for-field="comment">Comment</label>
+            <label form:for-field="comment">
+              <i18n:_>Comment</i18n:_>
+            </label>
             <input type="text"
                    form:field="comment" />
           </div>
           <div class="ym-fbox">
-            <label form:for-field="key">Key</label>
+            <label form:for-field="key">
+              <i18n:_>Key</i18n:_>
+            </label>
             <input type="text"
                    form:field="key" />
           </div>
@@ -42,41 +47,48 @@
     </tea:def>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Edit transmission format</h2>
+      <h2><i18n:_>Edit transmission format</i18n:_></h2>
       <tea:if exec:eval="arguments['has_users']">
         <p class="box warning">
-          <strong>Warning:</strong>
-          This format has users. This implies that you cannot modify it. You
-          can, however, save a copy of the format.
+          <strong><i18n:_>Warning:</i18n:_></strong>
+          <i18n:_>This format has users. This implies that you cannot modify
+          it. You can, however, save a copy of the format.</i18n:_>
         </p>
       </tea:if>
       <form class="ym-form" method="POST" name="format" form:form="form">
         <h6 class="ym-fbox-heading">General properties</h6>
         <div class="ym-fbox">
-          <label for="display-name">Display name</label>
-          <input type="text" id="display-name"
-                 form:field="display_name"
+          <label form:for-field="display_name">Display name</label>
+          <input form:field="display_name"
                  placeholder="e.g. S28 default format"/>
         </div>
         <div class="ym-fbox">
-          <label for="description">Description</label>
-          <textarea id="description" form:field="description" />
+          <label form:for-field="description">Description</label>
+          <textarea form:field="description" />
         </div>
-        <p class="ym-fbox-footer warning"><strong>Warning:</strong> Until you click “Save to database” below, <em>no</em> changes are made to the entries in the database. Leaving the page without saving will make you lose all your changes!</p>
+        <p class="ym-fbox-footer warning">
+          <strong xml:space="preserve"><i18n:_>Warning:</i18n:_> </strong>
+          <i18n:_>Until you click “Save to database” below,
+          <em i18n:id="em">no</em> changes are made to the entries in the
+          database. Leaving the page without saving will make you lose all your
+          changes!</i18n:_>
+        </p>
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   form:action="update"
-                  class="ym-button ym-reload">Update / Check for errors</button>
+                  class="ym-button ym-reload">
+            <i18n:_>Update / Check for errors</i18n:_>
+          </button>
         </div>
-        <h6 class="ym-fbox-heading">Parsing tree</h6>
+        <h6 class="ym-fbox-heading"><i18n:_>Parsing tree</i18n:_></h6>
         <table class="ym-fbox parsing-tree">
           <colgroup>
             <col class="parsing-tree-key" />
           </colgroup>
           <thead>
             <tr>
-              <th>Format node</th>
-              <th>Controls</th>
+              <th><i18n:_>Format node</i18n:_></th>
+              <th><i18n:_>Controls</i18n:_></th>
             </tr>
           </thead>
           <tbody>
@@ -89,11 +101,15 @@
           <tea:if exec:eval="not arguments['has_users']">
             <button type="submit"
                     form:action="save_to_db"
-                    class="ym-button ym-primary ym-save">Save to database</button>
+                    class="ym-button ym-primary ym-save">
+              <i18n:_>Save to database</i18n:_>
+            </button>
           </tea:if>
           <button type="submit"
                   form:action="save_copy"
-                  class="ym-button ym-add">Save as copy</button>
+                  class="ym-button ym-add">
+            <i18n:_>Save as copy</i18n:_>
+          </button>
         </div>
       </form>
     </main>

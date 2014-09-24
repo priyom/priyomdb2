@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
-      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom">
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>View stations</title>
+    <title><i18n:_>View stations</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -19,12 +20,12 @@
     <exec:code>delete_station = arguments['delete_station']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Stations</h2>
+      <h2><i18n:_>View stations</i18n:_></h2>
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
             <tea:if auth:cap="CREATE_STATION">
-              <h3>Activities</h3>
+              <h3><i18n:_>Activities</i18n:_></h3>
               <ul class="navlist">
                 <li><a exec:href="context.href(view_station, station_id=0)"
                        class="ym-button ym-success ym-add">New station</a></li>
@@ -33,7 +34,7 @@
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
-              <h3>Filters</h3>
+              <h3><i18n:_>Filters</i18n:_></h3>
               <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_stations</tea:pass>
@@ -59,12 +60,12 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Modified</th>
-            <th>Enigma ID</th>
-            <th>Priyom ID</th>
-            <th>Nickname</th>
-            <th>Event count</th>
-            <th>Actions</th>
+            <th><i18n:_>Modified</i18n:_></th>
+            <th><i18n:_>Enigma ID</i18n:_></th>
+            <th><i18n:_>Priyom ID</i18n:_></th>
+            <th><i18n:_>Nickname</i18n:_></th>
+            <th><i18n:_>Event count</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
           </tr>
         </thead>
         <tbody>
@@ -78,16 +79,9 @@
               <td><exec:text>nickname or ''</exec:text></td>
               <td><exec:text>events or 0</exec:text></td>
               <td>
-                <exec:code>can_edit = context.request.auth.has_capability(Capability.EDIT_STATION)</exec:code>
-                <a exec:href="context.href(view_station, station_id=id)"
-                   exec:class="'ym-button ym-primary'+
-                               (' ym-edit' if can_edit else '')">
-                  <exec:text>'Edit' if can_edit else 'View'</exec:text>
-                </a>
-                <tea:if auth:cap="DELETE_STATION">
-                  <a exec:href="context.href(delete_station, station_id=id)"
-                     class="ym-button ym-danger ym-delete ym-small">Delete</a>
-                </tea:if>
+                <tea:call src="library.xml" name="station_actions">
+                  <tea:pass name="station_id">id</tea:pass>
+                </tea:call>
               </td>
             </tr>
           </tea:for-each>

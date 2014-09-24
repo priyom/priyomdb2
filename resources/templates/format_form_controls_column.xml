@@ -2,12 +2,13 @@
 <td xmlns="http://www.w3.org/1999/xhtml"
     xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
-    xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+    xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+    xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <div class="ym-fbox">
     <div class="ym-fbox-wrap ym-grid linearize-level-3">
       <div class="ym-gl ym-g33"><div class="ym-gbox">
         <div class="ym-fbox">
-          <label form:for-field="duplicity">Duplicity</label>
+          <label form:for-field="duplicity"><i18n:_>Duplicity</i18n:_></label>
           <select form:field="duplicity">
             <tea:for-each bind="value, name"
                           from="(
@@ -16,36 +17,47 @@
                                     ('*', 'zero or more'),
                                     ('{}', 'custom, fixed amount'),
                                     )">
-              <option exec:value="value"
-                      exec:selected="'' if node.duplicity == value else None"><exec:text>name</exec:text></option>
+              <option
+                  exec:value="value"
+                  exec:selected="'selected' if node.duplicity == value else None">
+                <exec:text>context.i18n(name, ctxt="duplicity")</exec:text>
+              </option>
             </tea:for-each>
           </select>
         </div>
         <div class="ym-fbox">
           <label form:for-field="count"
-                 tooltip="This is unused if duplicity is anything but a custom, fixed amount.">Count</label>
+                 i18n:tooltip="This is unused if duplicity is anything but a custom, fixed amount.">
+            <i18n:_>Count</i18n:_>
+          </label>
           <input type="number"
                  form:field="count"/>
         </div>
       </div></div>
       <div class="ym-gl ym-g33"><div class="ym-gbox">
         <div class="ym-fbox">
-          <span class="ym-label">Flags</span>
+          <span class="ym-label"><i18n:_>Flags</i18n:_></span>
           <div class="ym-fbox-wrap">
             <div class="ym-fbox-check">
               <input type="checkbox"
                      form:field="saved" />
-              <label form:for-field="saved">Save contents to db</label>
+              <label form:for-field="saved">
+                <i18n:_>Save contents to db</i18n:_>
+              </label>
             </div>
             <div class="ym-fbox-check">
               <input type="checkbox"
                      form:field="join" />
-              <label form:for-field="join">Join children</label>
+              <label form:for-field="join">
+                <i18n:_>Join children</i18n:_>
+              </label>
             </div>
           </div>
         </div>
         <div class="ym-fbox">
-          <label form:for-field="content_match">Join / Match expression</label>
+          <label form:for-field="content_match">
+            <i18n:_>Join / Match expression</i18n:_>
+          </label>
           <input type="text"
                  form:field="content_match" />
         </div>
@@ -54,21 +66,29 @@
         <div class="ym-fbox">
           <button type="submit"
                   class="ym-button ym-success ym-add"
-                  form:action="add_child">Add child</button>
+                  form:action="add_child">
+            <i18n:_>Add child</i18n:_>
+          </button>
         </div>
         <tea:if exec:eval="level > 0">
           <div class="ym-fbox">
             <button type="submit"
                     class="ym-button ym-up"
-                    form:action="move_up">Move up</button>
+                    form:action="move_up">
+              <i18n:_>Move up</i18n:_>
+            </button>
             <button type="submit"
                    class="ym-button ym-down"
-                   form:action="move_down">Move down</button>
+                   form:action="move_down">
+              <i18n:_>Move down</i18n:_>
+            </button>
           </div>
           <div class="ym-fbox">
             <button type="submit"
                     class="ym-button ym-danger ym-delete"
-                    form:action="delete">Delete</button>
+                    form:action="delete">
+              <i18n:_>Delete</i18n:_>
+            </button>
           </div>
         </tea:if>
       </div></div>

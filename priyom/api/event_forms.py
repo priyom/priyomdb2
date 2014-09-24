@@ -44,7 +44,7 @@ def frequency_picker_options(dbsession, for_event=None):
 
     if for_event is not None:
         query = query.filter(
-            priyom.model.Event.station_id == for_event.station_id
+            priyom.model.Event.station_id == for_event.station.id
         )
     return query
 

@@ -3,7 +3,50 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
     xmlns:form="https://xmlns.zombofant.net/xsltea/form"
-    xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+    xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+    xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+    xmlns:auth="https://xmlns.zombofant.net/xsltea/auth">
+
+  <tea:def name="submitter">
+    <tea:arg name="submitter" mode="lazy" default="event.submitter" />
+    <tea:switch>
+      <tea:case exec:eval="submitter">
+        <exec:text>submitter</exec:text>
+      </tea:case>
+      <tea:default><em><i18n:_>system generated</i18n:_></em></tea:default>
+    </tea:switch>
+  </tea:def>
+
+  <tea:def name="station">
+    <tea:arg name="station" mode="lazy" default="station" />
+    <tea:arg name="attr" mode="static" default="None" />
+    <exec:code>
+import priyom.api.stations
+view_station = priyom.api.stations.get_station_viewer(context.request)
+    </exec:code>
+    <a exec:href="context.href(view_station, station_id=station.id)">
+      <exec:text>station if not attr else getattr(station, attr)</exec:text>
+    </a>
+  </tea:def>
+
+  <tea:def name="event">
+    <tea:arg name="event" mode="lazy" default="event" />
+    <tea:arg name="attr" mode="static" default="None" />
+    <exec:code>
+import priyom.api.events
+view_event = priyom.api.events.get_event_viewer(context.request)
+text = event if not attr else getattr(event, attr)
+    </exec:code>
+    <tea:switch>
+      <tea:case exec:eval="view_event">
+        <a exec:href="context.href(view_event, event_id=event.id)">
+          <exec:text>text</exec:text>
+        </a>
+      </tea:case>
+      <tea:default><exec:text>text</exec:text></tea:default>
+    </tea:switch>
+  </tea:def>
+
   <tea:def name="page">
     <tea:arg name="page" mode="lazy" default="page" />
     <tea:arg name="view" mode="lazy" default="view" />
@@ -12,6 +55,7 @@
       <a exec:href="context.href(view, view=page.at_page(pageno))"><exec:text>pageno</exec:text></a>
     </li>
   </tea:def>
+
   <tea:def name="pagination">
     <tea:arg name="page" />
     <tea:arg name="view" />
@@ -39,7 +83,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <ul class="pagination">
       <tea:if exec:eval="page.get_pageno() &gt; 1">
         <li class="wide">
-          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()-1))">« prev</a>
+          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()-1))"><i18n:_>« prev</i18n:_></a>
         </li>
       </tea:if>
       <tea:call name="page">
@@ -61,11 +105,12 @@ pagerange = range(start_at, end_at+1)</exec:code>
       </tea:if>
       <tea:if exec:eval="page.get_pageno() &lt; page.total_pages">
         <li class="wide">
-          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()+1))">next »</a>
+          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()+1))"><i18n:_>next »</i18n:_></a>
         </li>
       </tea:if>
     </ul>
   </tea:def>
+
   <tea:def name="filters">
     <tea:arg name="page" />
     <tea:arg name="view" />
@@ -73,16 +118,16 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <ul>
       <tea:for-each bind="row" from="filters">
         <li>
-          <exec:text>row.f</exec:text>
+          <exec:text>context.i18n(row.f, ctxt="field")</exec:text>
           <exec:text>' '</exec:text>
-          <exec:text>row.o</exec:text>
+          <exec:text>context.i18n(row.o, ctxt="operator")</exec:text>
           <exec:text>' '</exec:text>
           <exec:text>repr(row.v)</exec:text>
         </li>
       </tea:for-each>
     </ul>
     <a class="ym-button ym-warning ym-delete"
-       exec:href="context.href(view, view=page.without_filters())">Clear all filters</a>
+       exec:href="context.href(view, view=page.without_filters())"><i18n:_>Clear all filters</i18n:_></a>
   </tea:def>
 
   <tea:def name="errors">
@@ -112,6 +157,7 @@ errors = form.errors.get(field, [])</exec:code>
       </tea:if>
     </tea:for-each>
   </tea:def>
+
   <tea:def name="frequency_list_input">
     <tea:arg name="default_form" mode="lazy" default="default_form" />
     <tea:arg name="rows" />
@@ -124,9 +170,9 @@ errors = form.errors.get(field, [])</exec:code>
         <col class="actions" style="width: 15em" />
       </colgroup>
       <thead>
-        <th>Frequency</th>
-        <th>Mode and Mode</th>
-        <th>Actions</th>
+        <th><i18n:_>Frequency</i18n:_></th>
+        <th><i18n:_>Mode</i18n:_></th>
+        <th><i18n:_>Actions</i18n:_></th>
       </thead>
       <tbody>
         <tea:for-each bind="row" from="rows">
@@ -149,7 +195,9 @@ errors = form.errors.get(field, [])</exec:code>
               <div class="ym-fbox">
                 <button type="submit"
                         form:action="delete"
-                        class="ym-button ym-delete ym-warning">Delete</button>
+                        class="ym-button ym-delete ym-warning">
+                  <i18n:_>Delete</i18n:_>
+                </button>
               </div>
             </td>
           </tr>
@@ -158,11 +206,12 @@ errors = form.errors.get(field, [])</exec:code>
           <td colspan="3">
             <div class="ym-fbox">
               <label form:for-field="existing_event_frequency">
-                Add another frequency
+                <i18n:_>Add another frequency</i18n:_>
               </label>
               <select form:field="existing_event_frequency">
-                <option value="0">Select known frequency or hit add to
-                create a new one</option>
+                <option value="0">
+                  <i18n:_>Select known frequency or hit add to create a new one</i18n:_>
+                </option>
                 <tea:for-each bind="event_frequency"
                               from="existing_frequencies">
                   <option exec:value="event_frequency">
@@ -174,18 +223,21 @@ errors = form.errors.get(field, [])</exec:code>
             <div class="ym-fbox">
               <button type="submit"
                       form:action="add_frequency"
-                      class="ym-button ym-add">Add new</button>
+                      class="ym-button ym-add">
+                <i18n:_>Add frequency</i18n:_>
+              </button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
   </tea:def>
+
   <tea:def name="transcriptdata">
     <tea:arg name="row" mode="lazy" default="row" />
     <tea:arg name="alphabets" mode="lazy" default="alphabets" />
     <div class="ym-fbox" form:form="row">
-      <label form:for-field="alphabet">Alphabet</label>
+      <label form:for-field="alphabet"><i18n:_>Alphabet</i18n:_></label>
       <select form:field="alphabet">
         <tea:for-each bind="alphabet" from="alphabets">
           <option exec:value="alphabet.id"
@@ -196,19 +248,21 @@ errors = form.errors.get(field, [])</exec:code>
       </select>
     </div>
     <div class="ym-fbox" form:form="row">
-      <label form:for-field="contents">Contents</label>
+      <label form:for-field="contents"><i18n:_>Contents</i18n:_></label>
       <textarea form:field="contents"
                 rows="10"
                 class="transmission"/>
     </div>
   </tea:def>
+
   <tea:def name="transcriptmetadata">
     <tea:arg name="row" mode="lazy" default="row" />
     <div class="ym-fbox" form:form="row">
-      <label form:for-field="attribution">Attribution</label>
+      <label form:for-field="attribution"><i18n:_>Attribution</i18n:_></label>
       <textarea form:field="attribution" />
     </div>
   </tea:def>
+
   <tea:def name="contents_list_input">
     <tea:arg name="default_form" mode="lazy" default="default_form" />
     <tea:arg name="rows" />
@@ -220,15 +274,15 @@ errors = form.errors.get(field, [])</exec:code>
         <col width="33%" />
       </colgroup>
       <thead>
-        <th>Contents</th>
-        <th>Actions and Metadata</th>
+        <th><i18n:_>Contents</i18n:_></th>
+        <th><i18n:_>Actions and Metadata</i18n:_></th>
       </thead>
       <tbody>
         <tea:for-each bind="row" from="rows">
           <tr form:form="row">
             <td>
               <div class="ym-fbox">
-                <label form:for-field="format">Format</label>
+                <label form:for-field="format"><i18n:_>Format</i18n:_></label>
                 <select form:field="format">
                   <tea:for-each bind="format" from="formats">
                     <option exec:value="format.id"
@@ -241,18 +295,22 @@ errors = form.errors.get(field, [])</exec:code>
               <tea:call name="transcriptdata" />
             </td>
             <td>
-              <h6 class="ym-fbox-heading">Metadata</h6>
+              <h6 class="ym-fbox-heading"><i18n:_>Metadata</i18n:_></h6>
               <tea:call name="transcriptmetadata" />
-              <h6 class="ym-fbox-heading">Actions</h6>
+              <h6 class="ym-fbox-heading"><i18n:_>Actions</i18n:_></h6>
               <div class="ym-fbox ym-fbox-button">
                 <button type="submit"
                         form:action="add_transcript"
-                        class="ym-button ym-add">Add transcript</button>
+                        class="ym-button ym-add">
+                  <i18n:_>Add transcript</i18n:_>
+                </button>
               </div>
               <div class="ym-fbox ym-fbox-button">
                 <button type="submit"
                         form:action="delete"
-                        class="ym-button ym-delete ym-warning">Delete</button>
+                        class="ym-button ym-delete ym-warning">
+                  <i18n:_>Delete</i18n:_>
+                </button>
               </div>
             </td>
           </tr>
@@ -260,21 +318,23 @@ errors = form.errors.get(field, [])</exec:code>
           <tea:for-each bind="subrow" from="transcripts">
             <tr form:form="subrow">
               <td>
-                <h6 class="ym-fbox-heading">Transcript</h6>
+                <h6 class="ym-fbox-heading"><i18n:_>Transcript</i18n:_></h6>
                 <tea:call name="transcriptdata">
                   <tea:pass name="row">subrow</tea:pass>
                 </tea:call>
               </td>
               <td>
-                <h6 class="ym-fbox-heading">Transcript metadata</h6>
+                <h6 class="ym-fbox-heading"><i18n:_>Transcript metadata</i18n:_></h6>
                 <tea:call name="transcriptmetadata">
                   <tea:pass name="row">subrow</tea:pass>
                 </tea:call>
-                <h6 class="ym-fbox-heading">Transcript actions</h6>
+                <h6 class="ym-fbox-heading"><i18n:_>Transcript actions</i18n:_></h6>
                 <div class="ym-fbox ym-fbox-button">
                   <button type="submit"
                           form:action="delete"
-                          class="ym-button ym-delete ym-warning">Delete transcript</button>
+                          class="ym-button ym-delete ym-warning">
+                    <i18n:_>Delete transcript</i18n:_>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -286,11 +346,53 @@ errors = form.errors.get(field, [])</exec:code>
             <div class="ym-fbox">
               <button type="submit"
                       form:action="add_contents"
-                      class="ym-button ym-add">Add another transmission</button>
+                      class="ym-button ym-add">
+                <i18n:_>Add another transmission</i18n:_>
+              </button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
   </tea:def>
+
+  <tea:def name="event_actions">
+    <tea:arg name="event_id" />
+    <exec:code>
+import priyom.api.events
+from priyom.api.auth import Capability
+view_event = priyom.api.events.get_event_viewer(context.request)
+can_edit = context.request.auth.has_capability(Capability.EDIT_EVENT)
+    </exec:code>
+    <tea:if exec:eval="view_event">
+      <a exec:class="'ym-button ym-primary '+
+                     ('ym-edit' if can_edit else '')"
+         exec:href="context.href(view_event, event_id=event_id)">
+        <exec:text>context.i18n('Edit' if can_edit else 'View')</exec:text>
+      </a>
+    </tea:if>
+  </tea:def>
+
+  <tea:def name="station_actions">
+    <tea:arg name="station_id" />
+    <exec:code>
+import priyom.api.stations
+from priyom.api.auth import Capability
+view_station = priyom.api.stations.get_station_viewer(context.request)
+can_edit = context.request.auth.has_capability(Capability.EDIT_STATION)
+    </exec:code>
+    <a exec:class="'ym-button ym-primary '+
+                   ('ym-edit' if can_edit else '')"
+       exec:href="context.href(view_station, station_id=station_id)">
+      <exec:text>context.i18n('Edit' if can_edit else 'View')</exec:text>
+    </a>
+    <tea:if auth:cap="DELETE_STATION">
+      <a exec:href="context.href(priyom.api.stations.delete_station,
+                    station_id=station_id)"
+         class="ym-button ym-danger ym-delete ym-small">
+        <i18n:_>Delete</i18n:_>
+      </a>
+    </tea:if>
+  </tea:def>
+
 </library>

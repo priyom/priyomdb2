@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Manage broadcast modes</title>
+    <title><i18n:_>Manage broadcast modes</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -20,11 +21,11 @@
     <exec:code>form = arguments['form']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Modes and Modes</h2>
+      <h2><i18n:_>Manage broadcast modes</i18n:_></h2>
       <aside class="sidebar"><div class="sbox">
         <div class="ym-grid linearize-sidebar">
           <div class="ym-g50 ym-gl"><div class="ym-gbox">
-            <h3>Quick add</h3>
+            <h3><i18n:_>Quick add</i18n:_></h3>
             <form form:form="form"
                   method="POST"
                   class="ym-form"
@@ -37,13 +38,15 @@
               <div class="ym-fbox-footer ym-fbox-button">
                 <button type="submit"
                         class="ym-button ym-success ym-add"
-                        form:action="submit">New mode</button>
+                        form:action="submit">
+                  <i18n:_>New mode</i18n:_>
+                </button>
               </div>
             </form>
           </div></div>
           <div class="ym-g50 ym-gr"><div class="ym-gbox">
             <tea:if exec:eval="view.f">
-              <h3>Filters</h3>
+              <h3><i18n:_>Filters</i18n:_></h3>
               <tea:call src="library.xml" name="filters">
                 <tea:pass name="page">view</tea:pass>
                 <tea:pass name="view">view_modes</tea:pass>
@@ -67,9 +70,9 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Display name</th>
-            <th>User count</th>
-            <th>Actions</th>
+            <th><i18n:_>Display name</i18n:_></th>
+            <th><i18n:_>User count</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
           </tr>
         </thead>
         <tbody>
@@ -81,14 +84,18 @@
               <td><exec:text>user_count or 0</exec:text></td>
               <td>
                 <a exec:href="context.href(edit_mode, mode_id=id)"
-                   class="ym-button ym-primary ym-edit">Edit</a>
+                   class="ym-button ym-primary ym-edit">
+                  <i18n:_>Edit</i18n:_>
+                </a>
                 <tea:if exec:eval="not user_count">
                   <form exec:action="context.href(delete_mode, mode_id=id)"
                         method="POST"
                         class="inline">
                     <button type="submit"
                             name="action:delete"
-                            class="ym-button ym-danger ym-delete ym-small">Delete</button>
+                            class="ym-button ym-danger ym-delete ym-small">
+                      <i18n:_>Delete</i18n:_>
+                    </button>
                   </form>
                 </tea:if>
               </td>

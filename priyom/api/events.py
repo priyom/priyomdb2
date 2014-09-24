@@ -229,7 +229,7 @@ class ApproveForm(teapot.forms.Form):
         priyom.model.Event,
         allow_none=False)
 
-def filter_unapproved(query):
+def filter_unapproved(request, query):
     return query.filter(priyom.model.Event.approved == False)
 
 @require_capability(Capability.REVIEW_LOG)

@@ -78,6 +78,7 @@ class TransmissionFormatForm(TransmissionFormatRow):
         return instance
 
     display_name = teapot.html.TextField()
+    description = teapot.html.TextField()
 
     def to_database_object(self, destination=None):
         tree = super().to_database_object()

@@ -5,9 +5,10 @@
       xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
       xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
       xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
-      xmlns:form="https://xmlns.zombofant.net/xsltea/form">
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
   <head>
-    <title>Log transmission</title>
+    <title><i18n:_>Log transmission</i18n:_></title>
     <tea:include src="stylesheets.xml"
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
@@ -20,13 +21,15 @@
     <exec:code>alphabets = arguments['alphabets']</exec:code>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
-      <h2>Log transmission</h2>
+      <h2><i18n:_>Log transmission</i18n:_></h2>
       <form class="ym-form" method="POST" name="log" form:form="page">
         <tea:call src="log_library.xml" name="shadow_pages" />
         <div class="ym-fbox-footer ym-fbox-button">
           <button type="submit"
                   class="ym-button ym-reload"
-                  >Validate contents without submitting</button>
+                  >
+            <i18n:_>Validate contents without submitting</i18n:_>
+          </button>
         </div>
         <exec:code>rows = page.contents</exec:code>
         <tea:call src="library.xml" name="contents_list_input">
