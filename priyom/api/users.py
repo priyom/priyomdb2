@@ -72,7 +72,7 @@ def edit_self(request: teapot.request.Request):
 @router.route("/self",
               methods={teapot.request.Method.POST})
 @xsltea_site.with_template("self_form.xml")
-def edit_self(request: teapot.request.Request):
+def edit_self_POST(request: teapot.request.Request):
     user = request.auth.user
 
     form = SelfForm(request=request)

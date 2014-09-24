@@ -108,13 +108,13 @@ body > nav.ym-hlist ul li a:hover {
     /* border-bottom: none; */
 }
 
-body > nav.ym-hlist ul li.active {
+body > nav.ym-hlist ul li.sm-active {
     background: transparent;
 }
 
-body > nav.ym-hlist ul li.active strong,
-body > nav.ym-hlist ul li.active a,
-body > nav.ym-hlist ul li.active span {
+body > nav.ym-hlist ul li.sm-active strong,
+body > nav.ym-hlist ul li.sm-active a,
+body > nav.ym-hlist ul li.sm-active span {
     color: #fff;
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
 }

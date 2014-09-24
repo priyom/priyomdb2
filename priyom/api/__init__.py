@@ -87,7 +87,8 @@ user_sitemap.new(
 user_sitemap.new(
     users.edit_self,
     label="My account",
-    svgicon=svgicon.SVGIcon("icon-user"))
+    svgicon=svgicon.SVGIcon("icon-user"),
+    aliased_routables={users.edit_self_POST})
 user_sitemap.new(
     login.logout,
     label="Sign out",

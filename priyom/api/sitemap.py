@@ -3,6 +3,7 @@ import collections
 import collections.abc
 
 import lxml.etree as etree
+import lxml.builder
 
 import xsltea.processor
 import xsltea.exec
@@ -11,97 +12,81 @@ from xsltea.namespaces import NamespaceMeta, xhtml_ns, xlink_ns, svg_ns
 
 from . import svgicon
 
-class Node(collections.abc.MutableSequence):
+class Node(list):
     @classmethod
     def subnode(cls, parent, *args, **kwargs):
         node = cls(*args, **kwargs)
         parent.append(node)
         return node
 
-    def __init__(self, routable=None, label=None, svgicon=None, **kwargs):
+    def __init__(self,
+                 routable=None, label=None, svgicon=None,
+                 aliased_routables=set(),
+                 visible_predicate=None,
+                 **kwargs):
         super().__init__(**kwargs)
-        self.routable = routable
+        self.primary_routable = routable
+        self._aliased_routables = frozenset(set(aliased_routables) | {routable})
+        self._child_routables = set()
         self.label = label
         self.parent = None
         self.svgicon = svgicon
         self._children = []
+        self._invalidated_routables = True
+        self._visible_predicate = visible_predicate
 
-    def _release_child(self, obj):
-        obj.parent = None
+    @property
+    def child_routables(self):
+        if self._invalidated_routables:
+            self._update_child_routables()
+        return self._child_routables
 
-    def _release_children(self, sequence):
-        collections.deque(0, map(self._release_child, sequence))
+    @property
+    def matching_routables(self):
+        return self._aliased_routables
 
-    def _validate_and_acquire_child(self, obj):
-        if obj.parent is not None:
-            raise ValueError("{} is already bound to parent {}".format(
-                obj, obj.parent))
-        obj.parent = self
+    def is_visible(self, request):
+        if self._visible_predicate:
+            return self._visible_predicate(request)
+        return True
 
-    def _validate_and_acquire_children(self, sequence):
-        collections.deque(0, map(self._validate_and_acquire_child, sequence))
+    def _update_child_routables(self):
+        self._child_routables = set()
+        for child in self:
+            self._child_routables |= (child.matching_routables |
+                                      child.child_routables)
+        self._child_routables = frozenset(self._child_routables)
 
     def __delitem__(self, index):
-        if isinstance(index, slice):
-            self._release_children(self._children[index])
-        else:
-            self._release_child(self._children[index])
-        try:
-            del self._children[index]
-        except:
-            if isinstance(index, slice):
-                self._validate_and_acquire_children(self._children[index])
-            else:
-                self._validate_and_acquire_child(self._children[index])
-
-    def __getitem__(self, index):
-        return self._children[index]
-
-    def __iter__(self):
-        return iter(self._children)
-
-    def __len__(self):
-        return len(self._children)
-
-    def __reversed__(self):
-        return iter(reversed(self._children))
+        del self._children[index]
+        self._invalidated_routables = True
 
     def __setitem__(self, index, obj):
         if isinstance(index, slice):
-            obj = list(obj)  # we must evaluate it here once
-            self._validate_and_acquire_children(obj)
+            obj = list(obj)
+        super().__setitem__(index, obj)
+        if isinstance(index, slice):
+            for item in obj:
+                item.parent = self
         else:
-            self._validate_and_acquire_child(obj)
-        try:
-            self._children[index] = obj
-        except:
-            if isinstance(index, slice):
-                self._release_children(obj)
-            else:
-                self._release_child(obj)
+            obj.parent = self
+        self._invalidated_routables = True
 
     def append(self, obj):
-        self._validate_and_acquire_child(obj)
-        try:
-            self._children.append(obj)
-        except:
-            self._release_child(obj)
-            raise
+        super().append(obj)
+        obj.parent = self
+        if not self._invalidated_routables:
+            self._child_routables |= obj.matching_routables
 
     def insert(self, index, obj):
-        self._validate_and_acquire_child(obj)
-        try:
-            self._children.insert(index, obj)
-        except:
-            self._release_child(obj)
-            raise
-
-    def reverse(self):
-        self._children.reverse()
+        super().insert(index, obj)
+        obj.parent = self
+        if not self._invalidated_routables:
+            self._child_routables |= obj.matching_routables
 
     def pop(self, index=-1):
-        obj = self._children.pop(index)
-        self._release_child(obj)
+        obj = super().pop(index)
+        self._invalidated_routables = True
         return obj
 
     def new(self, *args, **kwargs):
@@ -131,303 +116,80 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
             "xhtml": self._xhtml_sitemap
         }
 
-    def _xhtml_elemcode(self, template, elem, node):
-        sourceline = elem.sourceline or 0
+    def _xhtml_nodefun(self, E, context, parent_node, parent_ul):
+        request = context.request
+        for node in parent_node:
+            if not node.is_visible(request):
+                continue
 
-        body = template.ast_makeelement_and_setup(
-            xhtml_ns.span,
-            sourceline,
-            varname="textcont")
+            child_active = request.current_routable in node.child_routables
+            active = request.current_routable in node.matching_routables
 
-        if node.routable:
-            routable_key = template.store(node.routable)
+            label_el = E(
+                xhtml_ns.strong if active else xhtml_ns.a,
+                node.label
+            )
+            if not active:
+                label_el.set("href", context.href(node.primary_routable))
 
-            body.append(
-                ast.If(
-                    ast.Compare(
-                        ast.Attribute(
-                            template.ast_get_request(sourceline),
-                            "current_routable",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        [
-                            ast.Eq()
-                        ],
-                        [
-                            template.ast_get_stored(
-                                routable_key,
-                                sourceline)
-                        ],
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        # set the class of the surrounding element
-                        template.ast_set_elem_attr(
-                            "class",
-                            ast.Str(
-                                "active",
-                                lineno=sourceline,
-                                col_offset=0),
-                            sourceline),
-                        # convert the text container to <strong />
-                        ast.Assign(
-                            [
-                                ast.Attribute(
-                                    ast.Name(
-                                        "textcont",
-                                        ast.Load(),
-                                        lineno=sourceline,
-                                        col_offset=0),
-                                    "tag",
-                                    ast.Store(),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            ast.Str(
-                                xhtml_ns.strong,
-                                lineno=sourceline,
-                                col_offset=0),
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    [
-                        # convert the text container to <a />
-                        ast.Assign(
-                            [
-                                ast.Attribute(
-                                    ast.Name(
-                                        "textcont",
-                                        ast.Load(),
-                                        lineno=sourceline,
-                                        col_offset=0),
-                                    "tag",
-                                    ast.Store(),
-                                    lineno=sourceline,
-                                    col_offset=0),
-                            ],
-                            ast.Str(
-                                xhtml_ns.a,
-                                lineno=sourceline,
-                                col_offset=0),
-                            lineno=sourceline,
-                            col_offset=0),
-                        # set the link href
-                        template.ast_set_elem_attr(
-                            "href",
-                            template.ast_href(
-                                template.ast_get_stored(
-                                    routable_key,
-                                    sourceline),
-                                sourceline),
-                            sourceline,
-                            varname="textcont"),
-                    ],
-                    lineno=sourceline,
-                    col_offset=0))
+            li = E(xhtml_ns.li, label_el)
+            classes = []
+            if child_active:
+                classes.append("sm-child-active")
+            if active:
+                classes.append("sm-active")
+            if classes:
+                li.set("class", " ".join(classes))
 
-        body.append(
-            ast.Expr(
-                ast.Call(
-                    ast.Attribute(
-                        ast.Name(
-                            "elem",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        "append",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        ast.Name(
-                            "textcont",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0)
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0))
+            if node.svgicon and self._sprites_source:
+                icon = context.makeelement(svg_ns.svg, {}, {
+                    None: str(svg_ns),
+                    "xlink": str(xlink_ns)
+                })
+                icon.set("class", "icon")
+                icon.set("viewBox", node.svgicon.viewbox())
+                etree.SubElement(
+                    icon,
+                    svg_ns.use,
+                    {
+                        xlink_ns.href: "{}#{}".format(
+                            self._sprites_source,
+                            node.svgicon.elementid)
+                    })
+                icon.tail = label_el.text
+                label_el.append(icon)
+                label_el.text = None
 
-        if node.svgicon and self._sprites_source:
-            body.extend(
-                svgicon.SVGIconProcessor.create_svgicon(
-                    template,
-                    self._sprites_source,
-                    node.svgicon.elementid,
-                    node.svgicon.viewbox(),
-                    sourceline,
-                    varname="svgicon"))
+            parent_ul.append(li)
 
-            body.append(
-                ast.Expr(
-                    ast.Call(
-                        ast.Attribute(
-                            ast.Name(
-                                "textcont",
-                                ast.Load(),
-                                lineno=sourceline,
-                                col_offset=0),
-                            "insert",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        [
-                            ast.Num(
-                                0,
-                                lineno=sourceline,
-                                col_offset=0),
-                            ast.Name(
-                                "svgicon",
-                                ast.Load(),
-                                lineno=sourceline,
-                                col_offset=0),
-                        ],
-                        [],
-                        None,
-                        None,
-                        lineno=sourceline,
-                        col_offset=0),
-                    lineno=sourceline,
-                    col_offset=0))
+    def _xhtml_rootfun(self, context):
+        E = lxml.builder.ElementMaker(makeelement=context.makeelement)
 
-        if node.label:
-            body.append(
-                ast.Assign(
-                    [
-                        ast.Attribute(
-                            ast.Name(
-                                "svgicon" if node.svgicon else "textcont",
-                                ast.Load(),
-                                lineno=sourceline,
-                                col_offset=0),
-                            "tail" if node.svgicon else "text",
-                            ast.Store(),
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    ast.Str(
-                        node.label,
-                        lineno=sourceline,
-                        col_offset=0),
-                    lineno=sourceline,
-                    col_offset=0))
+        yield E(xhtml_ns.h3, E(xhtml_ns.span, self._sitemap.label))
+        ul = E(xhtml_ns.ul)
+        self._xhtml_nodefun(E, context, self._sitemap, ul)
 
-        return body
-
-    def _xhtml_childfun(self, template, elem, node, name):
-        precode, elemcode, postcode = [], [], []
-
-        for i, child in enumerate(node):
-            child_precode, child_elemcode, child_postcode = \
-                self._xhtml_node("li", template, elem, child, i)
-
-            precode.extend(child_precode)
-            elemcode.extend(child_elemcode)
-            postcode[:0] = child_postcode
-
-        body = precode + elemcode + postcode
-
-        if not body:
-            return []
-
-        childfun = ast.FunctionDef(
-            name,
-            ast.arguments(
-                [], None, None, [], None, None, [], [],
-                lineno=elem.sourceline or 0,
-                col_offset=0),
-            body,
-            [],
-            None,
-            lineno=elem.sourceline or 0,
-            col_offset=0)
-
-        return [childfun]
-
-    def _xhtml_childrencode(self, template, elem, node, offset):
-        sourceline = elem.sourceline or 0
-        if not precode:
-            return [], []
-
-        elemcode = [
-            ast.Expr(
-                ast.Call(
-                    ast.Name(
-                        "append_children",
-                        ast.Load(),
-                        lineno=sourceline,
-                        col_offset=0),
-                    [
-                        ast.Name(
-                            "elem",
-                            ast.Load(),
-                            lineno=sourceline,
-                            col_offset=0),
-                        ast.Call(
-                            ast.Name(
-                                childfun_name,
-                                ast.Load(),
-                                lineno=sourceline,
-                                col_offset=0),
-                            [],
-                            [],
-                            None,
-                            None,
-                            lineno=sourceline,
-                            col_offset=0),
-                    ],
-                    [],
-                    None,
-                    None,
-                    lineno=sourceline,
-                    col_offset=0),
-                lineno=sourceline,
-                col_offset=0),
-        ]
-
-        return precode, elemcode
+        yield ul
 
     def _xhtml_node(self, type_, template, elem, node, offset):
         sourceline = elem.sourceline or 0
 
-        precode = []
+        elemcode = [
+            ast.Expr(
+                ast.YieldFrom(
+                    template.ast_store_and_call(
+                        self._xhtml_rootfun,
+                        [
+                            "context"
+                        ],
+                        sourceline=sourceline).value,
+                    lineno=sourceline,
+                    col_offset=0),
+                lineno=sourceline,
+                col_offset=0)
+        ]
 
-        elemcode = template.ast_makeelement_and_setup(
-            getattr(xhtml_ns, type_),
-            sourceline)
-        elemcode.extend(self._xhtml_elemcode(template, elem, node))
-
-        elemcode.append(
-            template.ast_yield(
-                "elem",
-                sourceline))
-
-        childfun_name = "children{}".format(offset)
-
-        child_precode = self._xhtml_childfun(
-            template, elem, node, childfun_name)
-
-        if child_precode:
-            elemcode.extend(
-                template.ast_makeelement_and_setup(
-                    xhtml_ns.ul,
-                    sourceline,
-                    childfun=childfun_name))
-
-            elemcode.append(
-                template.ast_yield(
-                    "elem",
-                    sourceline))
-
-            precode.extend(child_precode)
-
-        return precode, elemcode, []
+        return [], elemcode, []
 
     def _xhtml_sitemap(self, template, elem, context, offset):
         precode, elemcode, postcode = self._xhtml_node("h3", template, elem, self._sitemap, offset)
