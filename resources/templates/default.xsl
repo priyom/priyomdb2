@@ -32,13 +32,15 @@
         <nav class="ym-hlist">
           <div class="ym-wrapper"><div class="ym-wbox">
             <div class="ym-grid linearize-level-1">
-              <xsl:apply-templates select="h:body/h:nav/*" />
+              <xsl:apply-templates select="h:body/h:nav[@id='nav-main']/*" />
             </div>
           </div></div>
         </nav>
         <main>
           <xsl:apply-templates select="h:body/h:main/@*" />
           <div class="ym-wrapper"><div class="ym-wbox">
+            <xsl:apply-templates select="h:body/h:nav[@id='nav-crumbs']" />
+            <div style="clear: both;" />
             <xsl:apply-templates select="h:body/h:main/*" />
             <div style="clear: both;" />
           </div></div>

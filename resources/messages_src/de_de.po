@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-19 15:33+0200\n"
+"PO-Revision-Date: 2014-09-25 23:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -213,6 +213,10 @@ msgstr "Anzeigename"
 msgid "Duplicity"
 msgstr "Vielfachheit"
 
+#: resources/templates/view_formats.xml:71
+msgid "Edit"
+msgstr "Bearbeiten"
+
 #: resources/templates/alphabet_form.xml:10
 msgid "Edit alphabet"
 msgstr "Alphabet bearbeiten"
@@ -403,15 +407,15 @@ msgstr "Meine Eintragungen"
 
 #: resources/templates/view_alphabets.xml:51
 msgid "New alphabet"
-msgstr "Neues Alphabet"
+msgstr "Neues Alphabet anlegen"
 
 #: resources/templates/view_formats.xml:25
 msgid "New format"
-msgstr "Neues Format"
+msgstr "Neues Format anlegen"
 
 #: resources/templates/view_modes.xml:42
 msgid "New mode"
-msgstr "Neue Modulation"
+msgstr "Neuen Übertragungsmodus anlegen"
 
 #: resources/templates/self_form.xml:59
 msgid "New password"
@@ -649,7 +653,7 @@ msgid ""
 "make you lose all your changes!"
 msgstr ""
 "Bis du “In der Datenbank speichern” klickst, werden die Änderungen <xml "
-"id='em'>nicht</em> gespeichert. Wenn du die Seite verlässt, ohne zu "
+"id='em'>nicht</xml> gespeichert. Wenn du die Seite verlässt, ohne zu "
 "speichern, gehen die Änderungen verloren!"
 
 #: resources/templates/station_form.xml:67
@@ -892,8 +896,29 @@ msgctxt "duplicity"
 msgid "custom, fixed amount"
 msgstr "feste Anzahl"
 
-msgid "Edit"
-msgstr "Bearbeiten"
-
 msgid "View"
 msgstr "Ansehen"
+
+msgid "Sign out"
+msgstr "Abmelden"
+
+msgid "Log TX"
+msgstr ""
+
+msgid "Stations"
+msgstr "Sender"
+
+msgid "Review queue"
+msgstr "Eintrage überprüfen"
+
+msgid "Modes"
+msgstr "Übertragungsmodi"
+
+msgid "Common activities"
+msgstr "Allgemeine Aktivitäten"
+
+msgid "Moderator activities"
+msgstr "Moderatorwerkzeuge"
+
+msgid "Admin activities"
+msgstr "Adminwerkzeuge"

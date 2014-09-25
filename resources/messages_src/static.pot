@@ -144,8 +144,29 @@ msgctxt "duplicity"
 msgid "custom, fixed amount"
 msgstr ""
 
-msgid "Edit"
+msgid "View"
 msgstr ""
 
-msgid "View"
+msgid "Sign out"
+msgstr ""
+
+msgid "Log TX"
+msgstr ""
+
+msgid "Stations"
+msgstr ""
+
+msgid "Review queue"
+msgstr ""
+
+msgid "Modes"
+msgstr ""
+
+msgid "Common activities"
+msgstr ""
+
+msgid "Moderator activities"
+msgstr ""
+
+msgid "Admin activities"
 msgstr ""

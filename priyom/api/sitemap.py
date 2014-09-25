@@ -23,6 +23,7 @@ class Node(list):
                  routable=None, label=None, svgicon=None,
                  aliased_routables=set(),
                  visible_predicate=None,
+                 children_visible_predicate=None,
                  **kwargs):
         super().__init__(**kwargs)
         self.primary_routable = routable
@@ -34,6 +35,7 @@ class Node(list):
         self._children = []
         self._invalidated_routables = True
         self._visible_predicate = visible_predicate
+        self._children_visible_predicate = children_visible_predicate
 
     @property
     def child_routables(self):
@@ -46,8 +48,21 @@ class Node(list):
         return self._aliased_routables
 
     def is_visible(self, request):
-        if self._visible_predicate:
-            return self._visible_predicate(request)
+        if self._visible_predicate is not None:
+            if (self._visible_predicate is not True and
+                self._visible_predicate is not False):
+                return self._visible_predicate(self, request)
+            else:
+                return self._visible_predicate
+        return True
+
+    def children_are_visible(self, request):
+        if self._children_visible_predicate is not None:
+            if (self._children_visible_predicate is not True and
+                self._children_visible_predicate is not False):
+                return self._children_visible_predicate(self, request)
+            else:
+                return self._children_visible_predicate
         return True
 
     def _update_child_routables(self):
@@ -94,9 +109,17 @@ class Node(list):
 
     def __repr__(self):
         return "<sitemap node: routable={!r}, len(children)={}, label={!r}>".format(
-            self.routable,
+            self.primary_routable,
             len(self),
             self.label)
+
+    def find_first_matching(self, routable):
+        yield self
+        for child in self:
+            if routable in child.matching_routables:
+                yield child
+            elif routable in child.child_routables:
+                yield from child.find_first_matching(routable)
 
 class SitemapProcessor(xsltea.processor.TemplateProcessor):
     class xmlns(metaclass=NamespaceMeta):
@@ -127,7 +150,7 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
 
             label_el = E(
                 xhtml_ns.strong if active else xhtml_ns.a,
-                node.label
+                context.i18n(node.label)
             )
             if not active:
                 label_el.set("href", context.href(node.primary_routable))
@@ -160,18 +183,24 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
                 label_el.append(icon)
                 label_el.text = None
 
+            if len(node) > 0 and node.children_are_visible(request):
+                ul = E(xhtml_ns.ul)
+                self._xhtml_nodefun(E, context, node, ul)
+                li.append(ul)
+
             parent_ul.append(li)
 
     def _xhtml_rootfun(self, context):
         E = lxml.builder.ElementMaker(makeelement=context.makeelement)
 
-        yield E(xhtml_ns.h3, E(xhtml_ns.span, self._sitemap.label))
+        yield E(xhtml_ns.h3, E(xhtml_ns.span,
+                               context.i18n(self._sitemap.label)))
         ul = E(xhtml_ns.ul)
         self._xhtml_nodefun(E, context, self._sitemap, ul)
 
         yield ul
 
-    def _xhtml_node(self, type_, template, elem, node, offset):
+    def _xhtml_sitemap(self, template, elem, context, offset):
         sourceline = elem.sourceline or 0
 
         elemcode = [
@@ -191,10 +220,6 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
 
         return [], elemcode, []
 
-    def _xhtml_sitemap(self, template, elem, context, offset):
-        precode, elemcode, postcode = self._xhtml_node("h3", template, elem, self._sitemap, offset)
-        return precode, elemcode, postcode
-
     def handle_sitemap(self, template, elem, context, offset):
         try:
             name = elem.attrib["name"]
@@ -206,6 +231,79 @@ class SitemapProcessor(xsltea.processor.TemplateProcessor):
 
         if name != self._name:
             return False
+
+        try:
+            fmt_handler = self._outputfmts[outputfmt]
+        except KeyError as err:
+            raise ValueError("Unknown tea:sitemap output format: {}".format(
+                err))
+
+        return fmt_handler(template, elem, context, offset)
+
+class CrumbsProcessor(xsltea.processor.TemplateProcessor):
+    class xmlns(metaclass=NamespaceMeta):
+        xmlns = "https://xmlns.zombofant.net/xsltea/sitemap"
+
+    def __init__(self, sitemap, **kwargs):
+        super().__init__(**kwargs)
+        self._sitemap = sitemap
+
+        self.attrhooks = {}
+        self.elemhooks = {
+            (str(self.xmlns), "crumbs"): [self.handle_crumbs]
+        }
+
+        self._outputfmts = {
+            "xhtml": self._xhtml_crumbs
+        }
+
+    def _xhtml_rootfun(self, context):
+        ul = context.makeelement(xhtml_ns.ul)
+        for crumb in self._sitemap.find_first_matching(
+                context.request.current_routable):
+            if not crumb.label:
+                continue
+            li = context.makeelement(xhtml_ns.li)
+            if not crumb.primary_routable:
+                label_el = context.makeelement(xhtml_ns.span)
+            elif crumb.primary_routable == context.request.current_routable:
+                label_el = context.makeelement(xhtml_ns.strong)
+            else:
+                label_el = context.makeelement(xhtml_ns.a)
+                label_el.set("href", context.href(crumb.primary_routable))
+            label_el.text = context.i18n(crumb.label)
+            li.append(label_el)
+            ul.append(li)
+
+        yield ul
+
+    def _xhtml_crumbs(self, template, elem, context, offset):
+        sourceline = elem.sourceline or 0
+
+        elemcode = [
+            ast.Expr(
+                ast.YieldFrom(
+                    template.ast_store_and_call(
+                        self._xhtml_rootfun,
+                        [
+                            "context"
+                        ],
+                        sourceline=sourceline).value,
+                    lineno=sourceline,
+                    col_offset=0),
+                lineno=sourceline,
+                col_offset=0)
+        ]
+
+        return [], elemcode, []
+
+    def handle_crumbs(self, template, elem, context, offset):
+        try:
+            outputfmt = elem.attrib.get("format", "xml")
+        except KeyError as err:
+            raise ValueError(
+                "missing required attribute on tea:sitemap: @tea:{}".format(
+                    str(err).split("}", 1)[1]))
 
         try:
             fmt_handler = self._outputfmts[outputfmt]

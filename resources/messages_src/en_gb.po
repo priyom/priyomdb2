@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-19 00:12+0200\n"
+"PO-Revision-Date: 2014-09-25 23:23+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -28,17 +28,12 @@ msgid ""
 msgstr ""
 
 #: resources/templates/signup-form-full.xml:35
-#, fuzzy
 msgid ""
 "<xml id='p'>Password strength criteria:</xml><xml id='li1'>At least 8 "
 "characters length and</xml><xml id='li2'>either one letter, one special "
 "character and one number or, for each group missing from that list, 8 "
 "additional characters</xml>"
-msgstr ""
-"<xml id='p'>Password strength criteria:</xml><xml id='ul'><xml id='li1'>At "
-"least 8 characters length and</xml><xml id='li2'>either one letter, one "
-"special character and one number or, for each group missing from that list, "
-"8 additional characters</xml></xml>"
+msgstr "<xml id='p'>Password strength criteria:</xml><xml id='li1'>At least 8 characters length and</xml><xml id='li2'>either one letter, one special character and one number or, for each group missing from that list, 8 additional characters</xml>"
 
 #: resources/templates/footer.xml:9
 msgid "A <xml id='priyom'>priyom.org</xml> project"
@@ -208,6 +203,10 @@ msgstr ""
 msgid "Duplicity"
 msgstr ""
 
+#: resources/templates/view_formats.xml:71
+msgid "Edit"
+msgstr ""
+
 #: resources/templates/alphabet_form.xml:10
 msgid "Edit alphabet"
 msgstr ""
@@ -225,9 +224,8 @@ msgid "Edit mode"
 msgstr ""
 
 #: resources/templates/station_form.xml:10
-#, fuzzy
 msgid "Edit station"
-msgstr "Station#"
+msgstr "Edit station"
 
 #: resources/templates/format_form.xml:50
 msgid "Edit transmission format"
@@ -360,9 +358,8 @@ msgid "Manage transmission formats"
 msgstr ""
 
 #: resources/templates/library.xml:298
-#, fuzzy
 msgid "Metadata"
-msgstr "Main data"
+msgstr "Metadata"
 
 #: resources/templates/library.xml:174
 msgid "Mode"
@@ -405,9 +402,8 @@ msgid "New format"
 msgstr ""
 
 #: resources/templates/view_modes.xml:42
-#, fuzzy
 msgid "New mode"
-msgstr "New Password"
+msgstr "New mode"
 
 #: resources/templates/self_form.xml:59
 msgid "New password"
@@ -519,19 +515,16 @@ msgid "Select known frequency or hit add to create a new one"
 msgstr ""
 
 #: resources/templates/view_alphabets.xml:82
-#, fuzzy
 msgid "Short"
-msgstr "Login name"
+msgstr "Short"
 
 #: resources/templates/alphabet_form.xml:27
-#, fuzzy
 msgid "Short name"
-msgstr "Login name"
+msgstr "Short name"
 
 #: resources/templates/dash-unauthed.xml:42
-#, fuzzy
 msgid "Sign in"
-msgstr "Sign up"
+msgstr "Sign in"
 
 #: resources/templates/dash-unauthed.xml:32
 msgid "Sign up"
@@ -546,9 +539,8 @@ msgid "Start time"
 msgstr ""
 
 #: resources/templates/event_form.xml:37
-#, fuzzy
 msgid "Station"
-msgstr "Station#"
+msgstr "Station"
 
 #: resources/templates/station_not_found.xml:10
 msgid "Station not found"
@@ -652,14 +644,12 @@ msgid "User \"{user}\""
 msgstr "User “{user}”"
 
 #: resources/templates/view_formats.xml:56
-#, fuzzy
 msgid "User count"
-msgstr "My account"
+msgstr "User count"
 
 #: resources/templates/login.xml:24
-#, fuzzy
 msgid "User name"
-msgstr "Login name"
+msgstr "User name"
 
 #: resources/templates/log3.xml:31
 msgid "Validate contents without submitting"
@@ -678,14 +668,12 @@ msgid "View events"
 msgstr ""
 
 #: resources/templates/station_not_found.xml:20
-#, fuzzy
 msgid "View station"
-msgstr "Station#"
+msgstr "View station"
 
 #: resources/templates/view_stations.xml:11
-#, fuzzy
 msgid "View stations"
-msgstr "Station#"
+msgstr "View stations"
 
 #: resources/templates/format_form.xml:53
 msgid "Warning:"
@@ -883,10 +871,31 @@ msgctxt "duplicity"
 msgid "custom, fixed amount"
 msgstr ""
 
-msgid "Edit"
+msgid "View"
 msgstr ""
 
-msgid "View"
+msgid "Sign out"
+msgstr "Sign out"
+
+msgid "Log TX"
+msgstr ""
+
+msgid "Stations"
+msgstr "Stations"
+
+msgid "Review queue"
+msgstr ""
+
+msgid "Modes"
+msgstr ""
+
+msgid "Common activities"
+msgstr ""
+
+msgid "Moderator activities"
+msgstr ""
+
+msgid "Admin activities"
 msgstr ""
 
 #, fuzzy

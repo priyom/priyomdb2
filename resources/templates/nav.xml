@@ -2,27 +2,19 @@
 <nav xmlns="http://www.w3.org/1999/xhtml"
      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
-     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors">
-  <tea:switch>
-    <tea:case auth:login="true">
-      <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <sitemap:insert name="user" format="xhtml" />
-      </div></div>
-      <tea:if auth:group="MODERATORS">
-        <div class="ym-gl ym-g25"><div class="ym-gbox">
-          <sitemap:insert name="moderator" format="xhtml" />
-        </div></div>
-      </tea:if>
-      <tea:if auth:group="ADMINS">
-        <div class="ym-gr ym-g25"><div class="ym-gbox">
-          <sitemap:insert name="admin" format="xhtml" />
-        </div></div>
-      </tea:if>
-    </tea:case>
-    <tea:default>
-      <div class="ym-gl ym-g50"><div class="ym-gbox">
-        <sitemap:insert name="anonymous" format="xhtml" />
-      </div></div>
-    </tea:default>
-  </tea:switch>
+     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+     id="nav-main">
+  <div class="ym-gl ym-g50"><div class="ym-gbox">
+    <sitemap:insert name="user" format="xhtml" />
+  </div></div>
+  <tea:if auth:group="MODERATORS">
+    <div class="ym-gl ym-g25"><div class="ym-gbox">
+      <sitemap:insert name="moderator" format="xhtml" />
+    </div></div>
+  </tea:if>
+  <tea:if auth:group="ADMINS">
+    <div class="ym-gr ym-g25"><div class="ym-gbox">
+      <sitemap:insert name="admin" format="xhtml" />
+    </div></div>
+  </tea:if>
 </nav>

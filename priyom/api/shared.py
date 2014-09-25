@@ -21,7 +21,6 @@ from . import sitemap, sortable_table, auth, svgicon
 
 __all__ = [
     "xsltea_site",
-    "anonymous_sitemap",
     "user_sitemap",
     "admin_sitemap",
     "moderator_sitemap",
@@ -42,10 +41,17 @@ textdb.load_all(priyom.config.get_data_path("l10n"))
 
 # setup sitemap root
 
-anonymous_sitemap = sitemap.Node()
-user_sitemap = sitemap.Node()
-moderator_sitemap = sitemap.Node()
-admin_sitemap = sitemap.Node()
+sitemap_root = sitemap.Node()
+
+user_sitemap = sitemap_root.new(
+    None,
+    label="Common activities")
+moderator_sitemap = sitemap_root.new(
+    None,
+    label="Moderator activities")
+admin_sitemap = sitemap_root.new(
+    None,
+    label="Admin activities")
 
 # setup xsltea transforms
 
@@ -76,10 +82,6 @@ _xsltea_loader.loader.add_processor(xsltea.i18n.I18NProcessor(
     textdb,
     safety_level=xsltea.SafetyLevel.unsafe))
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
-    "anonymous", anonymous_sitemap,
-    sprites
-))
-_xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "user", user_sitemap,
     sprites
 ))
@@ -90,6 +92,9 @@ _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
 _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
     "admin", admin_sitemap,
     sprites
+))
+_xsltea_loader.loader.add_processor(sitemap.CrumbsProcessor(
+    sitemap_root
 ))
 
 _xsltea_website_output = xsltea.XHTMLPipeline()

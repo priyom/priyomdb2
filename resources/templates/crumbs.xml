@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<nav xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+     xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
+     xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+     id="nav-crumbs"
+     class="ym-hlist">
+  <sitemap:crumbs format="xhtml" />
+</nav>

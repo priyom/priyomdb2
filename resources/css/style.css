@@ -37,6 +37,7 @@ svg.button-icon.icon-microphone {
 
 body > nav.ym-hlist {
     background-image: url('/img/pattern.png');
+    background-position:
 }
 
 body > nav h3 {
@@ -64,7 +65,7 @@ body > nav .ym-gbox {
     margin-right: 1.5em;
 }
 
-body > nav.ym-hlist ul {
+nav.ym-hlist ul {
     display: block;
     float: none;
     /* border: 1px solid #444; */
@@ -72,7 +73,7 @@ body > nav.ym-hlist ul {
     padding: 0;
 }
 
-body > nav.ym-hlist ul li {
+nav.ym-hlist ul li {
     display: inline-block;
     float: none;
     margin: 0;
@@ -80,9 +81,9 @@ body > nav.ym-hlist ul li {
     font-family: "Droid Sans",Arial,Helvetica,sans-serif;
 }
 
-body > nav.ym-hlist ul li a,
-body > nav.ym-hlist ul li strong,
-body > nav.ym-hlist ul li span {
+nav.ym-hlist ul li a,
+nav.ym-hlist ul li strong,
+nav.ym-hlist ul li span {
     margin: 0;
     padding-left: 0.875em;
     padding-right: 0.875em;
@@ -97,8 +98,8 @@ body > nav.ym-hlist ul li span {
     /* padding-bottom: 1px; */
 }
 
-body > nav.ym-hlist ul li a:focus,
-body > nav.ym-hlist ul li a:hover {
+nav.ym-hlist ul li a:focus,
+nav.ym-hlist ul li a:hover {
     /* box-shadow: inset 0 0 20px rgba(127, 127, 127, 1); */
     /* border-radius: 0; */
     background: transparent;
@@ -119,6 +120,13 @@ body > nav.ym-hlist ul li.sm-active span {
     text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
 }
 
+body > nav.ym-hlist ul li.sm-child-active strong,
+body > nav.ym-hlist ul li.sm-child-active a,
+body > nav.ym-hlist ul li.sm-child-active span {
+    color: rgb(220, 220, 220);
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
 body > nav.ym-hlist ul li svg.icon {
     margin-left: -0.25em;
     margin-right: 0.25em;
@@ -128,11 +136,12 @@ body > nav.ym-hlist ul li svg.icon {
     fill: rgb(170, 170, 170);
 }
 
-body > nav.ym-hlist ul li a:hover svg.icon {
+body > nav.ym-hlist ul li a:hover svg.icon,
+body > nav.ym-hlist ul li.sm-child-active svg.icon {
     fill: rgb(220, 220, 220);
 }
 
-body > nav.ym-hlist ul li strong svg.icon {
+body > nav.ym-hlist ul li.sm-active svg.icon {
     fill: #ffffff;
 }
 
@@ -147,6 +156,45 @@ body > nav {
 
 body > footer {
     box-shadow: 0 0 1.5em #444;
+}
+
+nav#nav-crumbs {
+    background: transparent;
+    margin-top: -1.5em;
+    padding-top: 0.5em;
+}
+
+nav#nav-crumbs ul li:before {
+    content: '»';
+}
+
+nav#nav-crumbs ul li:first-child:before {
+    content: '';
+}
+
+nav#nav-crumbs ul li {
+}
+
+nav#nav-crumbs ul li {
+    display: inline-block;
+}
+
+nav#nav-crumbs ul li a,
+nav#nav-crumbs ul li strong,
+nav#nav-crumbs ul li span {
+    color: #333;
+    display: inline;
+}
+
+nav#nav-crumbs ul li a:hover,
+nav#nav-crumbs ul li a:focus {
+    color: #666;
+    text-decoration: underline;
+}
+
+nav#nav-crumbs ul li strong {
+    font-weight: bold;
+    text-shadow: none;
 }
 
 form.inline {

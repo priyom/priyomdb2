@@ -31,7 +31,7 @@
                   class="ym-form"
                   exec:action="context.href(edit_mode, mode_id=0)">
               <div class="ym-fbox">
-                <label form:for-field="display_name">Display name</label>
+                <label form:for-field="display_name"><i18n:_>Display name</i18n:_></label>
                 <input type="text"
                        form:field="display_name" />
               </div>

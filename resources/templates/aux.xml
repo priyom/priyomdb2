@@ -2,4 +2,5 @@
 <misc xmlns:tea="https://xmlns.zombofant.net/xsltea/processors">
   <tea:include src="nav.xml" />
   <tea:include src="footer.xml" />
+  <tea:include src="crumbs.xml" />
 </misc>
