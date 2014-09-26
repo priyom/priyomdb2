@@ -7,6 +7,7 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import teapot
+import teapot.routing
 import teapot.routing.selectors
 import teapot.sqlalchemy
 import teapot.templating
@@ -116,11 +117,35 @@ _dbengine = sqlalchemy.create_engine(
 Session = sqlalchemy.orm.sessionmaker(bind=_dbengine)
 del _dbengine
 
+@xsltea_site.with_template("internal_server_error.xml")
+def internal_server_error(request: teapot.request.Request,
+                          exc_info):
+    yield teapot.response.Response(None, response_code=500)
+
+    _, exc, tb = exc_info
+
+    yield ({
+        "exc": exc,
+        "tb": tb
+    }, {})
+
 # main router
 
 class _Router(teapot.sqlalchemy.SessionMixin, teapot.routing.Router):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, sessionmaker=Session, **kwargs)
+
+    def handle_internal_server_error(self, request, exc_info):
+        request.current_routable = internal_server_error
+
+        ctx = teapot.routing.Context.from_request(request)
+        selectors = teapot.routing.getrouteinfo(internal_server_error).selectors
+        for selector in selectors:
+            selector.select(ctx)
+
+        yield from internal_server_error(*ctx.args,
+                                         exc_info=exc_info,
+                                         **ctx.kwargs)
 
     def _reauth(self, request):
         from .auth import Authorization

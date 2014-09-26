@@ -210,66 +210,89 @@ class AuthProcessor(xsltea.processor.TemplateProcessor):
             lineno=sourceline,
             col_offset=0)
 
-    def _build_capability_condition(self, auth_ast, capability_key, sourceline):
-        return ast.Call(
-            ast.Attribute(
-                auth_ast,
-                "has_capability",
+    def _safeguard(self, auth_ast, action_ast, sourceline, default_ast=None):
+        if not default_ast:
+            default_ast = ast.Name(
+                "False",
                 ast.Load(),
                 lineno=sourceline,
-                col_offset=0),
-            [ # arguments
-                ast.Str(
-                    getattr(Capability, capability_key),
-                    lineno=sourceline,
-                    col_offset=0),
-            ],
-            [],
-            None,
-            None,
+                col_offset=0)
+        return ast.IfExp(
+            auth_ast,
+            action_ast,
+            default_ast,
             lineno=sourceline,
             col_offset=0)
 
-    def _build_login_condition(self, auth_ast, logged_in, sourceline):
-        return ast.Compare(
-            ast.Attribute(
-                auth_ast,
-                "user",
-                ast.Load(),
-                lineno=sourceline,
-                col_offset=0),
-            [
-                ast.IsNot() if logged_in else ast.Is()
-            ],
-            [
-                ast.Name(
-                    "None",
+    def _build_capability_condition(self, auth_ast, capability_key, sourceline):
+        return self._safeguard(
+            auth_ast,
+            ast.Call(
+                ast.Attribute(
+                    auth_ast,
+                    "has_capability",
                     ast.Load(),
                     lineno=sourceline,
-                    col_offset=0)
-            ],
-            lineno=sourceline,
-            col_offset=0)
-
-    def _build_group_condition(self, auth_ast, group_key, sourceline):
-        return ast.Call(
-            ast.Attribute(
-                auth_ast,
-                "has_group",
-                ast.Load(),
+                    col_offset=0),
+                [ # arguments
+                    ast.Str(
+                        getattr(Capability, capability_key),
+                        lineno=sourceline,
+                        col_offset=0),
+                ],
+                [],
+                None,
+                None,
                 lineno=sourceline,
                 col_offset=0),
-            [ # arguments
-                ast.Str(
-                    getattr(priyom.model.user.Group, group_key),
+            sourceline)
+
+    def _build_login_condition(self, auth_ast, logged_in, sourceline):
+        return self._safeguard(
+            auth_ast,
+            ast.Compare(
+                ast.Attribute(
+                    auth_ast,
+                    "user",
+                    ast.Load(),
                     lineno=sourceline,
                     col_offset=0),
-            ],
-            [],
-            None,
-            None,
-            lineno=sourceline,
-            col_offset=0)
+                [
+                    ast.IsNot() if logged_in else ast.Is()
+                ],
+                [
+                    ast.Name(
+                        "None",
+                        ast.Load(),
+                        lineno=sourceline,
+                        col_offset=0)
+                ],
+                lineno=sourceline,
+                col_offset=0),
+            sourceline)
+
+    def _build_group_condition(self, auth_ast, group_key, sourceline):
+        return self._safeguard(
+            auth_ast,
+            ast.Call(
+                ast.Attribute(
+                    auth_ast,
+                    "has_group",
+                    ast.Load(),
+                    lineno=sourceline,
+                    col_offset=0),
+                [ # arguments
+                    ast.Str(
+                        getattr(priyom.model.user.Group, group_key),
+                        lineno=sourceline,
+                    col_offset=0),
+                ],
+                [],
+                None,
+                None,
+                lineno=sourceline,
+                col_offset=0),
+            sourceline)
 
     def cond_cap(self, template, elem, key, value, context):
         sourceline = elem.sourceline or 0

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<footer xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+        xmlns:exec="https://xmlns.zombofant.net/xsltea/exec">
+  <div class="ym-wrapper"><div class="ym-wbox">
+    <p>
+      <i18n:_>A <a i18n:id="priyom" href="http://priyom.org">priyom.org</a> project</i18n:_> •
+      <i18n:_>hacked together by Horrorcat</i18n:_> •
+      <i18n:_>using <a i18n:id="yaml" href="http://yaml.de">yaml CSS framework</a></i18n:_>
+    </p>
+  </div></div>
+</footer>

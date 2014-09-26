@@ -50,10 +50,10 @@ def img_file(f):
     return teapot.response.Response.file(mimetype, f)
 
 def logged_in(node, request):
-    return bool(request.auth.user)
+    return request.auth and request.auth.user
 
 def logged_out(node, request):
-    return not request.auth.user
+    return not request.auth or not request.auth.user
 
 # Sitemap: Common activities
 user_sitemap.new(

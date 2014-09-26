@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
+      xmlns:svgicon="https://api.priyom.org/xmlns/svgicon"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+  <exec:code>exc = arguments['exc']</exec:code>
+  <exec:code>tb = arguments['tb']</exec:code>
+  <head>
+    <title><i18n:_>Internal server error</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <tea:include src="nav.xml" />
+    <tea:include src="minimal_footer.xml" />
+    <nav id="nav-crumbs" />
+    <main>
+      <h2><i18n:_>Internal server error</i18n:_></h2>
+      <p class="box error">
+        <i18n:_>An internal error was encountered while trying to serve the
+        request.</i18n:_>
+      </p>
+      <dl>
+        <dt><i18n:_>Error class</i18n:_></dt>
+        <dd><i18n:any>str(type(exc))</i18n:any></dd>
+        <dt><i18n:_>Error message</i18n:_></dt>
+        <dd><i18n:any>str(exc)</i18n:any></dd>
+      </dl>
+    </main>
+  </body>
+</html>
