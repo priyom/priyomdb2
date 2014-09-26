@@ -170,3 +170,7 @@ msgstr ""
 
 msgid "Admin activities"
 msgstr ""
+
+msgctxt "event_class"
+msgid ""
+msgstr "Plain transmission"

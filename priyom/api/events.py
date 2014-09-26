@@ -289,6 +289,22 @@ def review_POST(request: teapot.request.Request):
         review,
         view=view)
 
+@require_capability(Capability.VIEW_EVENT)
+@router.route("/event/{event_id:d}",
+              methods={teapot.request.Method.GET})
+@xsltea_site.with_variable_template()
+def view_event(event_id, request: teapot.request.Request):
+    event = request.dbsession.query(priyom.model.Event).get(event_id)
+
+    if event is None:
+        yield "event_not_found.xml"
+        yield teapot.response.Response(None, response_code=404)
+        yield {"event_id": event_id}, {}
+    else:
+        yield "event_view.xml"
+        yield teapot.response.Response(None)
+        yield {"event": event}, {}
+
 
 def get_event_viewer(request):
     """
@@ -301,4 +317,4 @@ def get_event_viewer(request):
     if request.auth.has_capability(Capability.EDIT_EVENT):
         return edit_event
     else:
-        return None
+        return view_event

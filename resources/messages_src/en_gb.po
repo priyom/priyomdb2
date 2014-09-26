@@ -21,7 +21,7 @@ msgstr ""
 msgid "An event with the ID {event_id} does not exist."
 msgstr ""
 
-#: resources/templates/event_form.xml:121
+#: resources/templates/event_form.xml:123
 msgid ""
 "Moderator approval (without, the Event and its contents will not be shown in "
 "queries)"
@@ -33,7 +33,11 @@ msgid ""
 "characters length and</xml><xml id='li2'>either one letter, one special "
 "character and one number or, for each group missing from that list, 8 "
 "additional characters</xml>"
-msgstr "<xml id='p'>Password strength criteria:</xml><xml id='li1'>At least 8 characters length and</xml><xml id='li2'>either one letter, one special character and one number or, for each group missing from that list, 8 additional characters</xml>"
+msgstr ""
+"<xml id='p'>Password strength criteria:</xml><xml id='li1'>At least 8 "
+"characters length and</xml><xml id='li2'>either one letter, one special "
+"character and one number or, for each group missing from that list, 8 "
+"additional characters</xml>"
 
 #: resources/templates/footer.xml:9
 msgid "A <xml id='priyom'>priyom.org</xml> project"
@@ -93,7 +97,11 @@ msgstr ""
 msgid "Already have an account?"
 msgstr ""
 
-#: resources/templates/event_form.xml:99
+#: resources/templates/internal_server_error.xml:26
+msgid "An internal error was encountered while trying to serve the request."
+msgstr ""
+
+#: resources/templates/event_form.xml:101
 msgid "Anonymous / External submitter"
 msgstr ""
 
@@ -101,7 +109,7 @@ msgstr ""
 msgid "Append to existing event"
 msgstr ""
 
-#: resources/templates/event_form.xml:129
+#: resources/templates/event_form.xml:131
 msgid "Approved"
 msgstr ""
 
@@ -133,7 +141,7 @@ msgstr ""
 msgid "Congratulations!"
 msgstr ""
 
-#: resources/templates/event_form.xml:147
+#: resources/templates/event_form.xml:149
 msgid "Contents"
 msgstr ""
 
@@ -239,7 +247,7 @@ msgstr "Email address"
 msgid "End time"
 msgstr ""
 
-#: resources/templates/view_stations.xml:64
+#: resources/templates/view_stations.xml:66
 msgid "Enigma ID"
 msgstr ""
 
@@ -247,11 +255,19 @@ msgstr ""
 msgid "Enigma Identifier"
 msgstr ""
 
+#: resources/templates/internal_server_error.xml:31
+msgid "Error class"
+msgstr ""
+
+#: resources/templates/internal_server_error.xml:35
+msgid "Error message"
+msgstr ""
+
 #: resources/templates/event_form.xml:73
 msgid "Event class"
 msgstr ""
 
-#: resources/templates/view_stations.xml:67
+#: resources/templates/view_stations.xml:69
 msgid "Event count"
 msgstr ""
 
@@ -269,6 +285,10 @@ msgstr ""
 
 #: resources/templates/user_view.xml:41
 msgid "Events logged"
+msgstr ""
+
+#: resources/templates/internal_server_error.xml:47
+msgid "File"
 msgstr ""
 
 #: resources/templates/view_formats.xml:30
@@ -293,7 +313,11 @@ msgstr ""
 msgid "Format node"
 msgstr ""
 
-#: resources/templates/event_form.xml:138
+#: resources/templates/event_view.xml:43
+msgid "Frequencies"
+msgstr ""
+
+#: resources/templates/event_form.xml:140
 msgid "Frequencies and Modes"
 msgstr ""
 
@@ -303,6 +327,10 @@ msgstr ""
 
 #: resources/templates/user_view.xml:31
 msgid "Group memberships"
+msgstr ""
+
+#: resources/templates/internal_server_error.xml:14
+msgid "Internal server error"
 msgstr ""
 
 #: resources/templates/format_form_controls_column.xml:59
@@ -357,7 +385,7 @@ msgstr ""
 msgid "Manage transmission formats"
 msgstr ""
 
-#: resources/templates/library.xml:298
+#: resources/templates/event_view.xml:20
 msgid "Metadata"
 msgstr "Metadata"
 
@@ -413,6 +441,11 @@ msgstr "New Password"
 msgid "New password (confirm)"
 msgstr "New password (confirm)"
 
+#: resources/templates/view_stations.xml:32
+#, fuzzy
+msgid "New station"
+msgstr "View station"
+
 #: resources/templates/log_library.xml:83
 msgid "Next"
 msgstr ""
@@ -421,11 +454,19 @@ msgstr ""
 msgid "Nickname"
 msgstr ""
 
+#: resources/templates/event_view.xml:54
+msgid "No frequencies are attached to this event."
+msgstr ""
+
 #: resources/templates/log2.xml:85
 msgid ""
 "No related events were found for this station at the given time. If you "
 "meant to append to an existing event, go back and double-check the time and "
 "station."
+msgstr ""
+
+#: resources/templates/event_view.xml:73
+msgid "No transmissions are attached to this event."
 msgstr ""
 
 #: resources/templates/log2.xml:84
@@ -448,7 +489,7 @@ msgstr "Password (confirm)"
 msgid "Previous"
 msgstr ""
 
-#: resources/templates/view_stations.xml:65
+#: resources/templates/view_stations.xml:67
 msgid "Priyom ID"
 msgstr ""
 
@@ -554,7 +595,7 @@ msgstr ""
 msgid "Statistics"
 msgstr ""
 
-#: resources/templates/event_form.xml:91
+#: resources/templates/event_form.xml:93
 msgid "Submitter"
 msgstr ""
 
@@ -608,6 +649,10 @@ msgstr ""
 "including confirmation. If you do not want to change your password, leave "
 "any of the password fields blank."
 
+#: resources/templates/internal_server_error.xml:40
+msgid "Traceback (most recent call first)"
+msgstr ""
+
 #: resources/templates/library.xml:321
 msgid "Transcript"
 msgstr ""
@@ -622,6 +667,10 @@ msgstr ""
 
 #: resources/templates/view_formats.xml:19
 msgid "Transmission formats"
+msgstr ""
+
+#: resources/templates/event_view.xml:60
+msgid "Transmissions"
 msgstr ""
 
 #: resources/templates/format_form.xml:71
@@ -655,11 +704,11 @@ msgstr "User name"
 msgid "Validate contents without submitting"
 msgstr ""
 
-#: resources/templates/event_form.xml:135
+#: resources/templates/event_form.xml:137
 msgid "Validate without saving"
 msgstr ""
 
-#: resources/templates/event_not_found.xml:20
+#: resources/templates/event_view.xml:10
 msgid "View event"
 msgstr ""
 
@@ -702,6 +751,10 @@ msgstr ""
 #: resources/templates/footer.xml:10
 msgid "hacked together by Horrorcat"
 msgstr "hacked together by Horrorcat"
+
+#: resources/templates/internal_server_error.xml:51
+msgid "in function"
+msgstr ""
 
 #: resources/templates/library.xml:108
 msgid "next »"
@@ -897,6 +950,23 @@ msgstr ""
 
 msgid "Admin activities"
 msgstr ""
+
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgctxt "event_class"
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2014-09-25 23:23+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 
 #, fuzzy
 #~ msgid "Radio dash"

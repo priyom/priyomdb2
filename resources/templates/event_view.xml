@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
+      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth">
+  <exec:code>event = arguments['event']</exec:code>
+  <head>
+    <title><i18n:_>View event</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <tea:include src="aux.xml" xpath="/misc/*" />
+    <main>
+      <h2><i18n:_>View event</i18n:_></h2>
+      <div class="ym-grid">
+        <h3><i18n:_>Metadata</i18n:_></h3>
+        <div class="ym-gl ym-g62"><div class="ym-gbox">
+          <h6><i18n:_>Event properties</i18n:_></h6>
+          <div class="ym-grid">
+            <div class="ym-gl ym-g50"><div class="ym-gbox">
+              <dl>
+                <dt><i18n:_>Station</i18n:_></dt>
+                <dd><exec:text>event.station</exec:text></dd>
+                <dt><i18n:_>Event class</i18n:_></dt>
+                <dd><exec:text>context.i18n(str(event.event_class or ""), ctxt="event_class")</exec:text></dd>
+              </dl>
+            </div></div>
+            <div class="ym-gl ym-g50"><div class="ym-gbox">
+              <dl>
+                <dt><i18n:_>Start time</i18n:_></dt>
+                <dd><i18n:datetime>event.start_time</i18n:datetime></dd>
+                <dt><i18n:_>End time</i18n:_></dt>
+                <dd><i18n:datetime>event.end_time</i18n:datetime></dd>
+              </dl>
+            </div></div>
+          </div>
+        </div></div>
+        <div class="ym-gr ym-g38"><div class="ym-gbox">
+          <h6><i18n:_>Frequencies</i18n:_></h6>
+          <tea:switch>
+            <tea:case exec:eval="event.frequencies">
+              <ul>
+                <tea:for-each bind="frequency" from="event.frequencies">
+                  <li><exec:text>frequency</exec:text></li>
+                </tea:for-each>
+              </ul>
+            </tea:case>
+            <tea:default>
+              <p class="box info">
+                <i18n:_>No frequencies are attached to this event.</i18n:_>
+              </p>
+            </tea:default>
+          </tea:switch>
+        </div></div>
+      </div>
+      <h3><i18n:_>Transmissions</i18n:_></h3>
+      <tea:switch>
+        <tea:case exec:eval="event.contents">
+          <ul>
+            <tea:for-each bind="content" from="event.contents">
+              <li><code>
+                <exec:text>content</exec:text>
+              </code></li>
+            </tea:for-each>
+          </ul>
+        </tea:case>
+        <tea:default>
+          <p class="box info">
+            <i18n:_>No transmissions are attached to this event.</i18n:_>
+          </p>
+        </tea:default>
+      </tea:switch>
+    </main>
+  </body>
+</html>

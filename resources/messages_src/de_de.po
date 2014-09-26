@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-25 23:23+0200\n"
+"PO-Revision-Date: 2014-09-26 14:40+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -21,7 +21,7 @@ msgstr "Ein Sender mit der ID {station_id} existiert nicht."
 msgid "An event with the ID {event_id} does not exist."
 msgstr "Ein Ereignis mit der ID {event_id} existiert nicht."
 
-#: resources/templates/event_form.xml:121
+#: resources/templates/event_form.xml:123
 msgid ""
 "Moderator approval (without, the Event and its contents will not be shown in "
 "queries)"
@@ -101,7 +101,11 @@ msgstr "Alphabete"
 msgid "Already have an account?"
 msgstr "Du hast schon einen Account?"
 
-#: resources/templates/event_form.xml:99
+#: resources/templates/internal_server_error.xml:26
+msgid "An internal error was encountered while trying to serve the request."
+msgstr "Während der Bearbeitung der Anfrage ist ein interner Fehler aufgetreten."
+
+#: resources/templates/event_form.xml:101
 msgid "Anonymous / External submitter"
 msgstr "Anonymous / externer Einsender"
 
@@ -109,7 +113,7 @@ msgstr "Anonymous / externer Einsender"
 msgid "Append to existing event"
 msgstr "Zu bestehendem Ereignis hinzufügen"
 
-#: resources/templates/event_form.xml:129
+#: resources/templates/event_form.xml:131
 msgid "Approved"
 msgstr "Überprüft"
 
@@ -141,7 +145,7 @@ msgstr ""
 msgid "Congratulations!"
 msgstr "Gratuation!"
 
-#: resources/templates/event_form.xml:147
+#: resources/templates/event_form.xml:149
 msgid "Contents"
 msgstr "Inhalt"
 
@@ -249,7 +253,7 @@ msgstr "E-Mail Adresse"
 msgid "End time"
 msgstr "Endzeit"
 
-#: resources/templates/view_stations.xml:64
+#: resources/templates/view_stations.xml:66
 msgid "Enigma ID"
 msgstr "Enigma ID"
 
@@ -257,11 +261,19 @@ msgstr "Enigma ID"
 msgid "Enigma Identifier"
 msgstr "Enigma-Kennzeichnung"
 
+#: resources/templates/internal_server_error.xml:31
+msgid "Error class"
+msgstr "Fehlertyp"
+
+#: resources/templates/internal_server_error.xml:35
+msgid "Error message"
+msgstr "Fehlermeldung"
+
 #: resources/templates/event_form.xml:73
 msgid "Event class"
 msgstr "Ereignisart"
 
-#: resources/templates/view_stations.xml:67
+#: resources/templates/view_stations.xml:69
 msgid "Event count"
 msgstr "Ereignisanzahl"
 
@@ -280,6 +292,10 @@ msgstr "Ereignisse"
 #: resources/templates/user_view.xml:41
 msgid "Events logged"
 msgstr "Ereignisse eingetragen"
+
+#: resources/templates/internal_server_error.xml:47
+msgid "File"
+msgstr "Datei"
 
 #: resources/templates/view_formats.xml:30
 msgid "Filters"
@@ -305,7 +321,11 @@ msgstr "Format"
 msgid "Format node"
 msgstr "Formatelement"
 
-#: resources/templates/event_form.xml:138
+#: resources/templates/event_view.xml:43
+msgid "Frequencies"
+msgstr "Frequenzen"
+
+#: resources/templates/event_form.xml:140
 msgid "Frequencies and Modes"
 msgstr "Frequenzen und Übertragungsmodi"
 
@@ -316,6 +336,10 @@ msgstr "Frequenz"
 #: resources/templates/user_view.xml:31
 msgid "Group memberships"
 msgstr "Gruppenmitgliedschaften"
+
+#: resources/templates/internal_server_error.xml:14
+msgid "Internal server error"
+msgstr "Interner Serverfehler"
 
 #: resources/templates/format_form_controls_column.xml:59
 msgid "Join / Match expression"
@@ -369,7 +393,7 @@ msgstr "Übertragungsmodi verwalten"
 msgid "Manage transmission formats"
 msgstr "Nachrichtenformate verwalten"
 
-#: resources/templates/library.xml:298
+#: resources/templates/event_view.xml:20
 msgid "Metadata"
 msgstr "Stammdaten"
 
@@ -425,6 +449,10 @@ msgstr "Neues Passwort"
 msgid "New password (confirm)"
 msgstr "Neues Passwort (Bestätigung)"
 
+#: resources/templates/view_stations.xml:32
+msgid "New station"
+msgstr "Neuen Sender anlegen"
+
 #: resources/templates/log_library.xml:83
 msgid "Next"
 msgstr "Weiter"
@@ -432,6 +460,10 @@ msgstr "Weiter"
 #: resources/templates/station_form.xml:47
 msgid "Nickname"
 msgstr "Spitzname"
+
+#: resources/templates/event_view.xml:54
+msgid "No frequencies are attached to this event."
+msgstr "Diesem Ereignis sind keine Frequenzen zugeordnet."
 
 #: resources/templates/log2.xml:85
 msgid ""
@@ -442,6 +474,10 @@ msgstr ""
 "Keine ähnlichen Ereignisse wurden für diesen Sender zur angegebenen Zeit "
 "gefunden. Wenn du vor hattest, Eintragungen an ein bestehendes Ereignis "
 "anzuhängen, gehe zurück und überprüfe die Zeitangabe und den Sender."
+
+#: resources/templates/event_view.xml:73
+msgid "No transmissions are attached to this event."
+msgstr "Diesem Ereignis gibt es keine Nachrichten."
 
 #: resources/templates/log2.xml:84
 msgid "Note:"
@@ -463,7 +499,7 @@ msgstr "Passwort (Bestätigung)"
 msgid "Previous"
 msgstr "Zurück"
 
-#: resources/templates/view_stations.xml:65
+#: resources/templates/view_stations.xml:67
 msgid "Priyom ID"
 msgstr "Priyom ID"
 
@@ -572,7 +608,7 @@ msgstr "Sendereigenschaften"
 msgid "Statistics"
 msgstr "Statistiken"
 
-#: resources/templates/event_form.xml:91
+#: resources/templates/event_form.xml:93
 msgid "Submitter"
 msgstr "Einsender"
 
@@ -630,6 +666,10 @@ msgstr ""
 "Passwort inklusive Bestätigung angeben. Wenn du dein Passwort nicht ändern "
 "willst, lasse die Passwortfelder leer."
 
+#: resources/templates/internal_server_error.xml:40
+msgid "Traceback (most recent call first)"
+msgstr ""
+
 #: resources/templates/library.xml:321
 msgid "Transcript"
 msgstr "Transkript"
@@ -645,6 +685,10 @@ msgstr "Transkript-Metadaten"
 #: resources/templates/view_formats.xml:19
 msgid "Transmission formats"
 msgstr "Nachrichtenformate"
+
+#: resources/templates/event_view.xml:60
+msgid "Transmissions"
+msgstr "Nachrichten"
 
 #: resources/templates/format_form.xml:71
 msgid ""
@@ -680,11 +724,11 @@ msgstr "Benutzername"
 msgid "Validate contents without submitting"
 msgstr "Inhalt ohne Speichern überprüfen"
 
-#: resources/templates/event_form.xml:135
+#: resources/templates/event_form.xml:137
 msgid "Validate without saving"
 msgstr "Ohne Speichern überprüfen"
 
-#: resources/templates/event_not_found.xml:20
+#: resources/templates/event_view.xml:10
 msgid "View event"
 msgstr "Ereignis anzeigen"
 
@@ -727,6 +771,10 @@ msgstr "z.B. USB"
 #: resources/templates/footer.xml:10
 msgid "hacked together by Horrorcat"
 msgstr "zusammengehackt von Horrorcat"
+
+#: resources/templates/internal_server_error.xml:51
+msgid "in function"
+msgstr ""
 
 #: resources/templates/library.xml:108
 msgid "next »"
@@ -922,3 +970,7 @@ msgstr "Moderatorwerkzeuge"
 
 msgid "Admin activities"
 msgstr "Adminwerkzeuge"
+
+msgctxt "event_class"
+msgid ""
+msgstr "Normale Übertragung"

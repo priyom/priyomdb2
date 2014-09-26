@@ -565,3 +565,11 @@ ul.pagination > li:last-child > div.fakebutton
 .ym-g100 {
     width: 100%;
 }
+
+ol.tb {
+    font-family: "Droid Sans",Arial,Helvetica,sans-serif;
+}
+
+ol.tb pre {
+    margin-left: 2em;
+}

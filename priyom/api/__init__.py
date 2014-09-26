@@ -71,7 +71,8 @@ group1.new(
     label="View station")
 group1.new(
     stations.edit_station,
-    label="Edit station")
+    label="Edit station",
+    aliased_routables={stations.edit_station_POST})
 
 group1 = user_sitemap.new(
     events.view_events,
@@ -82,6 +83,9 @@ group1.new(
     events.edit_event,
     label="Edit event",
     aliased_routables={events.edit_event_POST})
+group1.new(
+    events.view_event,
+    label="View event")
 
 user_sitemap.new(
     log.log,

@@ -28,7 +28,9 @@
               <h3><i18n:_>Activities</i18n:_></h3>
               <ul class="navlist">
                 <li><a exec:href="context.href(view_station, station_id=0)"
-                       class="ym-button ym-success ym-add">New station</a></li>
+                       class="ym-button ym-success ym-add">
+                  <i18n:_>New station</i18n:_>
+                </a></li>
               </ul>
             </tea:if>
           </div></div>

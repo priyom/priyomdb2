@@ -74,11 +74,13 @@
             </label>
             <select form:field="event_class">
               <option value=""
-                      exec:selected="'selected' if not form.event_class else None">Plain transmission</option>
+                      exec:selected="'selected' if not form.event_class else None">
+                <exec:text>context.i18n("", ctxt="event_class")</exec:text>
+              </option>
               <tea:for-each bind="event_class" from="event_classes">
                 <option exec:value="event_class.id"
                         exec:selected="'selected' if form.event_class == event_class else None">
-                  <exec:text>str(event_class)</exec:text>
+                  <exec:text>context.i18n(str(event_class), ctxt="event_class")</exec:text>
                 </option>
               </tea:for-each>
             </select>

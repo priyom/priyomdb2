@@ -6,7 +6,8 @@
       xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n"
       xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
       xmlns:svgicon="https://api.priyom.org/xmlns/svgicon"
-      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap">
+      xmlns:sitemap="https://xmlns.zombofant.ne/xsltea/sitemap">
+  <exec:code>import traceback</exec:code>
   <exec:code>exc = arguments['exc']</exec:code>
   <exec:code>tb = arguments['tb']</exec:code>
   <head>
@@ -25,12 +26,35 @@
         <i18n:_>An internal error was encountered while trying to serve the
         request.</i18n:_>
       </p>
-      <dl>
-        <dt><i18n:_>Error class</i18n:_></dt>
-        <dd><i18n:any>str(type(exc))</i18n:any></dd>
-        <dt><i18n:_>Error message</i18n:_></dt>
-        <dd><i18n:any>str(exc)</i18n:any></dd>
-      </dl>
+      <div class="ym-grid">
+        <div class="ym-gl ym-g38"><div class="ym-gbox">
+          <h6><i18n:_>Error class</i18n:_>: </h6>
+          <p><code><i18n:any>type(exc).__name__</i18n:any></code></p>
+        </div></div>
+        <div class="ym-gr ym-g62"><div class="ym-gbox">
+          <h6><i18n:_>Error message</i18n:_>: </h6>
+          <p><code><i18n:any>str(exc)</i18n:any></code></p>
+        </div></div>
+      </div>
+      <h6>
+        <i18n:_>Traceback (most recent call first)</i18n:_>
+      </h6>
+      <ol class="tb">
+        <tea:for-each from="reversed(traceback.extract_tb(tb))"
+                      bind="src, lineno, func, listing">
+          <li>
+            <div>
+              <strong><i18n:_>File</i18n:_>: </strong>
+              <code><exec:text>src</exec:text>:<exec:text>lineno</exec:text></code>
+            </div>
+            <div>
+              <strong><i18n:_>in function</i18n:_>: </strong>
+              <code><exec:text>func</exec:text></code>
+            </div>
+            <pre><code><exec:text>listing</exec:text></code></pre>
+          </li>
+        </tea:for-each>
+      </ol>
     </main>
   </body>
 </html>

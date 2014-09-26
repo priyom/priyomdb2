@@ -18,7 +18,7 @@
         <title>
           <xsl:value-of select="h:head/h:title" />
           <xsl:text> – </xsl:text>
-          <xsl:text>Priyom Database Backend</xsl:text>
+          <xsl:text>Priyom.org Database</xsl:text>
         </title>
         <meta name="viewport" content="width=320, initial-scale=1, user-scalable=no" />
         <xsl:apply-templates select="h:head/h:link" />
@@ -26,7 +26,7 @@
       <body>
         <header>
           <div class="ym-wrapper"><div class="ym-wbox">
-            <h1>Priyom radio database backend</h1>
+            <h1>Priyom.org Database</h1>
           </div></div>
         </header>
         <nav class="ym-hlist">
