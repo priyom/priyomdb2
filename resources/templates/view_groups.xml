@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:auth="https://xmlns.zombofant.net/xsltea/auth"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:priyom="https://xmlns.zombofant.net/xsltea/priyom"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+  <head>
+    <title><i18n:_>View groups</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>view = arguments['view']</exec:code>
+    <tea:include src="aux.xml" xpath="/misc/*" />
+    <main>
+      <h2><i18n:_>View groups</i18n:_></h2>
+      <tea:call src="library.xml" name="pagination">
+        <tea:pass name="page">view</tea:pass>
+      </tea:call>
+      <tea:sortable-table tea:page="view"
+                          tea:routable="context.request.current_routable">
+        <colgroup>
+          <col class="id" name="id" />
+          <col name="name" />
+          <col />
+          <col name="member_count" />
+          <col class="actions" style="width: 20em;" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><i18n:_>Internal name</i18n:_></th>
+            <th><i18n:_>Display name</i18n:_></th>
+            <th><i18n:_>Members</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each bind="group, _, _, member_count" from="view">
+            <tr>
+              <td><exec:text>group.id</exec:text></td>
+              <td><exec:text>group.name</exec:text></td>
+              <td><exec:text>context.i18n(group.name, ctxt="group")</exec:text></td>
+              <td><exec:text>member_count or 0</exec:text></td>
+              <td>
+                <tea:call src="library.xml" name="group_actions">
+                  <tea:pass name="group_id">group.id</tea:pass>
+                </tea:call>
+              </td>
+            </tr>
+          </tea:for-each>
+        </tbody>
+      </tea:sortable-table>
+      <tea:call src="library.xml" name="pagination">
+        <tea:pass name="page">view</tea:pass>
+      </tea:call>
+    </main>
+  </body>
+</html>

@@ -50,15 +50,17 @@ text = event if not attr else getattr(event, attr)
   <tea:def name="page">
     <tea:arg name="page" mode="lazy" default="page" />
     <tea:arg name="view" mode="lazy" default="view" />
+    <tea:arg name="href" mode="lazy" default="href" />
     <tea:arg name="pageno" mode="lazy" default="pageno" />
     <li exec:class="'current' if page.get_pageno() == pageno else None">
-      <a exec:href="context.href(view, view=page.at_page(pageno))"><exec:text>pageno</exec:text></a>
+      <a exec:href="href(view, view=page.at_page(pageno))"><exec:text>pageno</exec:text></a>
     </li>
   </tea:def>
 
   <tea:def name="pagination">
     <tea:arg name="page" />
-    <tea:arg name="view" />
+    <tea:arg name="view" mode="lazy" default="context.request.current_routable" />
+    <tea:arg name="href" mode="lazy" default="context.href" />
     <exec:code>total_pages = page.total_pages</exec:code>
     <exec:code>
 def calculate_range(start_at, end_at):
@@ -83,7 +85,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
     <ul class="pagination">
       <tea:if exec:eval="page.get_pageno() &gt; 1">
         <li class="wide">
-          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()-1))"><i18n:_>« prev</i18n:_></a>
+          <a exec:href="href(view, view=page.at_page(page.get_pageno()-1))"><i18n:_>« prev</i18n:_></a>
         </li>
       </tea:if>
       <tea:call name="page">
@@ -105,7 +107,7 @@ pagerange = range(start_at, end_at+1)</exec:code>
       </tea:if>
       <tea:if exec:eval="page.get_pageno() &lt; page.total_pages">
         <li class="wide">
-          <a exec:href="context.href(view, view=page.at_page(page.get_pageno()+1))"><i18n:_>next »</i18n:_></a>
+          <a exec:href="href(view, view=page.at_page(page.get_pageno()+1))"><i18n:_>next »</i18n:_></a>
         </li>
       </tea:if>
     </ul>
@@ -140,7 +142,18 @@ errors = form.errors.get(field, [])</exec:code>
         <div class="form-errors">
           <ul>
             <tea:for-each bind="error" from="errors">
-              <li><exec:text>context.i18n(str(error.err))</exec:text></li>
+              <li>
+                <tea:switch>
+                  <tea:case exec:eval="(isinstance(error.err, Exception) and
+                                       len(error.err.args) > 0)">
+                    <exec:text>context.i18n(error.err.args[0]).format(
+                        *error.err.args[1:])</exec:text>
+                  </tea:case>
+                  <tea:default>
+                    <exec:text>context.i18n(str(error.err))</exec:text>
+                  </tea:default>
+                </tea:switch>
+              </li>
             </tea:for-each>
           </ul>
         </div>
@@ -373,6 +386,40 @@ can_edit = context.request.auth.has_capability(Capability.EDIT_EVENT)
     </tea:if>
   </tea:def>
 
+  <tea:def name="user_actions">
+    <tea:arg name="user_id" />
+    <exec:code>
+import priyom.api.users
+from priyom.api.auth import Capability
+view_user = priyom.api.users.get_user_viewer(context.request)
+can_edit = context.request.auth.has_capability(Capability.EDIT_USER)
+    </exec:code>
+    <tea:if exec:eval="view_user">
+      <a exec:class="'ym-button ym-primary '+
+                     ('ym-edit' if can_edit else '')"
+         exec:href="context.href(view_user, user_id=user_id)">
+        <exec:text>context.i18n('Edit' if can_edit else 'View')</exec:text>
+      </a>
+    </tea:if>
+  </tea:def>
+
+  <tea:def name="group_actions">
+    <tea:arg name="group_id" />
+    <exec:code>
+import priyom.api.groups
+from priyom.api.auth import Capability
+view_group = priyom.api.groups.get_group_viewer(context.request)
+can_edit = context.request.auth.has_capability(Capability.EDIT_GROUP)
+    </exec:code>
+    <tea:if exec:eval="view_group">
+      <a exec:class="'ym-button ym-primary '+
+                     ('ym-edit' if can_edit else '')"
+         exec:href="context.href(view_group, group_id=group_id)">
+        <exec:text>context.i18n('Edit' if can_edit else 'View')</exec:text>
+      </a>
+    </tea:if>
+  </tea:def>
+
   <tea:def name="station_actions">
     <tea:arg name="station_id" />
     <exec:code>
@@ -393,6 +440,29 @@ can_edit = context.request.auth.has_capability(Capability.EDIT_STATION)
         <i18n:_>Delete</i18n:_>
       </a>
     </tea:if>
+  </tea:def>
+
+  <tea:def name="list_capabilities">
+    <tea:arg name="caps" />
+    <exec:code>
+import itertools
+caps = sorted(caps)
+    </exec:code>
+    <tea:for-each bind="group, caps"
+                  from="itertools.groupby(
+                        caps,
+                        lambda x: x.split('-', 1)[0])">
+      <p><strong>
+        <exec:text>context.i18n(group, ctxt="capability")</exec:text>
+      </strong></p>
+      <ul>
+        <tea:for-each bind="cap" from="caps">
+          <exec:code>nonlocal cap</exec:code>
+          <exec:code>cap = cap.split("-", 1)[-1]</exec:code>
+          <li><exec:text>context.i18n(str(cap).title())</exec:text></li>
+        </tea:for-each>
+      </ul>
+    </tea:for-each>
   </tea:def>
 
 </library>

@@ -15,6 +15,7 @@ from . import modes
 from . import dash
 from . import login
 from . import users
+from . import groups
 
 mimetypes = {
     ".ttf": teapot.mime.Type("application", "x-font-ttf"),
@@ -116,8 +117,17 @@ moderator_sitemap.new(
     label="Review queue",
     svgicon=svgicon.SVGIcon("icon-eye"))
 
-# Sitemap: Admin activities
-group1 = admin_sitemap.new(
+group1 = moderator_sitemap.new(
+    modes.view_modes,
+    label="Modes",
+    svgicon=svgicon.SVGIcon("icon-bars2"),
+    children_visible_predicate=False)
+group1.new(
+    modes.edit_mode,
+    label="Edit mode",
+    aliased_routables={modes.edit_mode_POST})
+
+group1 = moderator_sitemap.new(
     alphabets.view_alphabets,
     label="Alphabets",
     svgicon=svgicon.SVGIcon("icon-font"),
@@ -127,15 +137,7 @@ group1.new(
     label="Edit alphabet",
     aliased_routables={alphabets.edit_alphabet_POST})
 
-group1 = admin_sitemap.new(
-    modes.view_modes,
-    label="Modes",
-    svgicon=svgicon.SVGIcon("icon-bars2"),
-    children_visible_predicate=False)
-group1.new(
-    modes.edit_mode,
-    label="Edit mode",
-    aliased_routables={modes.edit_mode_POST})
+# Sitemap: Admin activities
 
 group1 = admin_sitemap.new(
     formats.view_formats,
@@ -146,3 +148,24 @@ group1.new(
     formats.edit_format,
     label="Edit format",
     aliased_routables={formats.edit_format_POST})
+
+group1 = admin_sitemap.new(
+    users.view_users,
+    label="Users",
+    svgicon=svgicon.SVGIcon("icon-user"),
+    children_visible_predicate=False)
+group1.new(
+    users.view_user,
+    label="View user")
+group1.new(
+    users.edit_user,
+    label="Edit user")
+
+group1 = admin_sitemap.new(
+    groups.view_groups,
+    label="Groups",
+    svgicon=svgicon.SVGIcon("icon-group"),
+    children_visible_predicate=False)
+group1.new(
+    groups.view_group,
+    label="View group")

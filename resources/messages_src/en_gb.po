@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-25 23:23+0200\n"
+"PO-Revision-Date: 2014-10-27 16:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -47,7 +47,7 @@ msgstr "A <xml id='priyom'>priyom.org</xml> project"
 msgid "Actions"
 msgstr ""
 
-#: resources/templates/library.xml:278
+#: resources/templates/library.xml:291
 msgid "Actions and Metadata"
 msgstr ""
 
@@ -55,11 +55,11 @@ msgstr ""
 msgid "Activities"
 msgstr ""
 
-#: resources/templates/library.xml:209
+#: resources/templates/library.xml:222
 msgid "Add another frequency"
 msgstr ""
 
-#: resources/templates/library.xml:350
+#: resources/templates/library.xml:363
 msgid "Add another transmission"
 msgstr ""
 
@@ -67,11 +67,11 @@ msgstr ""
 msgid "Add child"
 msgstr ""
 
-#: resources/templates/library.xml:227
+#: resources/templates/library.xml:240
 msgid "Add frequency"
 msgstr ""
 
-#: resources/templates/library.xml:305
+#: resources/templates/library.xml:318
 msgid "Add transcript"
 msgstr ""
 
@@ -81,7 +81,7 @@ msgid ""
 "refer to the timezone specified in your profile."
 msgstr ""
 
-#: resources/templates/library.xml:240
+#: resources/templates/library.xml:253
 msgid "Alphabet"
 msgstr ""
 
@@ -113,7 +113,7 @@ msgstr ""
 msgid "Approved"
 msgstr ""
 
-#: resources/templates/library.xml:261
+#: resources/templates/library.xml:274
 msgid "Attribution"
 msgstr ""
 
@@ -121,7 +121,7 @@ msgstr ""
 msgid "Change password"
 msgstr "Change password"
 
-#: resources/templates/library.xml:130
+#: resources/templates/library.xml:132
 msgid "Clear all filters"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr "Current password"
 msgid "Currently, there are no entries waiting for moderation."
 msgstr ""
 
-#: resources/templates/library.xml:199
+#: resources/templates/library.xml:212
 msgid "Delete"
 msgstr ""
 
@@ -185,7 +185,7 @@ msgstr ""
 msgid "Delete station"
 msgstr ""
 
-#: resources/templates/library.xml:336
+#: resources/templates/library.xml:349
 msgid "Delete transcript"
 msgstr ""
 
@@ -237,6 +237,14 @@ msgstr "Edit station"
 
 #: resources/templates/format_form.xml:50
 msgid "Edit transmission format"
+msgstr ""
+
+#: resources/templates/user_form.xml:10
+msgid "Edit user"
+msgstr ""
+
+#: resources/templates/view_users.xml:38
+msgid "Email"
 msgstr ""
 
 #: resources/templates/signup-form.xml:19
@@ -305,7 +313,7 @@ msgid ""
 "used during the transmission."
 msgstr ""
 
-#: resources/templates/library.xml:285
+#: resources/templates/library.xml:298
 msgid "Format"
 msgstr ""
 
@@ -321,13 +329,21 @@ msgstr ""
 msgid "Frequencies and Modes"
 msgstr ""
 
-#: resources/templates/library.xml:173
+#: resources/templates/library.xml:186
 msgid "Frequency"
+msgstr ""
+
+#: resources/templates/group_view.xml:17
+msgid "Group \"{group}\" ({group_displayname})"
 msgstr ""
 
 #: resources/templates/user_view.xml:31
 msgid "Group memberships"
 msgstr ""
+
+#: resources/templates/view_groups.xml:36
+msgid "Internal name"
+msgstr "Internal name"
 
 #: resources/templates/internal_server_error.xml:14
 msgid "Internal server error"
@@ -365,7 +381,7 @@ msgstr ""
 msgid "Log transmission"
 msgstr ""
 
-#: resources/templates/signup-form.xml:12
+#: resources/templates/view_users.xml:37
 msgid "Login name"
 msgstr "Login name"
 
@@ -385,11 +401,19 @@ msgstr ""
 msgid "Manage transmission formats"
 msgstr ""
 
+#: resources/templates/view_groups.xml:38
+msgid "Members"
+msgstr ""
+
+#: resources/templates/group_view.xml:31
+msgid "Members (total: {member_count})"
+msgstr ""
+
 #: resources/templates/event_view.xml:20
 msgid "Metadata"
 msgstr "Metadata"
 
-#: resources/templates/library.xml:174
+#: resources/templates/library.xml:187
 msgid "Mode"
 msgstr ""
 
@@ -442,9 +466,8 @@ msgid "New password (confirm)"
 msgstr "New password (confirm)"
 
 #: resources/templates/view_stations.xml:32
-#, fuzzy
 msgid "New station"
-msgstr "View station"
+msgstr "New station"
 
 #: resources/templates/log_library.xml:83
 msgid "Next"
@@ -485,6 +508,10 @@ msgstr "Password"
 msgid "Password (confirm)"
 msgstr "Password (confirm)"
 
+#: resources/templates/group_view.xml:73
+msgid "Permissions"
+msgstr ""
+
 #: resources/templates/log_library.xml:78
 msgid "Previous"
 msgstr ""
@@ -523,6 +550,10 @@ msgid ""
 "get full access to the data."
 msgstr ""
 
+#: resources/templates/user_form.xml:70
+msgid "Resulting permissions"
+msgstr ""
+
 #: resources/templates/dash-authed.xml:47
 msgid "Review entries created by unprivilegued users."
 msgstr ""
@@ -551,7 +582,7 @@ msgstr ""
 msgid "Save to database"
 msgstr ""
 
-#: resources/templates/library.xml:213
+#: resources/templates/library.xml:226
 msgid "Select known frequency or hit add to create a new one"
 msgstr ""
 
@@ -653,15 +684,15 @@ msgstr ""
 msgid "Traceback (most recent call first)"
 msgstr ""
 
-#: resources/templates/library.xml:321
+#: resources/templates/library.xml:334
 msgid "Transcript"
 msgstr ""
 
-#: resources/templates/library.xml:331
+#: resources/templates/library.xml:344
 msgid "Transcript actions"
 msgstr ""
 
-#: resources/templates/library.xml:327
+#: resources/templates/library.xml:340
 msgid "Transcript metadata"
 msgstr ""
 
@@ -716,6 +747,10 @@ msgstr ""
 msgid "View events"
 msgstr ""
 
+#: resources/templates/view_groups.xml:11
+msgid "View groups"
+msgstr "View groups"
+
 #: resources/templates/station_not_found.xml:20
 msgid "View station"
 msgstr "View station"
@@ -723,6 +758,10 @@ msgstr "View station"
 #: resources/templates/view_stations.xml:11
 msgid "View stations"
 msgstr "View stations"
+
+#: resources/templates/view_users.xml:11
+msgid "View users"
+msgstr "View users"
 
 #: resources/templates/format_form.xml:53
 msgid "Warning:"
@@ -756,7 +795,7 @@ msgstr "hacked together by Horrorcat"
 msgid "in function"
 msgstr ""
 
-#: resources/templates/library.xml:108
+#: resources/templates/library.xml:110
 msgid "next »"
 msgstr ""
 
@@ -774,7 +813,7 @@ msgid_plural "{count} events in database"
 msgstr[0] "{count} event in database"
 msgstr[1] "{count} events in database"
 
-#: resources/templates/library.xml:86
+#: resources/templates/library.xml:88
 msgid "« prev"
 msgstr ""
 
@@ -844,6 +883,18 @@ msgctxt "group"
 msgid "registered"
 msgstr "Registered users"
 
+msgctxt "group"
+msgid "anonymous"
+msgstr "Anonymous"
+
+msgctxt "group"
+msgid "unmoderated"
+msgstr "Unmoderated"
+
+msgctxt "group"
+msgid "wheel"
+msgstr "Superusers"
+
 msgctxt "yesno"
 msgid "True"
 msgstr "yes"
@@ -910,63 +961,192 @@ msgstr "Station#"
 
 msgctxt "duplicity"
 msgid "one"
-msgstr ""
+msgstr "exactly one"
 
 msgctxt "duplicity"
 msgid "one or more"
-msgstr ""
+msgstr "one or more"
 
 msgctxt "duplicity"
 msgid "zero or more"
-msgstr ""
+msgstr "zero or more"
 
 msgctxt "duplicity"
 msgid "custom, fixed amount"
-msgstr ""
+msgstr "custom, fixed amount"
 
 msgid "View"
-msgstr ""
+msgstr "View"
 
 msgid "Sign out"
 msgstr "Sign out"
 
 msgid "Log TX"
-msgstr ""
+msgstr "Log TX"
 
 msgid "Stations"
 msgstr "Stations"
 
 msgid "Review queue"
-msgstr ""
+msgstr "Review queue"
 
 msgid "Modes"
-msgstr ""
+msgstr "Modes"
 
 msgid "Common activities"
-msgstr ""
+msgstr "Common activities"
 
 msgid "Moderator activities"
-msgstr ""
+msgstr "Moderator activities"
 
 msgid "Admin activities"
-msgstr ""
+msgstr "Admin activities"
 
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgctxt "event_class"
 msgid ""
+msgstr "Normal transmission"
+
+msgctxt "capability"
+msgid "ROOT"
+msgstr "Superuser"
+
+msgid "ROOT"
+msgstr "Superuser"
+
+msgctxt "capability"
+msgid "create"
+msgstr "Create"
+
+msgctxt "capability"
+msgid "delete"
+msgstr "Delete"
+
+msgctxt "capability"
+msgid "edit"
+msgstr "Edit"
+
+msgctxt "capability"
+msgid "review"
+msgstr "Review"
+
+msgctxt "capability"
+msgid "view"
+msgstr "View"
+
+msgid "Self"
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-25 23:23+0200\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Group"
+msgstr "Group"
+
+msgctxt "capability"
+msgid "log"
+msgstr "Log transmission"
+
+msgid "Log"
+msgstr "Log"
+
+msgid "Unmoderated"
+msgstr "Unmoderated"
+
+#~ msgid "self"
+#~ msgstr "Own account"
+
+#~ msgctxt "capability"
+#~ msgid "create-event"
+#~ msgstr "Create event"
+
+#~ msgctxt "capability"
+#~ msgid "delete-event"
+#~ msgstr "Delete event"
+
+#~ msgctxt "capability"
+#~ msgid "edit-event"
+#~ msgstr "Edit event"
+
+#~ msgctxt "capability"
+#~ msgid "view-event"
+#~ msgstr "View event"
+
+#~ msgctxt "capability"
+#~ msgid "reassign-event"
+#~ msgstr "Reassign event to different user"
+
+#~ msgctxt "capability"
+#~ msgid "create-format"
+#~ msgstr "Create format"
+
+#~ msgctxt "capability"
+#~ msgid "delete-format"
+#~ msgstr "Delete format"
+
+#~ msgctxt "capability"
+#~ msgid "edit-format"
+#~ msgstr "Edit format"
+
+#~ msgctxt "capability"
+#~ msgid "view-format"
+#~ msgstr "View formats"
+
+#~ msgctxt "capability"
+#~ msgid "create-station"
+#~ msgstr "Create station"
+
+#~ msgctxt "capability"
+#~ msgid "delete-station"
+#~ msgstr "Delete station"
+
+#~ msgctxt "capability"
+#~ msgid "edit-station"
+#~ msgstr "Edit station"
+
+#~ msgctxt "capability"
+#~ msgid "view-station"
+#~ msgstr "View stations"
+
+#~ msgctxt "capability"
+#~ msgid "create-alphabet"
+#~ msgstr "Create alphabet"
+
+#~ msgctxt "capability"
+#~ msgid "delete-alphabet"
+#~ msgstr "Delete alphabet"
+
+#~ msgctxt "capability"
+#~ msgid "edit-alphabet"
+#~ msgstr "Edit alphabet"
+
+#~ msgctxt "capability"
+#~ msgid "view-alphabet"
+#~ msgstr "View alphabets"
+
+#~ msgctxt "capability"
+#~ msgid "create-user"
+#~ msgstr "Create user"
+
+#~ msgctxt "capability"
+#~ msgid "delete-user"
+#~ msgstr "Delete user"
+
+#~ msgctxt "capability"
+#~ msgid "edit-user"
+#~ msgstr "Edit user"
+
+#~ msgctxt "capability"
+#~ msgid "view-user"
+#~ msgstr "View users"
+
+#~ msgctxt "capability"
+#~ msgid "create-group"
+#~ msgstr "Create group"
+
+#~ msgctxt "capability"
+#~ msgid "delete-group"
+#~ msgstr "Delete group"
+
+#~ msgctxt "capability"
+#~ msgid "log-unmoderated"
+#~ msgstr "Log transmission without moderation"
 
 #, fuzzy
 #~ msgid "Radio dash"

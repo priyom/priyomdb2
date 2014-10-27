@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2014-09-26 14:40+0200\n"
+"PO-Revision-Date: 2014-10-27 16:32+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -49,7 +49,7 @@ msgstr "Ein <xml id='priyom'>priyom.org</xml> Projekt"
 msgid "Actions"
 msgstr "Aktionen"
 
-#: resources/templates/library.xml:278
+#: resources/templates/library.xml:291
 msgid "Actions and Metadata"
 msgstr "Aktionen und Metadaten"
 
@@ -57,11 +57,11 @@ msgstr "Aktionen und Metadaten"
 msgid "Activities"
 msgstr "Aktivitäten"
 
-#: resources/templates/library.xml:209
+#: resources/templates/library.xml:222
 msgid "Add another frequency"
 msgstr "Weitere Frequenz hinzufügen"
 
-#: resources/templates/library.xml:350
+#: resources/templates/library.xml:363
 msgid "Add another transmission"
 msgstr "Weitere Nachricht hinzufügen"
 
@@ -69,11 +69,11 @@ msgstr "Weitere Nachricht hinzufügen"
 msgid "Add child"
 msgstr "Unterelement hinzufügen"
 
-#: resources/templates/library.xml:227
+#: resources/templates/library.xml:240
 msgid "Add frequency"
 msgstr "Weitere Frequenz hinzufügen"
 
-#: resources/templates/library.xml:305
+#: resources/templates/library.xml:318
 msgid "Add transcript"
 msgstr "Transkript hinzufügen"
 
@@ -85,7 +85,7 @@ msgstr ""
 "Alle Formate mit Z werden auch ohne Z unterstütz. Ohne Z werden die "
 "Zeitangaben in der Zeitzone deines Profils interpretiert."
 
-#: resources/templates/library.xml:240
+#: resources/templates/library.xml:253
 msgid "Alphabet"
 msgstr "Alphabet"
 
@@ -103,7 +103,8 @@ msgstr "Du hast schon einen Account?"
 
 #: resources/templates/internal_server_error.xml:26
 msgid "An internal error was encountered while trying to serve the request."
-msgstr "Während der Bearbeitung der Anfrage ist ein interner Fehler aufgetreten."
+msgstr ""
+"Während der Bearbeitung der Anfrage ist ein interner Fehler aufgetreten."
 
 #: resources/templates/event_form.xml:101
 msgid "Anonymous / External submitter"
@@ -117,7 +118,7 @@ msgstr "Zu bestehendem Ereignis hinzufügen"
 msgid "Approved"
 msgstr "Überprüft"
 
-#: resources/templates/library.xml:261
+#: resources/templates/library.xml:274
 msgid "Attribution"
 msgstr "Zuschreibung"
 
@@ -125,7 +126,7 @@ msgstr "Zuschreibung"
 msgid "Change password"
 msgstr "Passwort ändern"
 
-#: resources/templates/library.xml:130
+#: resources/templates/library.xml:132
 msgid "Clear all filters"
 msgstr "Alle Filter entfernen"
 
@@ -173,7 +174,7 @@ msgstr "Aktuelles Passwort"
 msgid "Currently, there are no entries waiting for moderation."
 msgstr "Derzeit warten keine Einträge auf Moderatorüberprüfung."
 
-#: resources/templates/library.xml:199
+#: resources/templates/library.xml:212
 msgid "Delete"
 msgstr "Löschen"
 
@@ -189,7 +190,7 @@ msgstr "Übertragungsmodus löschen"
 msgid "Delete station"
 msgstr "Sender löschen"
 
-#: resources/templates/library.xml:336
+#: resources/templates/library.xml:349
 msgid "Delete transcript"
 msgstr "Transkript löschen"
 
@@ -244,6 +245,14 @@ msgstr "Sender bearbeiten"
 #: resources/templates/format_form.xml:50
 msgid "Edit transmission format"
 msgstr "Nachrichtenformat bearbeiten"
+
+#: resources/templates/user_form.xml:10
+msgid "Edit user"
+msgstr "Benutzer bearbeiten"
+
+#: resources/templates/view_users.xml:38
+msgid "Email"
+msgstr ""
 
 #: resources/templates/signup-form.xml:19
 msgid "Email address"
@@ -313,7 +322,7 @@ msgstr ""
 "Um ein neues Nachrichtenereignis anzulegen müssen die Frequenzen angegeben "
 "werden, die für die Übertragung genutzt wurden."
 
-#: resources/templates/library.xml:285
+#: resources/templates/library.xml:298
 msgid "Format"
 msgstr "Format"
 
@@ -329,13 +338,21 @@ msgstr "Frequenzen"
 msgid "Frequencies and Modes"
 msgstr "Frequenzen und Übertragungsmodi"
 
-#: resources/templates/library.xml:173
+#: resources/templates/library.xml:186
 msgid "Frequency"
 msgstr "Frequenz"
+
+#: resources/templates/group_view.xml:17
+msgid "Group \"{group}\" ({group_displayname})"
+msgstr ""
 
 #: resources/templates/user_view.xml:31
 msgid "Group memberships"
 msgstr "Gruppenmitgliedschaften"
+
+#: resources/templates/view_groups.xml:36
+msgid "Internal name"
+msgstr "Interner Name"
 
 #: resources/templates/internal_server_error.xml:14
 msgid "Internal server error"
@@ -373,7 +390,7 @@ msgstr "Mit bestehendem Account an der Priyom.org Datenbank anmelden"
 msgid "Log transmission"
 msgstr "Nachricht eintragen"
 
-#: resources/templates/signup-form.xml:12
+#: resources/templates/view_users.xml:37
 msgid "Login name"
 msgstr "Benutzername"
 
@@ -393,11 +410,19 @@ msgstr "Übertragungsmodi verwalten"
 msgid "Manage transmission formats"
 msgstr "Nachrichtenformate verwalten"
 
+#: resources/templates/view_groups.xml:38
+msgid "Members"
+msgstr ""
+
+#: resources/templates/group_view.xml:31
+msgid "Members (total: {member_count})"
+msgstr ""
+
 #: resources/templates/event_view.xml:20
 msgid "Metadata"
 msgstr "Stammdaten"
 
-#: resources/templates/library.xml:174
+#: resources/templates/library.xml:187
 msgid "Mode"
 msgstr "Übertragungsmodus"
 
@@ -495,6 +520,10 @@ msgstr "Passwort"
 msgid "Password (confirm)"
 msgstr "Passwort (Bestätigung)"
 
+#: resources/templates/group_view.xml:73
+msgid "Permissions"
+msgstr "Berechtigungen"
+
 #: resources/templates/log_library.xml:78
 msgid "Previous"
 msgstr "Zurück"
@@ -535,6 +564,10 @@ msgstr ""
 "Registriere dich bei der Priyom.org Datenbank um Übertragungen loggen zu "
 "können und vollen Zugriff auf die Daten zu erhalten."
 
+#: resources/templates/user_form.xml:70
+msgid "Resulting permissions"
+msgstr "Berechtigungen"
+
 #: resources/templates/dash-authed.xml:47
 msgid "Review entries created by unprivilegued users."
 msgstr "Einträge von Normalsterblichen überprüfen"
@@ -563,7 +596,7 @@ msgstr "Inhalt in der Datenbank speichern"
 msgid "Save to database"
 msgstr "In die Datenbank speichern"
 
-#: resources/templates/library.xml:213
+#: resources/templates/library.xml:226
 msgid "Select known frequency or hit add to create a new one"
 msgstr ""
 "Bekannte Frequenz auswählen oder Hinzufügen klicken um eine neue Hinzuzufügen"
@@ -670,15 +703,15 @@ msgstr ""
 msgid "Traceback (most recent call first)"
 msgstr ""
 
-#: resources/templates/library.xml:321
+#: resources/templates/library.xml:334
 msgid "Transcript"
 msgstr "Transkript"
 
-#: resources/templates/library.xml:331
+#: resources/templates/library.xml:344
 msgid "Transcript actions"
 msgstr "Transkriptaktionen"
 
-#: resources/templates/library.xml:327
+#: resources/templates/library.xml:340
 msgid "Transcript metadata"
 msgstr "Transkript-Metadaten"
 
@@ -736,6 +769,10 @@ msgstr "Ereignis anzeigen"
 msgid "View events"
 msgstr "Ereignisse anzeigen"
 
+#: resources/templates/view_groups.xml:11
+msgid "View groups"
+msgstr "Gruppen einsehen"
+
 #: resources/templates/station_not_found.xml:20
 msgid "View station"
 msgstr "Sender anzeigen"
@@ -743,6 +780,10 @@ msgstr "Sender anzeigen"
 #: resources/templates/view_stations.xml:11
 msgid "View stations"
 msgstr "Sender anzeigen"
+
+#: resources/templates/view_users.xml:11
+msgid "View users"
+msgstr "Benutzer anzeigen"
 
 #: resources/templates/format_form.xml:53
 msgid "Warning:"
@@ -776,7 +817,7 @@ msgstr "zusammengehackt von Horrorcat"
 msgid "in function"
 msgstr ""
 
-#: resources/templates/library.xml:108
+#: resources/templates/library.xml:110
 msgid "next »"
 msgstr "weiter »"
 
@@ -794,7 +835,7 @@ msgid_plural "{count} events in database"
 msgstr[0] "{count} Ereignis in der Datenbank"
 msgstr[1] "{count} Ereignisse in der Datenbank"
 
-#: resources/templates/library.xml:86
+#: resources/templates/library.xml:88
 msgid "« prev"
 msgstr "« zurück"
 
@@ -863,6 +904,18 @@ msgstr "Moderatoren"
 msgctxt "group"
 msgid "registered"
 msgstr "Registrierte Benutzer"
+
+msgctxt "group"
+msgid "anonymous"
+msgstr "Anonymous"
+
+msgctxt "group"
+msgid "unmoderated"
+msgstr "Unmoderiert"
+
+msgctxt "group"
+msgid "wheel"
+msgstr "Superbenutzer"
 
 msgctxt "yesno"
 msgid "True"
@@ -974,3 +1027,149 @@ msgstr "Adminwerkzeuge"
 msgctxt "event_class"
 msgid ""
 msgstr "Normale Übertragung"
+
+msgctxt "capability"
+msgid "ROOT"
+msgstr "Superbenutzer"
+
+msgid "ROOT"
+msgstr "Superbenutzer"
+
+msgctxt "capability"
+msgid "create"
+msgstr "Erstellen"
+
+msgctxt "capability"
+msgid "delete"
+msgstr "Löschen"
+
+msgctxt "capability"
+msgid "edit"
+msgstr "Bearbeiten"
+
+msgctxt "capability"
+msgid "review"
+msgstr "Überprüfen"
+
+msgctxt "capability"
+msgid "view"
+msgstr "Einsehen"
+
+msgid "Self"
+msgstr ""
+
+msgid "Group"
+msgstr "Gruppe"
+
+msgctxt "capability"
+msgid "log"
+msgstr "Übertragung einreichen"
+
+msgid "Log"
+msgstr "Übertragung einreichen"
+
+msgid "Unmoderated"
+msgstr "Unmoderiert"
+
+#~ msgid "self"
+#~ msgstr "Eigenen Account"
+
+#~ msgctxt "capability"
+#~ msgid "create-event"
+#~ msgstr "Neues Ereignis anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-event"
+#~ msgstr "Ereignis löschen"
+
+#~ msgctxt "capability"
+#~ msgid "edit-event"
+#~ msgstr "Ereignis bearbeiten"
+
+#~ msgctxt "capability"
+#~ msgid "view-event"
+#~ msgstr "Ereignis anzeigen"
+
+#~ msgctxt "capability"
+#~ msgid "reassign-event"
+#~ msgstr "Ereignis einem anderen Benutzer zuordnen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-mode"
+#~ msgstr "Übertragungsmodus löschen"
+
+#~ msgctxt "capability"
+#~ msgid "create-format"
+#~ msgstr "Übertragungsformat anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-format"
+#~ msgstr "Übertragungsformat löschen"
+
+#~ msgctxt "capability"
+#~ msgid "edit-format"
+#~ msgstr "Übertragungsformat bearbeiten"
+
+#~ msgctxt "capability"
+#~ msgid "view-format"
+#~ msgstr "Übertragungsformate einsehen"
+
+#~ msgctxt "capability"
+#~ msgid "create-station"
+#~ msgstr "Sender anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-station"
+#~ msgstr "Sender löschen"
+
+#~ msgctxt "capability"
+#~ msgid "edit-station"
+#~ msgstr "Sender bearbeiten"
+
+#~ msgctxt "capability"
+#~ msgid "view-station"
+#~ msgstr "Sender anzeigen"
+
+#~ msgctxt "capability"
+#~ msgid "create-alphabet"
+#~ msgstr "Alphabet anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-alphabet"
+#~ msgstr "Alphabet löschen"
+
+#~ msgctxt "capability"
+#~ msgid "edit-alphabet"
+#~ msgstr "Alphabet bearbeiten"
+
+#~ msgctxt "capability"
+#~ msgid "view-alphabet"
+#~ msgstr "Alphabete einsehen"
+
+#~ msgctxt "capability"
+#~ msgid "create-user"
+#~ msgstr "Benutzer anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-user"
+#~ msgstr "Benutzer löschen"
+
+#~ msgctxt "capability"
+#~ msgid "edit-user"
+#~ msgstr "Benutzer bearbeiten"
+
+#~ msgctxt "capability"
+#~ msgid "view-user"
+#~ msgstr "Benutzer einsehen"
+
+#~ msgctxt "capability"
+#~ msgid "create-group"
+#~ msgstr "Gruppe anlegen"
+
+#~ msgctxt "capability"
+#~ msgid "delete-group"
+#~ msgstr "Gruppe löschen"
+
+#~ msgctxt "capability"
+#~ msgid "log-unmoderated"
+#~ msgstr "Übertragung ohne Moderation einreichen"

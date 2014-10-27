@@ -97,6 +97,11 @@ _xsltea_loader.loader.add_processor(sitemap.SitemapProcessor(
 _xsltea_loader.loader.add_processor(sitemap.CrumbsProcessor(
     sitemap_root
 ))
+_xsltea_loader.loader.add_processor(xsltea.SortableTableProcessor(
+    active_column_class="order-by",
+    order_indicator_class="order-indicator",
+    safety_level=xsltea.SafetyLevel.unsafe
+))
 
 _xsltea_website_output = xsltea.XHTMLPipeline()
 

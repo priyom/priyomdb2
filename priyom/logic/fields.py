@@ -327,3 +327,57 @@ class LocaleField(teapot.forms.StaticDefaultField,
         if value not in self.VALID_LOCALES:
             yield ValueError("Not a known locale")
         return value
+
+class GroupsField(teapot.forms.StaticDefaultField,
+                  teapot.html.fields.HTMLField):
+    def __init__(self, *, default=[], **kwargs):
+        super().__init__(default=default, **kwargs)
+
+    @property
+    def field_type(self):
+        return "select", "multiple"
+
+    def _extract_value(self, values):
+        return set(values),
+
+    def get_html_options(self, instance, context, elem):
+        current_values = self.__get__(instance, type(instance))
+        options = context.request.dbsession.query(
+            priyom.model.Group.id,
+            priyom.model.Group.name
+        ).order_by(
+            priyom.model.Group.name.asc()
+        )
+
+        for value, name in options:
+            selected = value in current_values
+            option = etree.SubElement(
+                elem,
+                xhtml_ns.option)
+            if selected:
+                option.set("selected", "selected")
+            option.set("value", str(value))
+            option.text = context.i18n(name, ctxt="group")
+
+    def input_validate(self, request, values):
+        valid_groups = set(id
+                           for id,
+                           in request.dbsession.query(
+                               priyom.model.Group.id))
+
+        converted_values = set()
+        has_error = False
+        for invalue in values:
+            try:
+                invalue = int(invalue)
+            except ValueError as err:
+                has_error = True
+                continue
+
+            if invalue in valid_groups:
+                converted_values.add(invalue)
+
+        if has_error:
+            yield ValueError("Invalid group id")
+
+        return converted_values

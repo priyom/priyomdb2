@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+  <exec:code>import functools</exec:code>
+  <exec:code>group = arguments['group']</exec:code>
+  <exec:code>view = arguments['view']</exec:code>
+  <exec:code>href = functools.partial(context.href, group_id=group.id)</exec:code>
+  <head>
+    <title><i18n:_
+               exec:group="group"
+               exec:group_displayname="context.i18n(str(group), ctxt='group')"
+               >Group "{group}" ({group_displayname})</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <tea:include src="aux.xml" xpath="/misc/*" />
+    <main>
+      <h2><i18n:_
+               exec:group="group"
+               exec:group_displayname="context.i18n(str(group), ctxt='group')"
+               >Group "{group}" ({group_displayname})</i18n:_></h2>
+      <h3><i18n:_
+              exec:member_count="len(group.users)"
+              >Members (total: {member_count})</i18n:_></h3>
+      <tea:call src="library.xml" name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="href">href</tea:pass>
+      </tea:call>
+      <tea:sortable-table
+          tea:page="view"
+          tea:href="href"
+          tea:routable="context.request.current_routable">
+        <colgroup>
+          <col class="id" name="id" />
+          <col name="loginname" />
+          <col name="email" />
+          <col class="actions" style="width: 20em;" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><i18n:_>Login name</i18n:_></th>
+            <th><i18n:_>Email</i18n:_></th>
+            <th><i18n:_>Actions</i18n:_></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tea:for-each bind="user" from="view">
+            <tr>
+              <td><exec:text>user.id</exec:text></td>
+              <td><exec:text>user.loginname</exec:text></td>
+              <td><code><exec:text>user.email</exec:text></code></td>
+              <td>
+                <tea:call src="library.xml" name="user_actions">
+                  <tea:pass name="user_id">user.id</tea:pass>
+                </tea:call>
+              </td>
+            </tr>
+          </tea:for-each>
+        </tbody>
+      </tea:sortable-table>
+      <tea:call src="library.xml" name="pagination">
+        <tea:pass name="page">view</tea:pass>
+        <tea:pass name="href">href</tea:pass>
+      </tea:call>
+      <h3><i18n:_>Permissions</i18n:_></h3>
+      <tea:call src="library.xml" name="list_capabilities">
+        <tea:pass name="caps">(cap.key for cap in group.capabilities)</tea:pass>
+      </tea:call>
+    </main>
+  </body>
+</html>

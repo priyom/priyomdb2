@@ -64,6 +64,18 @@ msgctxt "group"
 msgid "registered"
 msgstr ""
 
+msgctxt "group"
+msgid "anonymous"
+msgstr ""
+
+msgctxt "group"
+msgid "unmoderated"
+msgstr ""
+
+msgctxt "group"
+msgid "wheel"
+msgstr ""
+
 msgctxt "yesno"
 msgid "True"
 msgstr ""
@@ -174,3 +186,46 @@ msgstr ""
 msgctxt "event_class"
 msgid ""
 msgstr "Plain transmission"
+
+msgctxt "capability"
+msgid "ROOT"
+msgstr ""
+
+msgid "ROOT"
+msgstr ""
+
+msgctxt "capability"
+msgid "create"
+msgstr ""
+
+msgctxt "capability"
+msgid "delete"
+msgstr ""
+
+msgctxt "capability"
+msgid "edit"
+msgstr ""
+
+msgctxt "capability"
+msgid "review"
+msgstr ""
+
+msgctxt "capability"
+msgid "view"
+msgstr ""
+
+msgid "Self"
+msgstr ""
+
+msgid "Group"
+msgstr ""
+
+msgctxt "capability"
+msgid "log"
+msgstr ""
+
+msgid "Log"
+msgstr ""
+
+msgid "Unmoderated"
+msgstr ""

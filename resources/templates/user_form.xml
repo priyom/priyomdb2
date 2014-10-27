@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tea="https://xmlns.zombofant.net/xsltea/processors"
+      xmlns:exec="https://xmlns.zombofant.net/xsltea/exec"
+      xmlns:sitemap="https://xmlns.zombofant.net/xsltea/sitemap"
+      xmlns:form="https://xmlns.zombofant.net/xsltea/form"
+      xmlns:i18n="https://xmlns.zombofant.net/xsltea/i18n">
+  <head>
+    <title><i18n:_>Edit user</i18n:_></title>
+    <tea:include src="stylesheets.xml"
+                 xpath="h:link"
+                 nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
+  </head>
+  <body>
+    <exec:code>form = arguments['form']</exec:code>
+    <exec:code>user = arguments['user']</exec:code>
+    <tea:include src="aux.xml" xpath="/misc/*" />
+    <main>
+      <div class="ym-wrapper"><div class="ym-wbox">
+        <h2><i18n:_>Edit user</i18n:_></h2>
+        <form class="ym-form" method="POST" name="format" form:form="form">
+          <h6 class="ym-fbox-heading"><i18n:_>Metadata</i18n:_></h6>
+          <tea:call src="library.xml" name="errors">
+            <tea:pass name="field">None</tea:pass>
+          </tea:call>
+          <div class="ym-fbox">
+            <label form:for-field="loginname"><i18n:_>Login name</i18n:_></label>
+            <input type="text"
+                   form:field="loginname" />
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'loginname'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox">
+            <label form:for-field="email"><i18n:_>Email address</i18n:_></label>
+            <input type="text"
+                   form:field="email" />
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'email'</tea:pass>
+            </tea:call>
+          </div>
+          <h6 class="ym-fbox-heading"><i18n:_>Regional settings</i18n:_></h6>
+          <div class="ym-fbox">
+            <label form:for-field="locale"><i18n:_>Language</i18n:_></label>
+            <select form:field="locale" />
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'locale'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox">
+            <label form:for-field="timezone"><i18n:_>Time zone</i18n:_></label>
+            <select form:field="timezone" />
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'timezone'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-grid">
+            <div class="ym-gl ym-g50"><div class="ym-gbox">
+              <h6 class="ym-fbox-heading"><label form:for-field="groups">
+                <i18n:_>Group memberships</i18n:_>
+              </label></h6>
+              <input form:field="groups"/>
+              <tea:call src="library.xml" name="errors">
+                <tea:pass name="field">'groups'</tea:pass>
+              </tea:call>
+            </div></div>
+            <div class="ym-gr ym-g50"><div class="ym-gbox">
+              <h6 class="ym-fbox-heading">
+                <i18n:_>Resulting permissions</i18n:_>
+              </h6>
+              <tea:call src="library.xml" name="list_capabilities">
+                <tea:pass name="caps">user.get_capabilities()</tea:pass>
+              </tea:call>
+            </div></div>
+          </div>
+          <div class="ym-fbox-footer ym-fbox-button">
+            <button type="submit"
+                   form:action="save"
+                   class="ym-button ym-success ym-save">
+              <i18n:_>Save</i18n:_>
+            </button>
+          </div>
+        </form>
+      </div></div>
+    </main>
+  </body>
+</html>

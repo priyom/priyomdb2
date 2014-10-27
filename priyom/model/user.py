@@ -12,7 +12,7 @@ import sqlalchemy
 import sqlalchemy.orm
 
 from . import saslprep
-from .base import Base
+from .base import Base, TopLevel
 
 from sqlalchemy import Column, DateTime, Unicode, Binary, Table, Integer, \
     ForeignKey, UniqueConstraint, BINARY
@@ -141,22 +141,49 @@ class Group(Base):
 
     id = Column(Integer, nullable=False, primary_key=True)
     name = Column(Unicode(length=127), nullable=False)
+    supergroup_id = Column(Integer,
+                           ForeignKey(__tablename__ + ".id",
+                                      name="groups_fk_supergroup_id",
+                                      ondelete="SET NULL"),
+                           nullable=True)
 
     capabilities = relationship(
         Capability,
         secondary=group_capabilities,
         backref=backref("groups"))
 
+    subgroups = relationship(
+        "Group",
+        backref=backref("supergroup",
+                        remote_side=[id]),
+        passive_deletes=False)
+
     ANONYMOUS = "anonymous"
-    ADMINS = "admins"
-    MODERATORS = "moderators"
     REGISTERED = "registered"
+    MODERATORS = "moderators"
+    ADMINS = "admins"
+    WHEEL = "wheel"
+    UNMODERATED = "unmoderated"
 
     def add_capability(self, capability):
         self.capabilities.append(capability)
 
     def add_user(self, user):
         self.users.append(user)
+
+    def is_supergroup_of(self, other_group):
+        subgroups = frozenset(self.subgroups)
+        if other_group in subgroups:
+            return True
+        return any(group.is_supergroup_of(other_group)
+                   for group in subgroups)
+
+    def is_subgroup_of(self, other_group):
+        if self.supergroup is None:
+            return False
+        if self.supergroup == other_group:
+            return True
+        return self.supergroup.is_subgroup_of(other_group)
 
     def __str__(self):
         return self.name
@@ -168,7 +195,7 @@ user_groups = Table(
     Column("user_id", Integer, ForeignKey("users.id"))
 )
 
-class User(Base):
+class User(TopLevel):
     __tablename__ = "users"
 
     __table_args__ = (
@@ -235,6 +262,39 @@ class User(Base):
             Group.name == name
         ).count() > 0
 
+    def group_memberships(self):
+        session = Session.object_session(self)
+        if not session:
+            return set(group.name for group in self.groups)
+
+        return set(item
+                   for item,
+                   in session.query(
+                       Group.name
+                   ).filter(
+                       user_groups.c.group_id == Group.id,
+                       user_groups.c.user_id == self.id
+                   ))
+
+    def get_capabilities(self):
+        session = Session.object_session(self)
+        if not session:
+            raise ValueError("Cannot get list of capabilities for non-persisted "
+                             "user")
+
+        return [cap for cap, in session.query(
+            Capability.key
+        ).join(
+            group_capabilities
+        ).join(
+            Group
+        ).join(
+            user_groups,
+        ).filter(
+            user_groups.c.user_id == self.id
+        ).order_by(
+            Capability.key.asc()
+        ).distinct()]
 
     def set_password_from_plaintext(self,
                                     plaintext,
