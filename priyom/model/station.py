@@ -9,6 +9,7 @@ class Station(base.TopLevel):
     __tablename__ = 'stations'
     __table_args__ = (
         UniqueConstraint("enigma_id", "priyom_id"),
+        base.Base.__table_args__
     )
 
     id = Column(Integer, primary_key=True)
