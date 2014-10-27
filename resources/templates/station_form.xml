@@ -81,8 +81,8 @@
           <div class="ym-fbox-footer ym-fbox-button">
             <button type="submit"
                    form:action="save"
-                   class="ym-button ym-primary">
-              <i18n:_>Update</i18n:_>
+                   class="ym-button ym-success ym-save">
+              <i18n:_>Save</i18n:_>
             </button>
           </div>
         </form>

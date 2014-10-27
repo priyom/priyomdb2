@@ -96,10 +96,10 @@ def view_station(request: teapot.request.Request, station_id):
         }, {}
 
 class StationForm(teapot.forms.Form):
-    def __init__(self, from_station=None, **kwargs):
+    def __init__(self, from_station=None, station_id=None, **kwargs):
+        self.id = station_id
         super().__init__(**kwargs)
         if from_station is not None:
-            self.id = from_station.id
             self.enigma_id = from_station.enigma_id
             self.priyom_id = from_station.priyom_id
             self.nickname = from_station.nickname or ""
@@ -141,8 +141,7 @@ class StationForm(teapot.forms.Form):
 @xsltea_site.with_template("station_form.xml")
 def edit_station(station_id, request: teapot.request.Request):
     station = request.dbsession.query(priyom.model.Station).get(station_id)
-    form = StationForm(from_station=station)
-    form.id = station_id
+    form = StationForm(from_station=station, station_id=station_id)
     yield teapot.response.Response(None)
 
     from .events import view_events, get_event_viewer
@@ -162,8 +161,7 @@ def edit_station(station_id, request: teapot.request.Request):
 def edit_station_POST(station_id, request: teapot.request.Request):
     dbsession = request.dbsession
     station = dbsession.query(priyom.model.Station).get(station_id)
-    form = StationForm(request=request)
-    form.id = station_id
+    form = StationForm(request=request, station_id=station_id)
 
     if not form.errors:
         try:
@@ -180,7 +178,7 @@ def edit_station_POST(station_id, request: teapot.request.Request):
             station.location = form.location
             dbsession.add(station)
             dbsession.commit()
-        except sqlalchemy.orm.exc.IntegrityError as err:
+        except sqlalchemy.exc.IntegrityError as err:
             dbsession.rollback()
             teapot.forms.ValidationError(
                 "An unspecified integrity error occured: {}".format(
