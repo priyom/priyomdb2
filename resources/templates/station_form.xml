@@ -29,37 +29,55 @@
             </label>
             <input placeholder="e.g. S28"
                    form:field="enigma_id"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'enigma_id'</tea:pass>
+            </tea:call>
           </div>
-          <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'enigma_id'</tea:pass>
-          </tea:call>
           <div class="ym-fbox">
             <label form:for-field="priyom_id">
               <i18n:_>Priyom Identifier</i18n:_>
             </label>
             <input form:field="priyom_id"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'priyom_id'</tea:pass>
+            </tea:call>
           </div>
-          <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'priyom_id'</tea:pass>
-          </tea:call>
           <div class="ym-fbox">
             <label form:for-field="nickname">
               <i18n:_>Nickname</i18n:_>
             </label>
             <input form:field="nickname"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'nickname'</tea:pass>
+            </tea:call>
           </div>
-          <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'nickname'</tea:pass>
-          </tea:call>
+          <div class="ym-fbox">
+            <label form:for-field="location">
+              <i18n:_>Location</i18n:_>
+            </label>
+            <input form:field="location"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'location'</tea:pass>
+            </tea:call>
+          </div>
+          <div class="ym-fbox">
+            <label form:for-field="status">
+              <i18n:_>Status</i18n:_>
+            </label>
+            <input form:field="status"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'status'</tea:pass>
+            </tea:call>
+          </div>
           <div class="ym-fbox">
             <label form:for-field="description">
               <i18n:_>Description</i18n:_>
             </label>
             <textarea form:field="description"/>
+            <tea:call src="library.xml" name="errors">
+              <tea:pass name="field">'description'</tea:pass>
+            </tea:call>
           </div>
-          <tea:call src="library.xml" name="errors">
-            <tea:pass name="field">'description'</tea:pass>
-          </tea:call>
           <div class="ym-fbox-footer ym-fbox-button">
             <button type="submit"
                    form:action="save"

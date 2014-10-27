@@ -142,6 +142,7 @@ class StationForm(teapot.forms.Form):
 def edit_station(station_id, request: teapot.request.Request):
     station = request.dbsession.query(priyom.model.Station).get(station_id)
     form = StationForm(from_station=station)
+    form.id = station_id
     yield teapot.response.Response(None)
 
     from .events import view_events, get_event_viewer
@@ -161,9 +162,8 @@ def edit_station(station_id, request: teapot.request.Request):
 def edit_station_POST(station_id, request: teapot.request.Request):
     dbsession = request.dbsession
     station = dbsession.query(priyom.model.Station).get(station_id)
-    form = StationForm(post_data=request.post_data)
+    form = StationForm(request=request)
     form.id = station_id
-    form.postvalidate(request)
 
     if not form.errors:
         try:
