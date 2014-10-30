@@ -12,57 +12,21 @@ from sqlalchemy import func
 from .auth import *
 from .shared import *
 
-def mdzhb_format():
-    TF, TFN = priyom.model.TransmissionFormat, priyom.model.TransmissionFormatNode
-    call = TFN("[0-9]{2}\s+[0-9]{3}", key="call", comment="“Callsign”")
-    callwrap = TFN(
-        call,
-        duplicity="+",
-        separator=" ",
-        key="callwrap",
-        saved=False,
-        comment="Group callsigns separated with space"
-    )
-    codeword = TFN("\w+",
-                   key="codeword",
-                   comment="Single word")
-    numbers = TFN("([0-9]{2} ){3}[0-9]{2}",
-                  key="numbers",
-                  comment="Four two-digit numbers")
-    messagewrap = TFN(
-        TFN(
-            codeword,
-            TFN(" ", comment="Single space"),
-            numbers,
-            comment="A single message"
-        ),
-        duplicity="+",
-        separator=" ",
-        key="messagewrap",
-        saved=False,
-        comment="Join message parts"
-    )
-    tree = TFN(
-        callwrap,
-        TFN(" ", comment="Single space"),
-        messagewrap,
-        comment="S28 style message"
-    )
-    return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
+from priyom.model.format_templates import mkformat, monolyth
 
 @require_capability(Capability.VIEW_FORMAT)
 @teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
-    priyom.model.TransmissionFormat,
+    priyom.model.Format,
     [
-        ("id", priyom.model.TransmissionFormat.id, None),
-        ("modified", priyom.model.TransmissionFormat.modified, None),
-        ("display_name", priyom.model.TransmissionFormat.display_name, None),
+        ("id", priyom.model.Format.id, None),
+        ("modified", priyom.model.Format.modified, None),
+        ("display_name", priyom.model.Format.display_name, None),
         ("user_count",
          teapot.sqlalchemy.dbview.subquery(
-             priyom.model.TransmissionStructuredContents,
+             priyom.model.StructuredContents,
              func.count('*').label("user_count")
          ).with_labels().group_by(
-             priyom.model.TransmissionStructuredContents.format_id
+             priyom.model.StructuredContents.format_id
          ),
          int)
     ],
@@ -87,18 +51,18 @@ def view_formats(request: teapot.request.Request, view):
 @xsltea_site.with_template("format_form.xml")
 def edit_format(request: teapot.request.Request, format_id=0):
     if format_id == 0:
-        format = mdzhb_format()[0]
+        fmt = mkformat(monolyth()[0])
+        fmt.display_name = "Example format (monolyth style)"
+        fmt.description = "Change me"
     else:
-        format = request.dbsession.query(priyom.model.TransmissionFormat).get(
-            format_id)
+        fmt = request.dbsession.query(priyom.model.Format).get(format_id)
 
-    form = priyom.logic.TransmissionFormatForm.initialize_from_database(
-        format)
+    form = priyom.logic.FormatForm.instance_from_object(fmt)
 
     yield teapot.response.Response(None)
     yield {
         "form": form,
-        "has_users": format.get_has_users()
+        "has_users": fmt.get_has_users()
     }, {}
 
 @require_capability(Capability.EDIT_FORMAT)
@@ -109,7 +73,7 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
     post_data = request.post_data
     dbsession = request.dbsession
 
-    form = priyom.logic.TransmissionFormatForm(
+    form = priyom.logic.FormatForm(
         post_data=post_data)
 
     target, action = form.find_action(post_data)
@@ -117,7 +81,7 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
     if action == "update":
         pass
     elif action == "add_child":
-        target.children.append(priyom.logic.TransmissionFormatRow())
+        target.children.append(priyom.logic.FormatRow())
     elif hasattr(target, "parent") and target.parent:
         if action == "move_up":
             i = target.index
@@ -135,7 +99,7 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
             del target.parent[target.index]
     elif not form.errors and action in {"save_to_db", "save_copy"}:
         if action == "save_to_db":
-            format = dbsession.query(priyom.model.TransmissionFormat).get(
+            format = dbsession.query(priyom.model.Format).get(
                 format_id)
             if format and format.get_has_users():
                 raise ValueError("It is not allowed to modify a format with users")
@@ -155,7 +119,7 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
                 edit_format,
                 format_id=format.id)
 
-    format = request.dbsession.query(priyom.model.TransmissionFormat).get(
+    format = request.dbsession.query(priyom.model.Format).get(
         format_id)
 
     template_args = {

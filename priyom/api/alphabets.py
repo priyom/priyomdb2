@@ -24,10 +24,10 @@ class AlphabetForm(teapot.forms.Form):
         ("display_name", priyom.model.Alphabet.display_name, None),
         ("user_count",
          teapot.sqlalchemy.dbview.subquery(
-             priyom.model.TransmissionContents,
+             priyom.model.Contents,
              func.count('*').label('user_count')
          ).group_by(
-             priyom.model.TransmissionContents.alphabet_id
+             priyom.model.Contents.alphabet_id
          ),
          int)
     ],

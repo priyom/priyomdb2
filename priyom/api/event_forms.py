@@ -27,9 +27,9 @@ def alphabet_picker_options(dbsession):
 
 def format_picker_options(dbsession):
     return dbsession.query(
-        priyom.model.TransmissionFormat
+        priyom.model.Format
     ).order_by(
-        priyom.model.TransmissionFormat.display_name.asc()
+        priyom.model.Format.display_name.asc()
     )
 
 def frequency_picker_options(dbsession, for_event=None):
@@ -119,7 +119,7 @@ class EventTopLevelContentsRow(EventContentsRow):
                         from_contents=child))
 
     format = priyom.logic.fields.ObjectRefField(
-        priyom.model.TransmissionFormat)
+        priyom.model.Format)
 
     def get_format(self, request):
         return self.format
