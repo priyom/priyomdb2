@@ -226,8 +226,14 @@ class FormatStructure(FormatNode):
 
     def parse(self, text):
         regex = re.compile(self._get_compound_inner_child_regex())
+        count = 0
         for i, match in enumerate(regex.finditer(text)):
+            count += 1
             yield from self._parse_match(match, i)
+        if self.nmin > count:
+            raise ValueError("Too few repetitions of subpattern detected")
+        if self.nmax is not None and self.nmax < count:
+            raise ValueError("Too many repetitions of subpattern detected")
 
     def unparse(self, data, child_number=0):
         items = []
