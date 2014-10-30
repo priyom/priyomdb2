@@ -195,23 +195,23 @@ class FormatStructure(FormatNode):
 
         return regex
 
-    def _rewrite_parent(self, statement_generator):
-        for destination, _, text in statement_generator:
-            yield destination, self, text
+    def _rewrite_child_number(self, statement_generator, number):
+        for _, destination, text in statement_generator:
+            yield number, destination, text
 
-    def _parse_match(self, match):
+    def _parse_match(self, match, number):
         # if we are a saving node, we have to emit save statements
         # otherwise, we delegate parsing to the child nodes
 
         match_text = match.string[match.start():match.end()]
 
         if self.save_to:
-            yield (self, None, match_text)
+            yield (number, self, match_text)
             return
 
         if not self.nmin == self.nmax == 1:
             def child_statements(child, group):
-                return self._rewrite_parent(child.parse(group))
+                return self._rewrite_child_number(child.parse(group), number)
         else:
             def child_statements(child, group):
                 return child.parse(group)
@@ -226,28 +226,25 @@ class FormatStructure(FormatNode):
 
     def parse(self, text):
         regex = re.compile(self._get_compound_inner_child_regex())
-        for match in regex.finditer(text):
-            yield from self._parse_match(match)
+        for i, match in enumerate(regex.finditer(text)):
+            yield from self._parse_match(match, i)
 
-    def unparse(self, data):
+    def unparse(self, data, child_number=0):
         items = []
         if self.save_to:
             # expect data addressed to me
             # make sure we don’t consume more than the maximum amount of items
             # (we are not strict about the minimum though)
-            # print("searching for data")
-            # print(self)
             while (self.nmax is None or len(items) < self.nmax) and data:
-                addressee, _, text = data[0]
-                # print(addressee, _, text)
-                if addressee is not self:
+                number, addressee, text = data[0]
+                if addressee is not self or child_number != number:
                     break
                 data.pop(0)
                 items.append(text)
         else:
             # delegate to children
             while (self.nmax is None or len(items) < self.nmax) and data:
-                items.append("".join(child.unparse(data)
+                items.append("".join(child.unparse(data, child_number=len(items))
                                      for child in self.children))
 
         # recompose
@@ -320,7 +317,7 @@ class FormatSimpleContent(FormatNode):
 
         return []
 
-    def unparse(self, data):
+    def unparse(self, data, child_number=0):
         return self.KINDS[self.kind][1] * self.nmin
 
 
@@ -338,7 +335,29 @@ class Format(TopLevel):
                               name="formats_fk_format_structure_node_id"),
                           nullable=False)
 
-class TransmissionContents(Base):
+    root_node = relationship(FormatStructure)
+
+    def __init__(self, display_name, root_node, description=""):
+        super().__init__()
+        self.display_name = display_name
+        self.root_node = root_node
+        self.description = description
+
+    def parse(self, text):
+        for i, row in enumerate(self.root_node.parse(text)):
+            (child_number, format_node, text) = row
+            yield ContentNode(
+                order=i,
+                child_number=child_number,
+                format_node=format_node,
+                segment=text)
+
+    def unparse(self, content_nodes):
+        return self.root_node.unparse([
+            (node.child_number, node.format_node, node.segment)
+            for node in content_nodes])
+
+class Contents(Base):
     __tablename__ = "transmission_contents"
 
     id = Column(Integer, primary_key=True)
@@ -357,7 +376,7 @@ class TransmissionContents(Base):
                                 ForeignKey("transmission_contents.id",
                                            ondelete="CASCADE"),
                                 nullable=True)
-    parent_contents = relationship("TransmissionContents",
+    parent_contents = relationship("Contents",
                                    backref=backref("children",
                                                    passive_deletes=True),
                                    foreign_keys=[parent_contents_id],
@@ -378,7 +397,7 @@ class TransmissionContents(Base):
     def __init__(self, mime, is_transcribed=False,
             is_transcoded=False, alphabet=None,
             attribution=None):
-        super(TransmissionContents, self).__init__()
+        super(Contents, self).__init__()
         self.mime = mime
         self.is_transcribed = is_transcribed
         self.is_transcoded = is_transcoded
@@ -391,12 +410,12 @@ class TransmissionContents(Base):
             s = s[:max_len-len(ellipsis)] + ellipsis
         return s
 
-class TransmissionRawContents(TransmissionContents):
+class RawContents(Contents):
     __tablename__ = "transmission_raw_contents"
     __mapper_args__ = {"polymorphic_identity": "raw_contents"}
 
     id = Column(Integer,
-                ForeignKey(TransmissionContents.id,
+                ForeignKey(Contents.id,
                            ondelete="CASCADE"),
                 primary_key=True)
     encoding = Column(Unicode(63), nullable=False)
@@ -407,12 +426,12 @@ class TransmissionRawContents(TransmissionContents):
             return self.contents.decode(self.encoding)
         return "binary blob"
 
-class TransmissionStructuredContents(TransmissionContents):
+class StructuredContents(Contents):
     __tablename__ = "transmission_structured_contents"
     __mapper_args__ = {"polymorphic_identity": "structured_contents"}
 
     id = Column(Integer,
-                ForeignKey(TransmissionContents.id,
+                ForeignKey(Contents.id,
                            ondelete="CASCADE"),
                 primary_key=True)
     format_id = Column(Integer,
@@ -448,64 +467,51 @@ class TransmissionStructuredContents(TransmissionContents):
         return self.unparse()
 
 
-class TransmissionContentNode(Base):
+class ContentNode(Base):
     __tablename__ = "transmission_content_nodes"
 
     id = Column(Integer, primary_key=True)
     content_id = Column(Integer,
-                        ForeignKey(TransmissionStructuredContents.id,
+                        ForeignKey(StructuredContents.id,
                                    ondelete="CASCADE"),
                         nullable=False)
-    parent_id = Column(Integer,
-                       ForeignKey(__tablename__ + ".id",
-                                  ondelete="CASCADE"),
-                       nullable=True)
     format_node_id = Column(Integer,
                             ForeignKey(FormatNode.id,
                                        ondelete="CASCADE"),
                             nullable=False)
     order = Column(Integer, nullable=False)
+    child_number = Column(Integer, nullable=False)
     segment = Column(Unicode(127))
 
-    children = relationship(
-        "TransmissionContentNode",
-        backref=backref("parent",
-                        remote_side=[id]),
-        passive_deletes=True,
-        cascade="all, delete-orphan",
-        lazy="joined",
-        join_depth=4
-    )
     format_node = relationship(FormatNode)
-    contents = relationship(TransmissionStructuredContents,
+    contents = relationship(StructuredContents,
                             backref=backref("nodes",
                                             order_by=order,
                                             passive_deletes=True))
 
-    def __init__(self, structured_contents, format_node, order, segment,
-            parent=None, **kwargs):
-        super(TransmissionContentNode, self).__init__(**kwargs)
-        self.contents = structured_contents
-        self.format_node = format_node
+    def __init__(self, order, child_number, format_node, segment, **kwargs):
+        super(ContentNode, self).__init__(**kwargs)
         self.order = order
+        self.child_number = child_number
+        self.format_node = format_node
         self.segment = segment
-        self.parent = parent
 
-    def unparse_struct(self):
-        """
-        Return an element of the values list in the structure required by
-        :cls:`Format.unparse`. This is not of much use if called
-        directly but is used by :cls:`TransmissionStructuredContents.unparse`.
-        """
-        if len(self.children) > 0:
-            result = {}
-            for child in self.children:
-                _, child_list = result.setdefault(
-                    child.format_node.key, (child.format_node, []))
-                child_list.append(child.unparse_struct())
-            return result
-        else:
-            return self.segment
+    def __eq__(self, other):
+        return ((self.order, self.child_number, self.segment) ==
+                (other.order, other.child_number, other.segment) and
+                self.format_node is other.format_node)
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __repr__(self):
+        return ("<ContentNode order={} child_number={} segment={!r}"
+                " format_node={!r}>").format(
+                    self.order,
+                    self.child_number,
+                    self.segment,
+                    self.format_node)
+
 
 class EventAttachment(Attachment):
     __tablename__ = "event_attachments"

@@ -10,6 +10,7 @@ from . import transmission
 FN = transmission.FormatNode
 FS = transmission.FormatStructure
 FSC = transmission.FormatSimpleContent
+CN = transmission.ContentNode
 
 def monolyth_savables():
     codeword = FS(
@@ -103,6 +104,8 @@ def redundant_monolyth():
 
     return root, datanode, (call, codeword, numbers)
 
+def mkformat(root_node):
+    return transmission.Format("foo", root_node)
 
 class FormatStructureNode(unittest.TestCase):
     def test_defaults(self):
@@ -161,7 +164,7 @@ class FormatNode(unittest.TestCase):
         )
 
         self.assertSequenceEqual(
-            [(node, None, "test")],
+            [(0, node, "test")],
             list(node.parse("test"))
         )
 
@@ -181,9 +184,9 @@ class FormatNode(unittest.TestCase):
 
         self.assertSequenceEqual(
             [
-                (node, None, "test"),
-                (node, None, "123"),
-                (node, None, "foobar")
+                (0, node, "test"),
+                (1, node, "123"),
+                (2, node, "foobar")
             ],
             list(node.parse("test 123 foobar"))
         )
@@ -192,11 +195,11 @@ class FormatNode(unittest.TestCase):
         root, datanode, (call, codeword, numbers) = monolyth()
         self.assertSequenceEqual(
             [
-                (call, None, "12 123"),
-                (codeword, datanode, "HONKING"),
-                (numbers, datanode, "20 07 03 50"),
-                (codeword, datanode, "ANTELOPE"),
-                (numbers, datanode, "20 07 03 50")
+                (0, call, "12 123"),
+                (0, codeword, "HONKING"),
+                (0, numbers, "20 07 03 50"),
+                (1, codeword, "ANTELOPE"),
+                (1, numbers, "20 07 03 50")
             ],
             list(root.parse(
                 "12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
@@ -207,11 +210,11 @@ class FormatNode(unittest.TestCase):
         root, datanode, (call, codeword, numbers) = redundant_monolyth()
         self.assertSequenceEqual(
             [
-                (call, None, "12 123"),
-                (codeword, datanode, "пустые"),
-                (numbers, datanode, "20 07 03 49"),
-                (codeword, datanode, "стены"),
-                (numbers, datanode, "20 07 03 49")
+                (0, call, "12 123"),
+                (0, codeword, "пустые"),
+                (0, numbers, "20 07 03 49"),
+                (1, codeword, "стены"),
+                (1, numbers, "20 07 03 49")
             ],
             list(root.parse(
                 "12 123 пустые 20 07 03 49 стены 20 07 03 49"
@@ -220,8 +223,33 @@ class FormatNode(unittest.TestCase):
 
     def test_unparse(self):
         root, _, _ = monolyth()
-        text = "12 123 HONKING 20 07 03 05 ANTELOPE 20 07 03 50"
+        text = "12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
         self.assertEqual(
             text,
             root.unparse(list(root.parse(text)))
+        )
+
+
+class Format(unittest.TestCase):
+    def test_parse(self):
+        root, _, (call, codeword, numbers) = monolyth()
+        fmt = mkformat(root)
+        self.assertSequenceEqual(
+            [
+                CN(0, 0, call, "12 123"),
+                CN(1, 0, codeword, "HONKING"),
+                CN(2, 0, numbers, "20 07 03 50"),
+                CN(3, 1, codeword, "ANTELOPE"),
+                CN(4, 1, numbers, "20 07 03 50")
+            ],
+            list(fmt.parse("12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"))
+        )
+
+    def test_unparse(self):
+        root, _, (call, codeword, numbers) = monolyth()
+        fmt = mkformat(root)
+        text = "12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
+        self.assertEqual(
+            text,
+            fmt.unparse(list(fmt.parse(text)))
         )
