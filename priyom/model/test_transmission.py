@@ -5,246 +5,233 @@ import unittest
 import re
 import operator
 
-import priyom.model as model
+from . import transmission
 
-class TransmissionFormatNode(unittest.TestCase):
-    def test_init(self):
-        TFN = model.TransmissionFormatNode
-        child = TFN("fnord")
-        root_node = TFN(
-            child
-        )
-        self.assertIs(root_node.children[0], child)
-        self.assertEqual(child.order, 0)
+FN = transmission.FormatNode
+FS = transmission.FormatStructure
+FSC = transmission.FormatSimpleContent
 
-    def test_tree_init(self):
-        TFN = model.TransmissionFormatNode
-        leaf1 = TFN("foo")
-        leaf2 = TFN("bar")
-        leaf3 = TFN("baz")
-        node1 = TFN(leaf1, leaf2)
-        node2 = TFN(leaf3)
-        root = TFN(node1, node2)
-        self.assertEqual(node1.order, 0)
-        self.assertEqual(node2.order, 1)
-        self.assertEqual(leaf1.order, 0)
-        self.assertEqual(leaf2.order, 1)
-        self.assertEqual(leaf3.order, 0)
-        self.assertSequenceEqual(root.children, [node1, node2])
-        self.assertSequenceEqual(node1.children, [leaf1, leaf2])
-        self.assertSequenceEqual(node2.children, [leaf3])
-
-    def test_faulty_init(self):
-        TFN = model.TransmissionFormatNode
-        self.assertRaises(ValueError, TFN, "foo)")  # invalid regex
-
-    def test_regex_leaf(self):
-        TFN = model.TransmissionFormatNode
-        leaf = TFN("fnord")
-        self.assertEqual(leaf.build_regex(), "fnord")
-
-    def test_regex_nested(self):
-        TFN = model.TransmissionFormatNode
-        tree = TFN(
-            TFN(
-                TFN("foo"),
-                TFN("bar"),
+def monolyth():
+    datanode = FS(
+        FS(
+            FSC(FSC.KIND_ALPHABET_CHARACTER, nmin=1, nmax=None),
+            nmin=1,
+            nmax=1,
+            save_to="codeword"
+        ),
+            FSC(FSC.KIND_SPACE),
+        FS(
+            FS(
+                FSC(FSC.KIND_DIGIT, nmin=2, nmax=2),
+                nmin=4,
+                nmax=4,
+                joiner=" "
             ),
-            TFN("baz")
-        )
-        self.assertEqual(tree.build_regex(), "foobarbaz")
+            nmin=1,
+            nmax=1,
+            save_to="numbers"
+        ),
+        joiner=" ",
+        nmin=1,
+        nmax=None
+    )
 
-    def test_regex_nested_complex(self):
-        TFN = model.TransmissionFormatNode
-        tree = TFN(
-            TFN(
-                TFN("foo", duplicity="+"),
-                TFN("bar", duplicity="{}", count=4),
+
+    root = FS(
+        FS(
+            FSC(
+                FSC.KIND_DIGIT,
+                nmin=2,
+                nmax=2),
+            FSC(FSC.KIND_SPACE),
+            FSC(
+                FSC.KIND_DIGIT,
+                nmin=3,
+                nmax=3),
+            joiner=" ",
+            nmin=1,
+            nmax=None,
+            save_to="call"
+        ),
+        FSC(FSC.KIND_SPACE),
+        datanode
+    )
+
+    return root, datanode
+
+def redundant_monolyth():
+    """
+    This is a special version of a monolyth parser, which matches the same
+    patterns, but contains some no-op nodes. These are there to confuse the
+    algorithm and make sure it still produces the same results even if weird
+    people compose parsers :)
+    """
+    datanode = FS(
+        FS(
+            FS(
+                FSC(FSC.KIND_ALPHABET_CHARACTER, nmin=1, nmax=None),
+                nmin=1,
+                nmax=1,
+                save_to="codeword"
             ),
-            TFN("baz", duplicity="*")
-        )
-        self.assertEqual(tree.build_regex(), "(foo)+(bar){4}(baz)*")
-
-    def test_regex_keyed(self):
-        TFN = model.TransmissionFormatNode
-        tree = TFN(
-            TFN(
-                TFN("foo", duplicity="+"),
-                TFN("bar", duplicity="{}", count=4),
-                key="foobar"
+            nmin=1,
+            nmax=1
+        ),
+        FSC(FSC.KIND_SPACE),
+        FS(
+            FS(
+                FS(
+                    FSC(FSC.KIND_DIGIT, nmin=2, nmax=2),
+                    nmin=4,
+                    nmax=4,
+                    joiner=" "
+                ),
+                nmin=1,
+                nmax=1,
+                save_to="numbers"
             ),
-            TFN("baz", duplicity="*")
-        )
-        regex = tree.build_regex()
-        self.assertEqual(regex, "(?P<foobar>(foo)+(bar){4})(baz)*")
+            nmin=1,
+            nmax=1
+        ),
+        joiner=" ",
+        nmin=1,
+        nmax=None
+    )
 
-        regex = re.compile(regex)
-        match = regex.search("foofoobarbarbarbarbaz")
-        self.assertIsNotNone(match)
-        self.assertEqual(match.groupdict(), {"foobar": "foofoobarbarbarbar"})
 
-    def test_parse(self):
-        TFN = model.TransmissionFormatNode
-        call = TFN("[0-9]{2}\s+[0-9]{3}", key="call")
-        callwrap = TFN(
-            call,
-            duplicity="+",
-            separator=" ",
-            key="callwrap",
-            saved=False
-        )
-        codeword = TFN("\w+", key="codeword")
-        numbers = TFN("([0-9]{2} ){3}[0-9]{2}", key="numbers")
-        messagewrap = TFN(
-            TFN(
-                codeword,
-                TFN(" "),
-                numbers,
-            ),
-            duplicity="+",
-            separator=" ",
-            key="messagewrap",
-            saved=False
-        )
-        tree = TFN(
-            callwrap,
-            TFN(" "),
-            messagewrap
+    root = FS(
+        FS(
+            FSC(
+                FSC.KIND_DIGIT,
+                nmin=2,
+                nmax=2),
+            FSC(FSC.KIND_SPACE),
+            FSC(
+                FSC.KIND_DIGIT,
+                nmin=3,
+                nmax=3),
+            joiner=" ",
+            nmin=1,
+            nmax=None,
+            save_to="call"
+        ),
+        FSC(FSC.KIND_SPACE),
+        datanode
+    )
+
+    return root, datanode
+
+
+class FormatStructureNode(unittest.TestCase):
+    def test_defaults(self):
+        node = FS()
+        self.assertIsNone(node.joiner_const)
+        self.assertIsNone(node.joiner_regex)
+        self.assertIsNone(node.save_to)
+        self.assertEqual(1, node.nmin)
+        self.assertEqual(1, node.nmax)
+
+    def test_regex_no_repeat_no_joiner(self):
+        node = FS(FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1))
+        self.assertEqual(
+            r"[\d\w?]",
+            node.get_outer_regex())
+
+    def test_regex_no_repeat_joiner(self):
+        # this should not change a thing without repeat
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1),
+            joiner_regex="foo",
+            joiner="bar"
         )
         self.assertEqual(
-            tree.parse("11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22"),
-            {
-                "callwrap": (callwrap, [
-                    {
-                        "call": (call, ["11 111"])
-                    },
-                    {
-                        "call": (call, ["22 222"])
-                    },
-                    {
-                        "call": (call, ["33 333"])
-                    }
-                ]),
-                "messagewrap": (messagewrap, [
-                    {
-                        "codeword": (codeword, ["FOOBAR"]),
-                        "numbers": (numbers, ["11 11 11 11"])
-                    },
-                    {
-                        "codeword": (codeword, ["BAZ"]),
-                        "numbers": (numbers, ["22 22 22 22"])
-                    }
-                ])
-            }
+            r"[\d\w?]",
+            node.get_outer_regex())
+
+    def test_regex_repeat_no_joiner(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1),
+            nmin=0,
+            nmax=None
+        )
+        self.assertEqual(
+            r"(?:[\d\w?])*",
+            node.get_outer_regex()
         )
 
-class TransmissionFormat(unittest.TestCase):
-    @staticmethod
-    def multikey_format():
-        TF, TFN = model.TransmissionFormat, model.TransmissionFormatNode
-        foo_node = TFN("foo", duplicity="+", key="foos")
-        bar_node = TFN("bar", duplicity="+", key="bars")
-        return TF("test",
-            TFN(
-                foo_node,
-                bar_node,
-                TFN("baz")
-            )
-        ), foo_node, bar_node
-
-    @staticmethod
-    def mdzhb_format():
-        TF, TFN = model.TransmissionFormat, model.TransmissionFormatNode
-        call = TFN("[0-9]{2}\s+[0-9]{3}", key="call")
-        callwrap = TFN(
-            call,
-            duplicity="+",
-            separator=" ",
-            key="callwrap",
-            saved=False
+    def test_regex_repeat_joiner(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1),
+            nmin=1,
+            nmax=None,
+            joiner="foo"
         )
-        codeword = TFN("\w+", key="codeword")
-        numbers = TFN("([0-9]{2} ){3}[0-9]{2}", key="numbers")
-        messagewrap = TFN(
-            TFN(
-                codeword,
-                TFN(" "),
-                numbers,
-            ),
-            duplicity="+",
-            separator=" ",
-            key="messagewrap",
-            saved=False
-        )
-        tree = TFN(
-            callwrap,
-            TFN(" "),
-            messagewrap
-        )
-        return TF("test", tree), callwrap, call, messagewrap, codeword, numbers
-
-    def test_parse(self):
-        fmt, foo_node, bar_node = self.multikey_format()
-        parsed = fmt.parse("foofoobarbarbaz")
-        test_list = [
-            (item.order, item.format_node, item.segment)
-            for item in parsed.nodes
-        ]
-        reference_list = [
-            (0, foo_node, "foo"),
-            (1, foo_node, "foo"),
-            (2, bar_node, "bar"),
-            (3, bar_node, "bar"),
-        ]
-        for item in parsed.nodes:
-            self.assertIs(item.contents, parsed)
-        self.assertEqual(test_list, reference_list)
-        self.assertIs(parsed.format, fmt)
-
-    def _check_children(self, nodes, reference):
-        for (order, format_node, value), child in zip(reference, nodes):
-            self.assertEqual(child.order, order)
-            self.assertIs(child.format_node, format_node)
-            if isinstance(value, str):
-                self.assertEqual(value, child.segment)
-            else:
-                self._check_children(child.children, value)
-
-    def test_parse_mdzhb(self):
-        fmt, callwrap, call, messagewrap, codeword, numbers = self.mdzhb_format()
-        parsed = fmt.parse("11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22")
-        reference = [
-            (0, callwrap, [
-                (0, call, "11 111")
-            ]),
-            (1, callwrap, [
-                (0, call, "22 222")
-            ]),
-            (2, callwrap, [
-                (0, call, "33 333")
-            ]),
-            (3, messagewrap, [
-                (0, codeword, "FOOBAR"),
-                (1, numbers, "11 11 11 11")
-            ]),
-            (4, messagewrap, [
-                (0, codeword, "BAZ"),
-                (1, numbers, "22 22 22 22")
-            ])
-        ]
-        self._check_children(
-            filter(lambda x: x.parent is None, parsed.nodes),
-            reference
+        self.assertEqual(
+            r"(?:[\d\w?]foo)*[\d\w?]",
+            node.get_outer_regex()
         )
 
-    def test_unparse(self):
-        fmt, foo_node, bar_node = self.multikey_format()
-        s = "foofoobarbarbaz"
-        parsed = fmt.parse(s)
-        self.assertEqual(parsed.unparse(), s)
+class FormatNode(unittest.TestCase):
+    def test_parse_no_repeat_no_joiner(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC),
+            save_to="foo"
+        )
 
-    def test_unparse_mdzhb(self):
-        fmt, callwrap, call, messagewrap, codeword, numbers = self.mdzhb_format()
-        message = "11 111 22 222 33 333 FOOBAR 11 11 11 11 BAZ 22 22 22 22"
-        parsed = fmt.parse(message)
-        self.assertEqual(parsed.unparse(), message)
+        self.assertSequenceEqual(
+            [("foo", None, "test")],
+            list(node.parse("test"))
+        )
+
+    def test_parse_repeat_joiner(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC),
+            joiner=" ",
+            joiner_regex=r"\s*",
+            save_to="foo",
+            nmin=1,
+            nmax=None,
+        )
+
+        self.assertEqual(
+            r"(?:[\d\w?]+\s*)*[\d\w?]+",
+            node.get_outer_regex())
+
+        self.assertSequenceEqual(
+            [
+                ("foo", None, "test"),
+                ("foo", None, "123"),
+                ("foo", None, "foobar")
+            ],
+            list(node.parse("test 123 foobar"))
+        )
+
+    def test_complex_tree(self):
+        root, datanode = monolyth()
+        self.assertSequenceEqual(
+            [
+                ("call", root, "12 123"),
+                ("codeword", datanode, "HONKING"),
+                ("numbers", datanode, "20 07 03 50"),
+                ("codeword", datanode, "ANTELOPE"),
+                ("numbers", datanode, "20 07 03 50")
+            ],
+            list(root.parse(
+                "12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
+            ))
+        )
+
+    def test_redundant_complex_tree(self):
+        root, datanode = redundant_monolyth()
+        self.assertSequenceEqual(
+            [
+                ("call", root, "12 123"),
+                ("codeword", datanode, "пустые"),
+                ("numbers", datanode, "20 07 03 49"),
+                ("codeword", datanode, "стены"),
+                ("numbers", datanode, "20 07 03 49")
+            ],
+            list(root.parse(
+                "12 123 пустые 20 07 03 49 стены 20 07 03 49"
+            ))
+        )

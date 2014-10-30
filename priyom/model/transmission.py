@@ -1,6 +1,7 @@
 # encoding=utf8
 from __future__ import unicode_literals, print_function, absolute_import
 
+import abc
 import operator
 import re
 
@@ -10,6 +11,38 @@ from sqlalchemy.orm import relationship, backref, validates, Session
 from .base import Base, TopLevel
 from .event import Event
 from .attachment import Attachment
+
+def make_regex_range(nmin, nmax):
+    if nmax is None:
+        if nmin == 1:
+            return "+"
+        elif nmin == 0:
+            return "*"
+    elif nmax == 1:
+        if nmin == 0:
+            return "?"
+        elif nmin == 1:
+            return ""
+
+    return "{{{nmin},{nmax}}}".format(
+        nmin=nmin,
+        nmax=nmax if nmax is not None else ""
+    )
+
+def regex_range(regex_to_range, nmin, nmax, omit_grouping=False):
+    nmin = max(nmin, 0)
+    if nmax is not None:
+        nmax = max(nmax, 0)
+
+    if nmin == nmax == 0:
+        return ""
+    elif nmin == nmax == 1:
+        return regex_to_range
+
+    if not omit_grouping:
+        regex_to_range = "(?:" + regex_to_range + ")"
+
+    return regex_to_range + make_regex_range(nmin, nmax)
 
 class Alphabet(Base):
     __tablename__ = 'alphabets'
@@ -28,348 +61,248 @@ class Alphabet(Base):
         self.short_name = short_name
         self.display_name = display_name
 
-class TransmissionFormatNode(Base):
-    __tablename__ = "transmission_format_nodes"
+class FormatNode(Base):
+    TAG_PLAIN = "plain"
+    TAG_FLATTENABLE = "flattenable"
+    TAG_RSN = "rsn"
 
-    DUPLICITY_ONE = "1"
-    DUPLICITY_ONE_OR_MORE = "+"
-    DUPLICITY_ZERO_OR_MORE = "*"
-    DUPLICITY_FIXED = "{}"
-
-    DUPLICITY_TEMPLATES = {
-        DUPLICITY_ONE: "{match}",
-        DUPLICITY_ONE_OR_MORE: "({match})+",
-        DUPLICITY_ZERO_OR_MORE: "({match})*",
-        DUPLICITY_FIXED: "({match}){{{count}}}"
-    }
-    DUPLICITY_JOIN_TEMPLATES = {
-        #~ DUPLICITY_ONE: "(?P<{key0}>)(?P<{key1}>{match})",
-        #~ DUPLICITY_ONE_OR_MORE: "(?P<{key0}>({match}{sep})*)(?P<{key1}>{match})",
-        #~ DUPLICITY_ZERO_OR_MORE: "((?P<{key0}>({match}{sep})*)(?P<{key1}>{match}))?",
-        #~ DUPLICITY_FIXED: "(?P<{key0}>({match}{sep}){{{count_minus_one}}})(?P<{key1}>{match})"
-        DUPLICITY_ONE: "{match}",
-        DUPLICITY_ONE_OR_MORE: "({match}{sep})*{match}",
-        DUPLICITY_ZERO_OR_MORE: "(({match}{sep})*{match})?",
-        DUPLICITY_FIXED: "({match}{sep}){{{count_minus_one}}}{match}"
-    }
+    __tablename__ = "format_node"
 
     id = Column(Integer, primary_key=True)
+    type_ = Column(Unicode(4))
+    order = Column(Integer, nullable=False)
+
     parent_id = Column(Integer,
                        ForeignKey(
-                           "transmission_format_nodes.id",
-                           ondelete="CASCADE"))
-    order = Column(Integer)
-    duplicity = Column(Enum(
-        DUPLICITY_ONE,
-        DUPLICITY_ONE_OR_MORE,
-        DUPLICITY_ZERO_OR_MORE,
-        DUPLICITY_FIXED
-    ), nullable=False)
-    saved = Column(Boolean, nullable=False)
-    count = Column(Integer)
-    content_match = Column(Unicode(127))
-    key = Column(Unicode(63), nullable=True)
-    join = Column(Boolean, nullable=False)
-    comment = Column(Unicode(127))
+                           "format_structure_node.id",
+                           ondelete="CASCADE",
+                           name="format_node_fk_format_structure_node_id"),
+                       nullable=True)
+    parent = relationship(
+        "FormatStructure",
+        backref=backref("children",
+                        passive_deletes=True,
+                        order_by="FormatNode.order"),
+        foreign_keys=[parent_id])
 
-    children = relationship(
-        "TransmissionFormatNode",
-        backref=backref(
-            "parent",
-            remote_side=[id]),
-        single_parent=True,
-        cascade="all, delete-orphan",
-        lazy="joined",
-        join_depth=4
+    __table_args__ = (
+        # UniqueConstraint("parent_id", "order"),
+        Base.__table_args__
     )
 
-    def __init__(self, *args, **kwargs):
-        parent = kwargs.pop("parent", None)
-        duplicity = kwargs.pop("duplicity", self.DUPLICITY_ONE)
-        count = kwargs.pop("count", None)
-        key = kwargs.pop("key", None)
-        saved = kwargs.pop("saved", key is not None)
-        separator = kwargs.pop("separator", None)
-        join = kwargs.pop("join", separator is not None)
-        comment = kwargs.pop("comment", "")
+    __mapper_args__ = {
+        "polymorphic_identity": "node",
+        "polymorphic_on": type_,
+        "with_polymorphic": "*"
+    }
 
-        super(TransmissionFormatNode, self).__init__(**kwargs)
+    def __init__(self, *, order=None, parent=None):
+        super().__init__()
+        if parent is not None and order is None and parent.children:
+            order = parent.children[-1].order + 1
         self.parent = parent
-        if len(args) == 1 and isinstance(args[0], str):
-            self.content_match = args[0]
-        else:
-            self.children.extend(args)
-            if separator is not None:
-                self.content_match = separator
-        self.duplicity = duplicity
-        self.count = count
-        self.key = key
-        self.regex = None
-        self.saved = saved
-        self.join = join
-        self.join_separator = None
-        self.comment = comment
+        self.order = order or 0
 
-    def _get_join_keys(self):
-        return "jk"+str(id(self))+"k0", "jk"+str(id(self))+"k1"
-
-    @validates('key')
-    def validate_key(self, key, value):
-        if value is None:
-            return value
-        if any(ord(x) > 127 or x == '<' or x == '>' for x in value):
-            raise ValueError("key must be ASCII only, without < or >.")
-        return value
-
-    @validates('duplicity')
-    def validate_duplicity(self, key, value):
-        if value is not None and not value in self.DUPLICITY_TEMPLATES:
-            raise KeyError("Invalid value for duplicity: {0!r}".format(value))
-        return value
-
-    @validates('count')
-    def validate_count(self, key, count):
-        if self.duplicity != self.DUPLICITY_FIXED:
-            if count is not None:
-                raise ValueError("Only NULL count is allowed for duplicity != fixed")
-        else:
-            if count is None:
-                raise ValueError("NULL count is not allowed for duplicity == fixed")
-        return count
-
-    @validates('children')
-    def validate_child(self, key, child):
-        if not isinstance(child, TransmissionFormatNode):
-            raise TypeError("Only TransmissionFormatNode instances are allowed as children")
-        if child.order is None:
-            try:
-                max_order = max(map(operator.attrgetter("order"), self.children))
-            except ValueError:
-                max_order = -1
-            child.order = max_order+1
-        return child
-
-    @validates('parent')
-    def validate_parent(self, key, parent):
-        return parent
-
-    @validates('content_match')
-    def validate_content_match(self, key, content_match):
-        try:
-            re.compile(content_match)
-        except re.error:
-            raise ValueError("Supplied content_match is not a valid regular expression: {0!r}", content_match)
-        return content_match
-
-    def parse_subtree(self, message, root=False):
-        pattern = self.build_inner_regex(root=root)
-        regex = re.compile(pattern)
-        results = []
-        for match in regex.finditer(message):
-            groupdict = match.groupdict()
-            if not groupdict:
-                results.append(message[match.start():match.end()])
-            else:
-                resultdict = {}
-                for child in self.children:
-                    child.propagate_parse(groupdict, resultdict)
-                results.append(resultdict)
-        return self, results
-
-    def propagate_parse(self, groupdict, resultdict):
-        if self.key is not None:
-            result = self.parse_subtree(groupdict[self.key])
-            resultdict[self.key] = result
-        else:
-            for child in self.children:
-                child.propagate_parse(groupdict, resultdict)
-
-    def parse(self, message):
+    @abc.abstractmethod
+    def get_outer_regex(self):
         """
-        Parse the message string *message* and return a intermediate
-        representation of the message which can in turn be converted into a
-        database tree.
-
-        The structure is the following. For each keyed node, there is a tuple
-
-            (node, items)
-
-        where *node* is the node object itself and *items* is a list which
-        contains the data matched by the node. If the node has a duplicity of
-        one, the list contains exactly one item.
-
-        *items* may either contain a string (for nodes without keyed children)
-        or a dictionary mapping keys to tuples like the one above. The
-        dictionary has exactly one entry for each keyed child.
+        Return a string resembling the minimum regex required to validate and
+        parse this format node.
         """
-        items = self.parse_subtree(message, root=True)[1]
-        if not items:
-            raise ValueError("Failed to parse")
-        return items[0]
 
-    def build_inner_regex(self, keyed=True, root=False):
-        if self.content_match is None or self.join:
-            match = "".join(child.build_regex(keyed=keyed)
-                            for child in self.children)
-        else:
-            match = self.content_match
-        if root:
-            match = "^{}$".format(match)
-        return match
+    def parse(self, text):
+        raise NotImplementedError("You cannot parse this node standalone.")
 
-    def build_regex(self, keyed=True):
-        match = self.build_inner_regex(keyed=keyed and self.key is None)
-        if self.join:
-            key0, key1 = self._get_join_keys()
-            regex = self.DUPLICITY_JOIN_TEMPLATES[self.duplicity].format(
-                match=match,
-                key0=key0,
-                key1=key1,
-                count_minus_one=(self.count - 1) if self.count is not None else 0,
-                sep=self.content_match
-            )
+
+class FormatStructure(FormatNode):
+    __tablename__ = "format_structure_node"
+
+    __mapper_args__ = {
+        "polymorphic_identity": "srct",
+        "inherit_condition": id == FormatNode.id,
+    }
+
+    id = Column(Integer,
+                ForeignKey(FormatNode.id,
+                           ondelete="CASCADE",
+                           name="format_structure_node_fk_format_node_id"),
+                primary_key=True)
+    joiner_regex = Column(Unicode(255), nullable=True)
+    joiner_const = Column(Unicode(255), nullable=True)
+    save_to = Column(Unicode(255), nullable=True)
+    nmin = Column(Integer, nullable=False)
+    nmax = Column(Integer, nullable=True)
+
+    def __init__(self, *children,
+                 joiner=None, joiner_regex=None,
+                 save_to=None,
+                 nmin=1, nmax=1, **kwargs):
+        super().__init__(**kwargs)
+        self.joiner_const = joiner
+        self.joiner_regex = joiner_regex or joiner
+        self.save_to = save_to
+        self.nmin = nmin
+        self.nmax = nmax
+        self.children.extend(children)
+
+    def __repr__(self):
+        return ("<FormatStructure order={} #children={} nmin={} nmax={} "
+                "save_to={!r} joiner={!r}/{!r}>".format(
+                    self.order,
+                    len(self.children),
+                    self.nmin,
+                    self.nmax,
+                    self.save_to,
+                    self.joiner_const,
+                    self.joiner_regex))
+
+    def _get_compound_outer_child_regex(self):
+        return "".join(child.get_outer_regex()
+                       for child in self.children)
+
+    def _get_compound_inner_child_regex(self):
+        return "".join(
+            r"(?P<c{idx}>{regex})".format(
+                idx=i,
+                regex=child.get_outer_regex())
+            for i, child in enumerate(self.children))
+
+    def get_outer_regex(self):
+        children_regex = self._get_compound_outer_child_regex()
+
+        if self.nmin == 1 and self.nmax == 1:
+            regex = children_regex
+        elif not self.joiner_regex:
+            # the simple case. we just emit the correct constraint
+            regex = regex_range(children_regex,
+                                self.nmin,
+                                self.nmax)
         else:
-            regex = self.DUPLICITY_TEMPLATES[self.duplicity].format(
-                match=match,
-                count=self.count
-            )
-        if self.key and keyed:
-            regex = "(?P<{key}>{regex})".format(key=self.key, regex=regex)
+            # this is the complex case. we have to take into account joiners
+            regex = (regex_range(children_regex + self.joiner_regex,
+                                 self.nmin-1,
+                                 (self.nmax-1)
+                                 if self.nmax is not None
+                                 else None) +
+                     children_regex)
+
         return regex
 
-    def propagate_unparse(self, struct):
-        for child in self.children:
-            for item in child.unparse(struct):
-                yield item
+    def _rewrite_parent(self, statement_generator):
+        for destination, _, text in statement_generator:
+            yield destination, self, text
 
-    def unparse_children(self, values):
-        if not values:
+    def _parse_match(self, match):
+        # if we are a saving node, we have to emit save statements
+        # otherwise, we delegate parsing to the child nodes
+
+        match_text = match.string[match.start():match.end()]
+
+        if self.save_to:
+            yield (self.save_to, self.parent, match_text)
             return
-        if isinstance(values[0], str):
-            for item in values:
-                yield item
+
+        if not self.nmin == self.nmax == 1:
+            def child_statements(child, group):
+                return self._rewrite_parent(child.parse(group))
         else:
-            for struct in values:
-                yield "".join(self.propagate_unparse(struct))
+            def child_statements(child, group):
+                return child.parse(group)
 
-    def unparse(self, struct):
-        """
-        Take a structure as generated by :meth:`parse` and unparse it into a
-        string.
+        # as a non-saving node, we have to figure out whether we are the common
+        # parent which needs to take ownership of the statements emitted from
+        # the children.
+        groupdict = match.groupdict()
+        for i, child in enumerate(self.children):
+            group = groupdict["c"+str(i)]
+            yield from child_statements(child, group)
 
-        Returns an iterable which can be joined to a string.
-        """
-        if self.key is not None:
-            _, values = struct[self.key]
-            assert _ is self
+    def parse(self, text):
+        regex = re.compile(self._get_compound_inner_child_regex())
+        for match in regex.finditer(text):
+            yield from self._parse_match(match)
 
-            if self.join:
-                iterator = iter(self.unparse_children(values))
-                yield next(iterator)
-                for item in iterator:
-                    yield self.content_match
-                    yield item
-            else:
-                yield from self.unparse_children(values)
-        elif self.content_match is not None:
-            yield self.content_match
-        else:
-            yield from self.propagate_unparse(struct)
 
-class TransmissionFormat(TopLevel):
-    __tablename__ = "transmission_formats"
+class FormatSimpleContent(FormatNode):
+    KIND_ALPHABET_CHARACTER = "alphabet_character"
+    KIND_DIGIT = "digit"
+    KIND_ALPHANUMERIC = "alphanumeric"
+    KIND_NONSPACE = "nonspace"
+    KIND_SPACE = "space"
+
+    KINDS = {
+        KIND_ALPHANUMERIC: r"[\d\w?]",
+        KIND_ALPHABET_CHARACTER: r"[\w?]",
+        KIND_DIGIT: r"[\d?]",
+        KIND_NONSPACE: r"\S",
+        KIND_SPACE: r"\s",
+    }
+
+    __tablename__ = "format_simple_content_node"
+
+    __mapper_args__ = {
+        "polymorphic_identity": "sicn"
+    }
+
+    id = Column(Integer,
+                ForeignKey(FormatNode.id,
+                           ondelete="CASCADE",
+                           name="format_structure_node_fk_format_node_id"),
+                primary_key=True)
+    kind = Column(
+        Enum(
+            *KINDS,
+            name="simple_content_kind"
+        ),
+        nullable=False)
+    nmin = Column(Integer, nullable=False)
+    nmax = Column(Integer, nullable=True)
+
+    def __init__(self, kind, *, nmin=1, nmax=None, **kwargs):
+        super().__init__(**kwargs)
+        if kind not in self.KINDS:
+            raise ValueError("Invalid simple content type: {!r}".format(kind))
+        self.kind = kind
+        self.nmin = nmin
+        self.nmax = nmax
+
+    def __repr__(self):
+        return ("<FormatSimpleContentNode order={} kind={} "
+                "nmin={} nmax={}>".format(
+                    self.order,
+                    self.kind,
+                    self.nmin,
+                    self.nmax))
+
+    def get_outer_regex(self):
+        return regex_range(
+            self.KINDS[self.kind],
+            self.nmin,
+            self.nmax,
+            omit_grouping=True)
+
+    def parse(self, text):
+        regex = re.compile("^"+self.get_outer_regex()+"$")
+        if not regex.match(text):
+            raise ValueError("Match failed at {} with {!r}".format(
+                self, text))
+
+        return []
+
+
+class Format(TopLevel):
+    __tablename__ = "formats"
 
     id = Column(Integer, primary_key=True)
-    display_name = Column(Unicode(127), nullable=False)
-    description = Column(Text, nullable=False)
+    display_name = Column(Unicode(255), nullable=False)
+    description = Column(UnicodeText, nullable=False)
+
     root_node_id = Column(Integer,
-                          ForeignKey(TransmissionFormatNode.id),
+                          ForeignKey(
+                              FormatStructure.id,
+                              ondelete="RESTRICT",
+                              name="formats_fk_format_structure_node_id"),
                           nullable=False)
-
-    root_node = relationship(TransmissionFormatNode,
-                             cascade="all, delete-orphan",
-                             single_parent=True)
-
-    def __init__(self, display_name, root_node, description="", **kwargs):
-        super(TransmissionFormat, self).__init__(**kwargs)
-        self.display_name = display_name
-        self.root_node = root_node
-        self.description = description
-
-    def build_node_dict(self, curr, dct):
-        if curr.key is not None:
-            dct[curr.key] = (curr, len(dct))
-            return
-        for node in curr.children:
-            self.build_node_dict(node, dct)
-
-    def _build_tree_leaves(self, item, contents, parent, offs):
-        primitive_order = offs
-        key, (node, values) = item
-        for value in values:
-            order = len(parent.children) if parent else primitive_order
-            content_node = TransmissionContentNode(
-                contents, node, order, value, parent=parent)
-            primitive_order += 1
-        return primitive_order
-
-    def _build_tree_nodes(self, item, contents, parent, offs):
-        primitive_order = offs
-        key, (node, values) = item
-        for value in values:
-            order = len(parent.children) if parent else primitive_order
-            content_node = TransmissionContentNode(
-                contents, node, order, None, parent=parent)
-            self._build_tree(value, contents, content_node)
-            primitive_order += 1
-        return primitive_order
-
-    def _build_tree(self, parse_result, contents, parent):
-        items = sorted(parse_result.items(), key=lambda x: x[1][0].order)
-        if not items:
-            return
-        offs = 0
-        for item in items:
-            key, (node, values) = item
-            if values and isinstance(values[0], str):
-                offs = self._build_tree_leaves(item, contents, parent, offs)
-            else:
-                offs = self._build_tree_nodes(item, contents, parent, offs)
-
-    def parse(self, message):
-        """
-        Parse *message* and return a :cls:`TransmissionStructuredContents`
-        instance which contains the keys from the parser tree associated with
-        this format.
-
-        Raises ValueError if the message cannot be parsed by this format.
-        """
-        result = self.root_node.parse(message)
-        contents = TransmissionStructuredContents("text/plain", self)
-        self._build_tree(result, contents, None)
-        return contents
-
-    def unparse(self, struct):
-        """
-        Unparse a previously parsed message. *struct* must be a structure as
-        returned by :meth:`TransmissionFormatNode.parse`.
-
-        Return the joined string containing the message represented by *struct*.
-        """
-        return "".join(self.root_node.unparse(struct))
-
-    def __str__(self):
-        return self.display_name
-
-    def get_has_users(self):
-        session = Session.object_session(self)
-        if not session:
-            return False
-        if self.id is None:
-            return False
-        return session.query(TransmissionStructuredContents.id).filter(
-            TransmissionStructuredContents.format_id == self.id).count() > 0
-
 
 class TransmissionContents(Base):
     __tablename__ = "transmission_contents"
@@ -449,11 +382,11 @@ class TransmissionStructuredContents(TransmissionContents):
                            ondelete="CASCADE"),
                 primary_key=True)
     format_id = Column(Integer,
-                       ForeignKey(TransmissionFormat.id,
+                       ForeignKey(Format.id,
                                   ondelete="CASCADE"),
                        nullable=False)
 
-    format = relationship(TransmissionFormat)
+    format = relationship(Format)
 
     def __init__(self, mime, fmt, **kwargs):
         super().__init__(mime, **kwargs)
@@ -462,7 +395,7 @@ class TransmissionStructuredContents(TransmissionContents):
     def unparse_struct(self):
         """
         Convert this message into a *struct* as required by
-        :cls:`TransmissionFormat.unparse` recursively and return that structure.
+        :cls:`Format.unparse` recursively and return that structure.
         """
         result = {}
         for node in filter(lambda x: x.parent is None, self.nodes):
@@ -494,7 +427,7 @@ class TransmissionContentNode(Base):
                                   ondelete="CASCADE"),
                        nullable=True)
     format_node_id = Column(Integer,
-                            ForeignKey(TransmissionFormatNode.id,
+                            ForeignKey(FormatNode.id,
                                        ondelete="CASCADE"),
                             nullable=False)
     order = Column(Integer, nullable=False)
@@ -509,7 +442,7 @@ class TransmissionContentNode(Base):
         lazy="joined",
         join_depth=4
     )
-    format_node = relationship(TransmissionFormatNode)
+    format_node = relationship(FormatNode)
     contents = relationship(TransmissionStructuredContents,
                             backref=backref("nodes",
                                             order_by=order,
@@ -527,7 +460,7 @@ class TransmissionContentNode(Base):
     def unparse_struct(self):
         """
         Return an element of the values list in the structure required by
-        :cls:`TransmissionFormat.unparse`. This is not of much use if called
+        :cls:`Format.unparse`. This is not of much use if called
         directly but is used by :cls:`TransmissionStructuredContents.unparse`.
         """
         if len(self.children) > 0:

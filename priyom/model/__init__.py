@@ -6,5 +6,5 @@ from .transmission import\
     TransmissionContents, \
     EventAttachment, TransmissionContentNode, \
     TransmissionStructuredContents, \
-    TransmissionFormat, TransmissionFormatNode, Alphabet
+    Format, FormatNode, Alphabet
 from .user import User, UserSession, Capability, Group
