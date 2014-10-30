@@ -111,8 +111,15 @@ class FormatNode(Base):
         """
 
     def parse(self, text):
-        raise NotImplementedError("You cannot parse this node standalone.")
+        raise NotImplementedError("Cannot parse this node standalone.")
 
+    def unparse(self, data):
+        """
+        Unparse a list of parser statements.
+
+        This is the same kind of list as returned by :meth:`parse`.
+        """
+        raise NotImplementedError("Cannot unparse this node standalone.")
 
 class FormatStructure(FormatNode):
     __tablename__ = "format_structure_node"
@@ -199,7 +206,7 @@ class FormatStructure(FormatNode):
         match_text = match.string[match.start():match.end()]
 
         if self.save_to:
-            yield (self.save_to, self.parent, match_text)
+            yield (self, None, match_text)
             return
 
         if not self.nmin == self.nmax == 1:
@@ -222,6 +229,30 @@ class FormatStructure(FormatNode):
         for match in regex.finditer(text):
             yield from self._parse_match(match)
 
+    def unparse(self, data):
+        items = []
+        if self.save_to:
+            # expect data addressed to me
+            # make sure we don’t consume more than the maximum amount of items
+            # (we are not strict about the minimum though)
+            # print("searching for data")
+            # print(self)
+            while (self.nmax is None or len(items) < self.nmax) and data:
+                addressee, _, text = data[0]
+                # print(addressee, _, text)
+                if addressee is not self:
+                    break
+                data.pop(0)
+                items.append(text)
+        else:
+            # delegate to children
+            while (self.nmax is None or len(items) < self.nmax) and data:
+                items.append("".join(child.unparse(data)
+                                     for child in self.children))
+
+        # recompose
+        return (self.joiner_const or "").join(items)
+
 
 class FormatSimpleContent(FormatNode):
     KIND_ALPHABET_CHARACTER = "alphabet_character"
@@ -231,11 +262,11 @@ class FormatSimpleContent(FormatNode):
     KIND_SPACE = "space"
 
     KINDS = {
-        KIND_ALPHANUMERIC: r"[\d\w?]",
-        KIND_ALPHABET_CHARACTER: r"[\w?]",
-        KIND_DIGIT: r"[\d?]",
-        KIND_NONSPACE: r"\S",
-        KIND_SPACE: r"\s",
+        KIND_ALPHANUMERIC: (r"[\d\w?]", "X"),
+        KIND_ALPHABET_CHARACTER: (r"[\w?]", "A"),
+        KIND_DIGIT: (r"[\d?]", "#"),
+        KIND_NONSPACE: (r"\S", "?"),
+        KIND_SPACE: (r"\s", " "),
     }
 
     __tablename__ = "format_simple_content_node"
@@ -276,7 +307,7 @@ class FormatSimpleContent(FormatNode):
 
     def get_outer_regex(self):
         return regex_range(
-            self.KINDS[self.kind],
+            self.KINDS[self.kind][0],
             self.nmin,
             self.nmax,
             omit_grouping=True)
@@ -288,6 +319,9 @@ class FormatSimpleContent(FormatNode):
                 self, text))
 
         return []
+
+    def unparse(self, data):
+        return self.KINDS[self.kind][1] * self.nmin
 
 
 class Format(TopLevel):
