@@ -366,6 +366,16 @@ class Format(TopLevel):
             (node.child_number, node.format_node, node.segment)
             for node in content_nodes])
 
+    def get_has_users(self):
+        session = Session.object_session(self)
+        if not session:
+            return False
+        if self.id is None:
+            return False
+        return session.query(StructuredContents.id).filter(
+            StructuredContents.format_id == self.id
+        ).count() > 0
+
 class Contents(Base):
     __tablename__ = "transmission_contents"
 
