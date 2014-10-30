@@ -12,39 +12,152 @@
                  xpath="h:link"
                  nsmap="{'h': 'http://www.w3.org/1999/xhtml'}"/>
   </head>
+
+  <tea:def name="minmax">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="node" mode="lazy" default="node" />
+    <label form:for-field="nmin"><i18n:_>Minimum repeat: </i18n:_></label>
+    <input form:field="nmin"
+           i18n:title="Minimum character count"/>
+    <label form:for-field="nmax"><i18n:_>Maximum repeat: </i18n:_></label>
+    <input form:field="nmax"
+           i18n:title="Maximum character count"
+           placeholder="+∞"/>
+  </tea:def>
+
+  <tea:def name="common_controls_header">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="node" mode="lazy" default="node" />
+    <tea:switch>
+      <tea:case exec:eval="(node.index or 0) > 0">
+        <button form:action="move_up"
+                class="ym-button ym-small ym-up">
+          <i18n:_>Move up</i18n:_>
+        </button>
+      </tea:case>
+      <tea:default />
+    </tea:switch>
+  </tea:def>
+
+  <tea:def name="common_controls_footer">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="node" mode="lazy" default="node" />
+    <tea:if exec:eval="node.parent and
+                       (len(node.parent) - 1) &gt; node.index ">
+      <button form:action="move_down"
+              class="ym-button ym-small ym-down">
+        <i18n:_>Move down</i18n:_>
+      </button>
+    </tea:if>
+    <tea:if exec:eval="node.parent">
+      <button form:action="delete"
+              class="ym-button ym-small ym-delete">
+        <i18n:_>Delete</i18n:_>
+      </button>
+    </tea:if>
+  </tea:def>
+
+  <tea:def name="inserter_controls">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="node" mode="lazy" default="node" />
+    <button form:action="insert_structure"
+            class="ym-button ym-small ym-add">
+      <i18n:_>Insert structure node</i18n:_>
+    </button>
+    <button form:action="insert_simple_content"
+            class="ym-button ym-small ym-add">
+      <i18n:_>Insert simple content node</i18n:_>
+    </button>
+  </tea:def>
+
+  <tea:def name="appender_controls">
+    <tea:arg name="default_form" mode="lazy" default="default_form" />
+    <tea:arg name="node" mode="lazy" default="node" />
+    <button form:action="add_structure"
+            class="ym-button ym-small ym-add">
+      <i18n:_>Add structure node</i18n:_>
+    </button>
+    <button form:action="add_simple_content"
+            class="ym-button ym-small ym-add">
+      <i18n:_>Add simple content node</i18n:_>
+    </button>
+  </tea:def>
+
+  <tea:def name="simple_content_node">
+    <tea:arg name="node" />
+    <div form:form="node" class="fmt-node fmt-leaf">
+      <div class="fmt-node-header">
+        <span class="fmt-node-title"><i18n:_>Simple content</i18n:_></span>
+        <tea:call name="common_controls_header" />
+      </div>
+      <div class="fmt-leaf-controls0">
+        <label form:for-field="kind">
+          <i18n:_>Kind: </i18n:_>
+        </label>
+        <select form:field="kind"
+                i18n:title="Type of content"/>
+      </div>
+      <div class="fmt-leaf-controls1">
+        <tea:call name="minmax" />
+      </div>
+      <div class="fmt-node-footer">
+        <tea:call name="common_controls_footer" />
+      </div>
+    </div>
+  </tea:def>
+
+  <tea:def name="structure_node">
+    <tea:arg name="node" />
+    <div form:form="node" class="fmt-node fmt-struct">
+      <div class="fmt-node-header">
+        <span class="fmt-node-title"><i18n:_>Structure</i18n:_></span>
+        <tea:call name="common_controls_header" />
+      </div>
+      <div class="fmt-struct-outer-controls">
+        <tea:call name="minmax" />
+        <span><i18n:_>Join: </i18n:_></span>
+        <input form:field="joiner_regex"
+               i18n:placeholder="regex"/>
+        <input form:field="joiner_const"
+               i18n:placeholder="const"/>
+      </div>
+      <div class="fmt-struct-inner-box">
+        <div class="fmt-struct-inner-controls">
+          <label form:for-field="save_to">
+            <i18n:_>Save into DB as: </i18n:_>
+          </label>
+          <input form:field="save_to"
+                 i18n:placeholder="unique name"
+                 i18n:title="Name for saving an entry"/>
+        </div>
+        <div class="fmt-struct-children">
+          <tea:call name="inserter_controls" />
+          <tea:for-each bind="child" from="node.children">
+            <tea:switch>
+              <tea:case exec:eval="child.type_ == 'srct'">
+                <tea:call name="structure_node">
+                  <tea:pass name="node">child</tea:pass>
+                </tea:call>
+              </tea:case>
+              <tea:case exec:eval="child.type_ == 'sicn'">
+                <tea:call name="simple_content_node">
+                  <tea:pass name="node">child</tea:pass>
+                </tea:call>
+              </tea:case>
+              <tea:default>error</tea:default>
+            </tea:switch>
+          </tea:for-each>
+          <tea:call name="appender_controls" />
+        </div>
+      </div>
+      <div class="fmt-node-footer">
+        <tea:call name="common_controls_footer" />
+      </div>
+    </div>
+  </tea:def>
+
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:def name="subtree">
-      <tea:arg name="node" />
-      <tea:arg name="level" default="0" />
-      <tr form:form="node">
-        <td exec:style="'padding-left: {}px'.format(level*12)">
-          <div class="ym-fbox">
-            <label form:for-field="comment">
-              <i18n:_>Comment</i18n:_>
-            </label>
-            <input type="text"
-                   form:field="comment" />
-          </div>
-          <div class="ym-fbox">
-            <label form:for-field="key">
-              <i18n:_>Key</i18n:_>
-            </label>
-            <input type="text"
-                   form:field="key" />
-          </div>
-        </td>
-        <tea:include src="format_form_controls_column.xml"/>
-      </tr>
-      <exec:code>children = node.children</exec:code>
-      <exec:code>child_level = level + 1</exec:code>
-      <tea:for-each bind="child" from="children">
-        <tea:call name="subtree">
-          <tea:pass name="node">child</tea:pass>
-          <tea:pass name="level">child_level</tea:pass>
-        </tea:call>
-      </tea:for-each>
-    </tea:def>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2><i18n:_>Edit transmission format</i18n:_></h2>
@@ -80,23 +193,12 @@
             <i18n:_>Update / Check for errors</i18n:_>
           </button>
         </div>
-        <h6 class="ym-fbox-heading"><i18n:_>Parsing tree</i18n:_></h6>
-        <table class="ym-fbox parsing-tree">
-          <colgroup>
-            <col class="parsing-tree-key" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th><i18n:_>Format node</i18n:_></th>
-              <th><i18n:_>Controls</i18n:_></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tea:call name="subtree">
-              <tea:pass name="node">form</tea:pass>
-            </tea:call>
-          </tbody>
-        </table>
+        <h6 class="ym-fbox-heading"><i18n:_>Parser configuration</i18n:_></h6>
+        <div class="fmt-root">
+          <tea:call name="structure_node">
+            <tea:pass name="node">form</tea:pass>
+          </tea:call>
+        </div>
         <div class="ym-fbox-footer ym-fbox-button">
           <tea:if exec:eval="not arguments['has_users']">
             <button type="submit"
