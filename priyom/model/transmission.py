@@ -121,10 +121,12 @@ class FormatNode(Base):
         raise NotImplementedError("Cannot unparse this node standalone.")
 
 class FormatStructure(FormatNode):
+    IDENTITY = "srct"
+
     __tablename__ = "format_structure_node"
 
     __mapper_args__ = {
-        "polymorphic_identity": "srct",
+        "polymorphic_identity": IDENTITY,
         "inherit_condition": id == FormatNode.id,
     }
 
@@ -257,6 +259,8 @@ class FormatStructure(FormatNode):
 
 
 class FormatSimpleContent(FormatNode):
+    IDENTITY = "sicn"
+
     KIND_ALPHABET_CHARACTER = "alphabet_character"
     KIND_DIGIT = "digit"
     KIND_ALPHANUMERIC = "alphanumeric"
@@ -274,7 +278,7 @@ class FormatSimpleContent(FormatNode):
     __tablename__ = "format_simple_content_node"
 
     __mapper_args__ = {
-        "polymorphic_identity": "sicn"
+        "polymorphic_identity": IDENTITY
     }
 
     id = Column(Integer,
