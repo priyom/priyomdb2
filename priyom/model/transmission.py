@@ -74,16 +74,15 @@ class FormatNode(Base):
 
     parent_id = Column(Integer,
                        ForeignKey(
-                           "format_structure_node.id",
+                           "format_node.id",
                            ondelete="CASCADE",
-                           name="format_node_fk_format_structure_node_id"),
+                           name="format_node_fk_format_node_id"),
                        nullable=True)
     parent = relationship(
-        "FormatStructure",
+        "FormatNode",
         backref=backref("children",
-                        passive_deletes=True,
-                        order_by="FormatNode.order"),
-        foreign_keys=[parent_id])
+                        order_by=order),
+        remote_side=[id])
 
     __table_args__ = (
         # UniqueConstraint("parent_id", "order"),
@@ -132,7 +131,7 @@ class FormatStructure(FormatNode):
     id = Column(Integer,
                 ForeignKey(FormatNode.id,
                            ondelete="CASCADE",
-                           name="format_structure_node_fk_format_node_id"),
+                           name="format_structure_fk_format_node_id"),
                 primary_key=True)
     joiner_regex = Column(Unicode(255), nullable=True)
     joiner_const = Column(Unicode(255), nullable=True)
