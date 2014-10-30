@@ -8,6 +8,11 @@ import operator
 from . import transmission
 from .format_templates import monolyth, mkformat, redundant_monolyth
 
+FN = transmission.FormatNode
+FS = transmission.FormatStructure
+FSC = transmission.FormatSimpleContent
+CN = transmission.ContentNode
+
 class FormatStructureNode(unittest.TestCase):
     def test_defaults(self):
         node = FS()
