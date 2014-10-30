@@ -14,82 +14,91 @@ import priyom.model
 import teapot.forms
 import teapot.html
 
-__all__ = [
-    "TransmissionFormatForm",
-    "TransmissionFormatRow"]
+class FormatNodeRows(teapot.forms.CustomRows):
+    def instanciate_row(self, rows, request, subdata):
+        type_identity = subdata["type_"][0]
+        try:
+            rowcls = {
+                priyom.model.FormatStructure.IDENTITY: FormatStructureRow,
+                priyom.model.FormatSimpleContent.IDENTITY: FormatSimpleContentRow
+            }[type_identity]
+        except KeyError:
+            raise ValueError("Invald row type: {}", type_identity)
+        rows.append(
+            rowcls(
+                request=request,
+                post_data=subdata,
+                parent=rows))
 
-class TransmissionFormatRow(teapot.forms.Row):
+class FormatNodeRow(teapot.forms.Row):
+    type_ = teapot.html.TextField()
+
     @classmethod
-    def initialize_from_database(cls, txnode):
+    def instance_from_object(cls, obj):
         instance = cls()
-        instance.order = txnode.order
-        instance.duplicity = txnode.duplicity
-        instance.saved = txnode.saved
-        instance.count = txnode.count
-        instance.content_match = txnode.content_match
-        instance.key = txnode.key
-        instance.join = txnode.join
-        instance.comment = txnode.comment
-        instance.children[:] = (
-            TransmissionFormatRow.initialize_from_database(child)
-            for child in txnode.children)
+        instance._init_from_db(obj)
         return instance
 
-    order = teapot.html.IntField()
-    duplicity = teapot.html.EnumField(
-        options=[
-            (priyom.model.TransmissionFormatNode.DUPLICITY_ONE, "Exactly one"),
-            (priyom.model.TransmissionFormatNode.DUPLICITY_ONE_OR_MORE, "One or more"),
-            (priyom.model.TransmissionFormatNode.DUPLICITY_ZERO_OR_MORE, "Zero or more"),
-            (priyom.model.TransmissionFormatNode.DUPLICITY_FIXED, "Fixed amount"),
-        ],
-        default=priyom.model.TransmissionFormatNode.DUPLICITY_ONE)
+    def _init_from_db(self, obj):
+        self.type_ = obj.type_
 
-    saved = teapot.html.CheckboxField()
-    count = teapot.html.IntField(min=0)
-    content_match = teapot.html.TextField(default=None)
-    key = teapot.html.TextField(default=None)
-    join = teapot.html.CheckboxField()
-    comment = teapot.html.TextField()
+class MinMaxMixin(teapot.forms.Row):
+    nmin = teapot.html.IntField(default=1, min=0, max=None,
+                                allow_none=False)
+    nmax = teapot.html.IntField(default=1, min=0, max=None,
+                                allow_none=True)
 
-    def to_database_object(self):
-        obj = priyom.model.TransmissionFormatNode(
-            duplicity=self.duplicity,
-            count=self.count,
-            key=self.key,
-            saved=self.saved,
-            join=self.join,
-            comment=self.comment)
-        if self.content_match is not None:
-            obj.content_match = self.content_match
-        for child in self.children:
-            obj.children.append(child.to_database_object())
-        return obj
+    def _init_from_db(self, obj):
+        super()._init_from_db(obj)
+        self.nmin = obj.nmin
+        self.nmax = obj.nmax
 
-    children = teapot.forms.Rows(None)
+    def postvalidate(self, request):
+        super().postvalidate(request)
+        if self.nmax < self.nmin:
+            teapot.forms.ValidationError(
+                ValueError("nmax must be larger than or equal to nmin"),
+                FormatNodeRow.nmax,
+                self).register()
 
-class TransmissionFormatForm(TransmissionFormatRow):
-    @classmethod
-    def initialize_from_database(cls, txformat):
-        instance = super(TransmissionFormatForm, cls).initialize_from_database(
-            txformat.root_node)
-        instance.display_name = txformat.display_name
-        instance.description = txformat.description
-        return instance
+class FormatStructureRow(MinMaxMixin, FormatNodeRow):
+    joiner_regex = teapot.html.TextField()
+    joiner_const = teapot.html.TextField()
+    save_to = teapot.html.TextField()
+    children = FormatNodeRows()
 
+    def _init_from_db(self, obj):
+        rowcls_map = {
+            priyom.model.FormatStructure: FormatStructureRow,
+            priyom.model.FormatSimpleContent: FormatSimpleContentRow
+        }
+
+        super()._init_from_db(obj)
+        self.joiner_regex = obj.joiner_regex
+        self.joiner_const = obj.joiner_const
+        self.save_to = obj.save_to
+        for obj_child in obj.children:
+            self.children.append(
+                rowcls_map[type(obj_child)].instance_from_object(obj_child)
+            )
+
+
+class FormatSimpleContentRow(MinMaxMixin, FormatNodeRow):
+    kind = teapot.html.EnumField(
+        options=list(priyom.model.FormatSimpleContent.KINDS),
+        default=priyom.model.FormatSimpleContent.KIND_ALPHABET_CHARACTER
+    )
+
+    def _init_from_db(self, obj):
+        super()._init_from_db(obj)
+        self.kind = obj.kind
+
+
+class FormatForm(FormatStructureRow):
     display_name = teapot.html.TextField()
     description = teapot.html.TextField()
 
-    def to_database_object(self, destination=None):
-        tree = super().to_database_object()
-
-        if destination is None:
-            destination = priyom.model.TransmissionFormat(
-                self.display_name,
-                tree,
-                description=self.description)
-        else:
-            destination.display_name = self.display_name
-            destination.root_node = tree
-            destination.description = self.description
-        return destination
+    def _init_from_db(self, obj):
+        super()._init_from_db(obj.root_node)
+        self.display_name = obj.display_name
+        self.description = obj.description
