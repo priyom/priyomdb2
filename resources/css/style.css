@@ -306,22 +306,68 @@ td.tx-content {
     content: '\2622';
 }
 
-.parsing-tree td {
-    padding-top: 0;
-    padding-left: 0;
-    padding-right: 0;
+/* parser foo */
+
+.fmt-root input,
+.fmt-root select {
+    display: inline;
+    width: 6em;
 }
 
-.parsing-tree input, .parsing-tree textarea, .parsing-tree select {
-    width: 100%;
+.fmt-root label {
+    display: inline;
 }
 
-.parsing-tree col.parsing-tree-key {
-    width: 20em;
+.fmt-root button {
+    min-width: 2em;
+    display: inline-block;
+    text-align: center;
 }
 
-.parsing-tree .ym-fbox-wrap.ym-grid {
-    width: 100%;
+.fmt-struct {
+    display: block;
+}
+
+.fmt-struct-children {
+    padding: 0.5em;
+}
+
+.fmt-struct-inner-box {
+    margin-left: 1.5em;
+    background-colorb: rgba(0, 0, 0, 0.05);
+}
+
+.fmt-leaf {
+    display: block;
+}
+
+.fmt-node {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 1.5em;
+    margin-top: 3em;
+    margin-bottom: 3em;
+    margin-right: 0;
+}
+
+.fmt-node-header {
+    margin-bottom: 1.5em;
+}
+
+.fmt-node-footer {
+    margin-top: 1.5em;
+}
+
+.fmt-node-title {
+    float: right;
+    font-family: "Droid Sans",Arial,Helvetica,sans-serif;
+    font-weight: bold;
+    padding-left: 1.5em;
+}
+
+/* END OF parser foo */
+
+textarea.code {
+    font-family: Consolas, "Lucida Console", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier;
 }
 
 .action-column.ym-form {

@@ -3,66 +3,75 @@ import sqlalchemy.exc
 
 import teapot
 import teapot.sqlalchemy
+import teapot.forms
+import teapot.html
 
 import priyom.logic
 import priyom.model
+import priyom.model.format_parser
 
 from sqlalchemy import func
 
 from .auth import *
 from .shared import *
 
-def mdzhb_format():
-    TF, TFN = priyom.model.TransmissionFormat, priyom.model.TransmissionFormatNode
-    call = TFN("[0-9]{2}\s+[0-9]{3}", key="call", comment="“Callsign”")
-    callwrap = TFN(
-        call,
-        duplicity="+",
-        separator=" ",
-        key="callwrap",
-        saved=False,
-        comment="Group callsigns separated with space"
-    )
-    codeword = TFN("\w+",
-                   key="codeword",
-                   comment="Single word")
-    numbers = TFN("([0-9]{2} ){3}[0-9]{2}",
-                  key="numbers",
-                  comment="Four two-digit numbers")
-    messagewrap = TFN(
-        TFN(
-            codeword,
-            TFN(" ", comment="Single space"),
-            numbers,
-            comment="A single message"
-        ),
-        duplicity="+",
-        separator=" ",
-        key="messagewrap",
-        saved=False,
-        comment="Join message parts"
-    )
-    tree = TFN(
-        callwrap,
-        TFN(" ", comment="Single space"),
-        messagewrap,
-        comment="S28 style message"
-    )
-    return TF("Example format", tree), callwrap, call, messagewrap, codeword, numbers
+from priyom.model.format_templates import mkformat, monolyth
+
+class FormatForm(teapot.forms.Form):
+    display_name = teapot.html.TextField()
+    description = teapot.html.TextField()
+    format_string = teapot.html.TextField()
+
+    @classmethod
+    def instance_from_object(cls, obj):
+        instance = cls()
+        instance.display_name = obj.display_name
+        instance.description = obj.description
+        instance.format_string = obj.root_node.to_parser_expression()
+        instance.format_tree = obj.root_node
+        return instance
+
+    def to_database_object(self, destination=None):
+        if destination is None:
+            return priyom.model.Format(
+                self.display_name,
+                self.format_tree,
+                description=self.description)
+        else:
+            destination.display_name = self.display_name
+            destination.root_node = self.format_tree
+            destination.description = self.description
+            return destination
+
+    def postvalidate(self, request):
+        try:
+            self.format_tree = priyom.model.format_parser.parse_string(self.format_string)
+        except UnicodeEncodeError as err:
+            teapot.forms.ValidationError(
+                ValueError("Unsupported character at position {}: {!r}", err.start, err.object[err.start:err.end]),
+                FormatForm.format_string,
+                self).register()
+        except priyom.model.format_parser.SyntaxError as err:
+            msg = err.message
+            teapot.forms.ValidationError(
+                ValueError("Syntax error: {}:{}: {}", err.position.line0, err.position.col0,
+                           msg),
+                FormatForm.format_string,
+                self).register()
 
 @require_capability(Capability.VIEW_FORMAT)
 @teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
-    priyom.model.TransmissionFormat,
+    priyom.model.Format,
     [
-        ("id", priyom.model.TransmissionFormat.id, None),
-        ("modified", priyom.model.TransmissionFormat.modified, None),
-        ("display_name", priyom.model.TransmissionFormat.display_name, None),
+        ("id", priyom.model.Format.id, None),
+        ("modified", priyom.model.Format.modified, None),
+        ("display_name", priyom.model.Format.display_name, None),
         ("user_count",
          teapot.sqlalchemy.dbview.subquery(
-             priyom.model.TransmissionStructuredContents,
+             priyom.model.StructuredContents,
              func.count('*').label("user_count")
          ).with_labels().group_by(
-             priyom.model.TransmissionStructuredContents.format_id
+             priyom.model.StructuredContents.format_id
          ),
          int)
     ],
@@ -87,18 +96,18 @@ def view_formats(request: teapot.request.Request, view):
 @xsltea_site.with_template("format_form.xml")
 def edit_format(request: teapot.request.Request, format_id=0):
     if format_id == 0:
-        format = mdzhb_format()[0]
+        fmt = mkformat(monolyth()[0])
+        fmt.display_name = "Example format (monolyth style)"
+        fmt.description = "Change me"
     else:
-        format = request.dbsession.query(priyom.model.TransmissionFormat).get(
-            format_id)
+        fmt = request.dbsession.query(priyom.model.Format).get(format_id)
 
-    form = priyom.logic.TransmissionFormatForm.initialize_from_database(
-        format)
+    form = FormatForm.instance_from_object(fmt)
 
     yield teapot.response.Response(None)
     yield {
         "form": form,
-        "has_users": format.get_has_users()
+        "has_users": fmt.get_has_users()
     }, {}
 
 @require_capability(Capability.EDIT_FORMAT)
@@ -109,53 +118,42 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
     post_data = request.post_data
     dbsession = request.dbsession
 
-    form = priyom.logic.TransmissionFormatForm(
-        post_data=post_data)
+    form = FormatForm(request=request)
 
-    target, action = form.find_action(post_data)
+    target, action = form.find_action(request.post_data)
 
     if action == "update":
         pass
-    elif action == "add_child":
-        target.children.append(priyom.logic.TransmissionFormatRow())
-    elif hasattr(target, "parent") and target.parent:
-        if action == "move_up":
-            i = target.index
-            l = target.parent
-            if i >= 1:
-                l.pop(i)
-                l.insert(i-1, target)
-        elif action == "move_down":
-            i = target.index
-            l = target.parent
-            if i < len(l):
-                l.pop(i)
-                l.insert(i+1, target)
-        elif action == "delete":
-            del target.parent[target.index]
-    elif not form.errors and action in {"save_to_db", "save_copy"}:
+    elif action in {"save_to_db", "save_copy"}:
         if action == "save_to_db":
-            format = dbsession.query(priyom.model.TransmissionFormat).get(
+            format = dbsession.query(priyom.model.Format).get(
                 format_id)
             if format and format.get_has_users():
-                raise ValueError("It is not allowed to modify a format with users")
+                teapot.forms.ValidationError(
+                    ValueError("Cannot save: This format currently has users"),
+                    None,
+                    form).register()
         else:
             format = None
 
-        try:
-            format = form.to_database_object(destination=format)
-            dbsession.add(format)
-            dbsession.commit()
-        except sqlalchemy.exc.IntegrityError as err:
-            dbsession.rollback()
-            logging.error(err)
-        else:
-            raise teapot.make_redirect_response(
-                request,
-                edit_format,
-                format_id=format.id)
+        if not form.errors:
+            try:
+                format = form.to_database_object(destination=format)
+                dbsession.add(format)
+                dbsession.commit()
+            except sqlalchemy.exc.IntegrityError as err:
+                dbsession.rollback()
+                teapot.forms.ValidationError(
+                    ValueError(str(err)),
+                    None,
+                    form).register()
+            else:
+                raise teapot.make_redirect_response(
+                    request,
+                    edit_format,
+                    format_id=format.id)
 
-    format = request.dbsession.query(priyom.model.TransmissionFormat).get(
+    format = request.dbsession.query(priyom.model.Format).get(
         format_id)
 
     template_args = {

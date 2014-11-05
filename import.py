@@ -168,7 +168,7 @@ def convert_transmission(node):
     broadcast = dbsession.query(priyom.model.Event).get(
         broadcast_map[node.find(pxmlns.BroadcastID).text])
 
-    format = dbsession.query(priyom.model.TransmissionFormat).get(
+    format = dbsession.query(priyom.model.Format).get(
         format_map[int(node.find(pxmlns.ClassID).text)])
 
     callsigns_per_alphabet = {}

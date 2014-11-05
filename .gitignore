@@ -4,3 +4,4 @@ priyom_config.py
 .#*
 .emacs.desktop*
 \#*#
+priyom/model/format_parser_gen.py

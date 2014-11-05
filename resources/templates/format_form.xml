@@ -14,37 +14,6 @@
   </head>
   <body>
     <exec:code>form = arguments['form']</exec:code>
-    <tea:def name="subtree">
-      <tea:arg name="node" />
-      <tea:arg name="level" default="0" />
-      <tr form:form="node">
-        <td exec:style="'padding-left: {}px'.format(level*12)">
-          <div class="ym-fbox">
-            <label form:for-field="comment">
-              <i18n:_>Comment</i18n:_>
-            </label>
-            <input type="text"
-                   form:field="comment" />
-          </div>
-          <div class="ym-fbox">
-            <label form:for-field="key">
-              <i18n:_>Key</i18n:_>
-            </label>
-            <input type="text"
-                   form:field="key" />
-          </div>
-        </td>
-        <tea:include src="format_form_controls_column.xml"/>
-      </tr>
-      <exec:code>children = node.children</exec:code>
-      <exec:code>child_level = level + 1</exec:code>
-      <tea:for-each bind="child" from="children">
-        <tea:call name="subtree">
-          <tea:pass name="node">child</tea:pass>
-          <tea:pass name="level">child_level</tea:pass>
-        </tea:call>
-      </tea:for-each>
-    </tea:def>
     <tea:include src="aux.xml" xpath="/misc/*" />
     <main>
       <h2><i18n:_>Edit transmission format</i18n:_></h2>
@@ -61,10 +30,16 @@
           <label form:for-field="display_name">Display name</label>
           <input form:field="display_name"
                  placeholder="e.g. S28 default format"/>
+          <tea:call src="library.xml" name="errors">
+            <tea:pass name="field">'display_name'</tea:pass>
+          </tea:call>
         </div>
         <div class="ym-fbox">
           <label form:for-field="description">Description</label>
           <textarea form:field="description" />
+          <tea:call src="library.xml" name="errors">
+            <tea:pass name="field">'description'</tea:pass>
+          </tea:call>
         </div>
         <p class="ym-fbox-footer warning">
           <strong xml:space="preserve"><i18n:_>Warning:</i18n:_> </strong>
@@ -80,23 +55,38 @@
             <i18n:_>Update / Check for errors</i18n:_>
           </button>
         </div>
-        <h6 class="ym-fbox-heading"><i18n:_>Parsing tree</i18n:_></h6>
-        <table class="ym-fbox parsing-tree">
-          <colgroup>
-            <col class="parsing-tree-key" />
-          </colgroup>
-          <thead>
-            <tr>
-              <th><i18n:_>Format node</i18n:_></th>
-              <th><i18n:_>Controls</i18n:_></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tea:call name="subtree">
-              <tea:pass name="node">form</tea:pass>
-            </tea:call>
-          </tbody>
-        </table>
+        <h6 class="ym-fbox-heading"><i18n:_>Format description</i18n:_></h6>
+        <div class="ym-fbox">
+          <label form:for-field="format_string">Format string:</label>
+          <textarea form:field="format_string" rows="5" class="code"/>
+          <tea:call src="library.xml" name="errors">
+            <tea:pass name="field">'format_string'</tea:pass>
+          </tea:call>
+        </div>
+        <h6 class="ym-fbox-heading"><i18n:_>Examples for current format</i18n:_></h6>
+        <div class="ym-fbox">
+          <tea:switch>
+            <tea:case exec:eval="hasattr(form, 'format_tree') and form.format_tree is not None">
+              <p><i18n:_>
+                These are some auto-generated texts which can be parsed by this
+                format. To update these examples with your changes to the format,
+                make sure you hit the "Update / Check for errors" button.
+              </i18n:_></p>
+              <exec:code>import random</exec:code>
+              <ul>
+                <tea:for-each bind="i" from="range(5)">
+                  <li><code><exec:text>form.format_tree.generate(random)</exec:text></code></li>
+                </tea:for-each>
+              </ul>
+            </tea:case>
+            <tea:default>
+              <p><i18n:_>
+                The parser expression contains errors (see above). Thus, no
+                random data which can be matched by the parser can be generated.
+              </i18n:_></p>
+            </tea:default>
+          </tea:switch>
+        </div>
         <div class="ym-fbox-footer ym-fbox-button">
           <tea:if exec:eval="not arguments['has_users']">
             <button type="submit"

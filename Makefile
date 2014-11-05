@@ -5,8 +5,16 @@ LOCALE_SRC_PATH=resources/messages_src
 LOCALES=en_gb de_de
 LOCALE_FILES=$(addsuffix .mo,$(addprefix $(LOCALE_PATH)/,$(LOCALES)))
 
-run: $(LOCALE_FILES)
+GENERATED_FILES=priyom/model/format_parser_gen.py
+
+run: $(LOCALE_FILES) $(GENERATED_FILES)
 	./serve.py
+
+priyom/model/format_parser_gen.py: support-files/format-definition.grammar support-files/pyLR1/pyLRp/parsers/pyLRparser.py
+	cd support-files/pyLR1; python3 -m pyLRp -lLd3 -o ../../$@ ../../$<
+
+support-files/pyLR1/pyLRp/parsers/pyLRparser.py:
+	cd support-files/pyLR1; python3 -m pyLRp -lLd3 --bootstrap pyLRp/parsers/pyLRparser.pyLRp
 
 $(LOCALE_PATH):
 	mkdir -p $@
