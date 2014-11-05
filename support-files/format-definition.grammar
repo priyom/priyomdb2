@@ -1,0 +1,183 @@
+from .transmission import FormatStructure, FormatSimpleContent
+
+FSC_REVERSE_MAP = {
+    'X': FormatSimpleContent.KIND_ALPHANUMERIC,
+    '#': FormatSimpleContent.KIND_DIGIT,
+    'A': FormatSimpleContent.KIND_ALPHABET_CHARACTER,
+    '?': FormatSimpleContent.KIND_NONSPACE
+}
+
+%lexer
+
+%x GROUP_SETTINGS, RANGE
+
+%def
+    space [\ ]
+    identifier [a-zA-Z_][\w_]*
+
+%scope($INITIAL)
+    [\ ] SPACE
+    \( PAREN_OPEN
+    \) PAREN_CLOSE
+    \+ PLUS
+    \* ASTERISK
+    \{ %push(RANGE), BRACE_OPEN
+    \[ %push(GROUP_SETTINGS), BRACKET_OPEN
+    [AX\#?]+ CHARACTER
+
+%scope(GROUP_SETTINGS)
+    {space}+  %restart
+    \] %pop(), BRACKET_CLOSE
+    -> STORETO
+    , COMMA
+    "{identifier}" DESTINATION_LITERAL
+    [\w]+ INVALID0
+
+%scope(RANGE)
+    {space}+  %restart
+    \} %pop(), BRACE_CLOSE
+    [0-9]+ INTEGER_LITERAL
+    , COMMA
+    [\w]+ INVALID0
+
+%parser
+
+pattern:
+    %empty:
+        $$.sem = FormatStructure(nmin=1, nmax=1)
+    pattern ranged_part:
+        $$.sem = $1.sem
+        $$.sem.children.append($2.sem)
+        if isinstance($2.sem, FormatStructure):
+            if $2.sem.nmin == $2.sem.nmax == 1:
+                # these don’t make sense with nmin==nmax==1
+                $2.sem.joiner_regex = None
+                $2.sem.joiner_const = None
+    pattern %error:
+        raise SyntaxError("Expected valid pattern, found {!r}".format($1.sem),
+                          $1.pos)
+
+spaces:
+    SPACE:
+        $$.sem = FormatSimpleContent(FormatSimpleContent.KIND_SPACE,
+                                     nmin=1, nmax=None)
+    spaces SPACE:
+        $$.sem = $1.sem
+
+ranged_part:
+    part:
+        $$.sem = $1.sem
+    part range_spec:
+        if isinstance($1.sem, FormatStructure):
+            if $1.sem.from_group or $1.sem.nmin == $1.sem.nmax == 1:
+                $1.sem.nmin, $1.sem.nmax = $2.sem
+                $$.sem = $1.sem
+            else:
+                raise AssertionError("Range applied to unexpected"
+                                     " FormatStructure instance")
+        elif isinstance($1.sem, FormatSimpleContent):
+            if $1.sem.nmin == $1.sem.nmax == 1:
+                $1.sem.nmin, $1.sem.nmax = $2.sem
+                $$.sem = $1.sem
+            else:
+                $$.sem = FormatStructure(
+                    $1.sem,
+                    nmin=$2.sem[0],
+                    nmax=$2.sem[0]
+                )
+        else:
+            raise AssertionError("Unexpected node (unknown type): {!r}".format(
+                $1.sem))
+    spaces:
+        $$.sem = $1.sem
+    spaces range_spec:
+        raise SyntaxError("Cannot apply range spec to spaces", $2.pos)
+
+part:
+    atom:
+        $$.sem = $1.sem
+    group:
+        $$.sem = $1.sem
+
+explicit_range:
+    INTEGER_LITERAL COMMA BRACE_CLOSE:
+        $$.sem = (int($1.sem), None)
+    COMMA INTEGER_LITERAL BRACE_CLOSE:
+        $$.sem = (0, int($2.sem))
+    INTEGER_LITERAL COMMA INTEGER_LITERAL BRACE_CLOSE:
+        $$.sem = (int($1.sem), int($3.sem))
+    INTEGER_LITERAL BRACE_CLOSE:
+        n = int($1.sem)
+        $$.sem = (n, n)
+    %error BRACE_CLOSE:
+        raise SyntaxError("Expected integer literal or comma, found {!r}".format(
+            $1.sem), $1.pos)
+    # %error:
+    #     raise SyntaxError("Expected integer literal or comma, found {!r}".format(
+    #         $1.sem), $1.pos)
+
+range_spec:
+    ASTERISK:
+        $$.sem = (0, None)
+    PLUS:
+        $$.sem = (1, None)
+    BRACE_OPEN explicit_range:
+        $$.sem = $2.sem
+
+group_flag:
+    STORETO DESTINATION_LITERAL:
+        $$.sem = ('save_to', $2.sem[1:-1])
+
+group_flag_list:
+    group_flag:
+        $$.sem = [$1.sem]
+    group_flag_list COMMA group_flag:
+        $$.sem = $1.sem
+        $$.sem.append($3.sem)
+    %error:
+        raise SyntaxError("Expected group flag, found {!r}".format($1.sem),
+                          $1.pos)
+
+group_flags:
+    %empty:
+        $$.sem = []
+    BRACKET_OPEN group_flag_list BRACKET_CLOSE:
+        $$.sem = $2.sem
+
+group:
+    PAREN_OPEN pattern PAREN_CLOSE group_flags:
+        # pattern produces a FormatStructure
+        $$.sem = $2.sem
+        $$.sem.joiner_regex = "\s+"
+        $$.sem.joiner_const = " "
+        $$.sem.from_group = True
+        group_flags = dict($4.sem)
+        try:
+            $$.sem.save_to = group_flags.pop("save_to")
+        except KeyError:
+            pass
+        if group_flags:
+            raise ValueError("Unknown group flags: {}".format(
+                ", ".join(group_flags.keys())))
+
+atom:
+    CHARACTER:
+        if len(set($1.sem)) == 1:
+            $$.sem = FormatSimpleContent(FSC_REVERSE_MAP[$1.sem[0]],
+                                         nmin=len($1.sem),
+                                         nmax=len($1.sem))
+        else:
+            $$.sem = FormatStructure(
+                *[
+                    FormatSimpleContent(FSC_REVERSE_MAP[chr],
+                                        nmin=1, nmax=1)
+                    for chr in $1.sem
+                ],
+                nmin=1,
+                nmax=1)
+            $$.sem.from_group = False
+
+%footer
+def error(parser, pos, errmsg):
+    # eat all teh errorz (we throw our own)
+    pass

@@ -21,7 +21,8 @@ def monolyth_savables():
             FSC(FSC.KIND_DIGIT, nmin=2, nmax=2),
             nmin=4,
             nmax=4,
-            joiner=" "
+            joiner=" ",
+            joiner_regex=r"\s+"
         ),
         nmin=1,
         nmax=1,
@@ -39,6 +40,7 @@ def monolyth_savables():
             nmin=3,
             nmax=3),
         joiner=" ",
+        joiner_regex=r"\s+",
         nmin=1,
         nmax=None,
         save_to="call"
@@ -54,6 +56,7 @@ def monolyth():
         FSC(FSC.KIND_SPACE),
         numbers,
         joiner=" ",
+        joiner_regex=r"\s+",
         nmin=1,
         nmax=None
     )
@@ -88,6 +91,7 @@ def redundant_monolyth():
             nmax=1
         ),
         joiner=" ",
+        joiner_regex=r"\s+",
         nmin=1,
         nmax=None
     )

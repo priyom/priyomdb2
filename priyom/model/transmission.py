@@ -4,6 +4,7 @@ from __future__ import unicode_literals, print_function, absolute_import
 import abc
 import operator
 import re
+import sys
 
 from sqlalchemy import *
 from sqlalchemy.orm import relationship, backref, validates, Session
@@ -23,6 +24,8 @@ def make_regex_range(nmin, nmax):
             return "?"
         elif nmin == 1:
             return ""
+    elif nmin == nmax:
+        return "{{{n}}}".format(n=nmin)
 
     return "{{{nmin},{nmax}}}".format(
         nmin=nmin,
@@ -109,6 +112,22 @@ class FormatNode(Base):
         parse this format node.
         """
 
+    def _to_parser_expression_parts(self):
+        """
+        Return an iterable of strings which can be joined together to a parser
+        expression, resembling this node and all of its children.
+
+        If anything cannot be represented in a parser expression, a
+        :class:`ValueError` is raised
+        """
+        raise ValueError("{!r} does not support conversion to a parser"
+                         " expression".format(
+                             self))
+
+    def to_parser_expression(self):
+        return "".join(self._to_parser_expression_parts())
+
+
     def parse(self, text):
         raise NotImplementedError("Cannot parse this node standalone.")
 
@@ -163,6 +182,38 @@ class FormatStructure(FormatNode):
                     self.save_to,
                     self.joiner_const,
                     self.joiner_regex))
+
+    def _to_parser_expression_parts(self):
+        if     (not self.joiner_const and self.save_to and
+                not (self.nmin == self.nmax == 1)):
+            raise ValueError("{!r} cannot be expressed as parser expression, due"
+                             " to combination of group-mode and save_to".format(
+                                 self))
+
+        if ((self.joiner_regex and self.joiner_regex != r"\s+") or
+            (self.joiner_const and self.joiner_const != " ") or
+            (bool(self.joiner_regex) ^ bool(self.joiner_const))):
+            raise ValueError("{!r} cannot be expressed as parser expression"
+                             ", due to joiner setup.".format(
+                                 self))
+
+        if self.joiner_const or self.save_to:
+            # so this is a group
+            yield "("
+
+        for child in self.children:
+            yield from child._to_parser_expression_parts()
+
+        if self.joiner_const or self.save_to:
+            yield ")"
+            if self.save_to:
+                if not self.save_to.isidentifier():
+                    raise ValueError("{!r} cannot be expressed as parser"
+                                     "expression, due to save_to value".format(
+                                         self))
+                yield '[->"{}"]'.format(self.save_to)
+            yield make_regex_range(self.nmin, self.nmax)
+
 
     def _get_compound_outer_child_regex(self):
         return "".join(child.get_outer_regex()
@@ -257,6 +308,23 @@ class FormatStructure(FormatNode):
         # recompose
         return (self.joiner_const or "").join(items)
 
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return NotImplemented
+        return (self.joiner_regex == other.joiner_regex and
+                self.joiner_const == other.joiner_const and
+                self.save_to == other.save_to and
+                self.nmin == other.nmin and
+                self.nmax == other.nmax and
+                len(self.children) == len(other.children) and
+                all(my_child == other_child
+                    for my_child, other_child in zip(self.children,
+                                                     other.children)
+                ))
+
+    def __ne__(self, other):
+        return not (self == other)
+
 
 class FormatSimpleContent(FormatNode):
     IDENTITY = "sicn"
@@ -311,6 +379,21 @@ class FormatSimpleContent(FormatNode):
                     self.nmin,
                     self.nmax))
 
+    def _to_parser_expression_parts(self):
+        chr = self.KINDS[self.kind][1]
+
+        if self.kind == self.KIND_SPACE:
+            if self.nmin != 1 or self.nmax is not None:
+                raise ValueError("{!r} cannot be represented as parser"
+                                 " expression, due to range".format(self))
+
+            yield chr
+        elif self.nmin == self.nmax and self.nmax <= 3:
+            yield chr*self.nmax
+        else:
+            yield chr
+            yield make_regex_range(self.nmin, self.nmax)
+
     def get_outer_regex(self):
         return regex_range(
             self.KINDS[self.kind][0],
@@ -328,6 +411,16 @@ class FormatSimpleContent(FormatNode):
 
     def unparse(self, data, child_number=0):
         return self.KINDS[self.kind][1] * self.nmin
+
+    def __eq__(self, other):
+        if type(self) != type(other):
+            return NotImplemented
+        return (self.kind == other.kind and
+                self.nmin == other.nmin and
+                self.nmax == other.nmax)
+
+    def __ne__(self, other):
+        return not (self == other)
 
 
 class Format(TopLevel):
@@ -351,6 +444,10 @@ class Format(TopLevel):
         self.display_name = display_name
         self.root_node = root_node
         self.description = description
+
+    def from_format_string(self, format_string):
+        from .format_parser import parse_string
+        fmt = parse_string(format_string)
 
     def parse(self, text):
         for i, row in enumerate(self.root_node.parse(text)):
@@ -549,3 +646,13 @@ class EventAttachment(Attachment):
     event = relationship(Event,
                          backref=backref("attachments",
                                          passive_deletes=True))
+
+def dump_format_tree(node, indent="", indent_per_level=4, file=sys.stdout):
+    print(indent + repr(node), file=file)
+    if hasattr(node, "children"):
+        new_indent = indent + " "*indent_per_level
+        for child in node.children:
+            dump_format_tree(child,
+                             indent=new_indent,
+                             indent_per_level=indent_per_level,
+                             file=file)
