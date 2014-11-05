@@ -54,8 +54,8 @@ pattern:
                 $2.sem.joiner_regex = None
                 $2.sem.joiner_const = None
     pattern %error:
-        raise SyntaxError("Expected valid pattern, found {!r}".format($1.sem),
-                          $1.pos)
+        raise SyntaxError("Expected valid pattern, found {!r}".format($2.sem),
+                          $2.pos)
 
 spaces:
     SPACE:
