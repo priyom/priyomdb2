@@ -212,7 +212,7 @@ class FormatStructure(FormatNode):
                                      "expression, due to save_to value".format(
                                          self))
                 yield '[->"{}"]'.format(self.save_to)
-            yield make_regex_range(self.nmin, self.nmax)
+        yield make_regex_range(self.nmin, self.nmax)
 
 
     def _get_compound_outer_child_regex(self):

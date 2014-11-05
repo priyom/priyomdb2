@@ -147,6 +147,16 @@ class TestUnparser(unittest.TestCase):
             FS(FSC(FSC.KIND_ALPHABET_CHARACTER, nmin=4, nmax=4), nmin=1, nmax=1).to_parser_expression()
         )
 
+    def test_multiple_simple_content_with_range(self):
+        self.assertEqual(
+            "AA+",
+            FS(
+                FSC(FSC.KIND_ALPHABET_CHARACTER, nmin=2, nmax=2),
+                nmin=1,
+                nmax=None,
+            ).to_parser_expression()
+        )
+
     def test_complex(self):
         t = format_templates.monolyth()[0]
         self.assertEqual(
