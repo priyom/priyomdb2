@@ -159,6 +159,14 @@ class Format(unittest.TestCase):
             list(fmt.parse("12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"))
         )
 
+    def test_exact_match(self):
+        root, _, (call, codeword, numbers) = monolyth()
+        fmt = mkformat(root)
+        with self.assertRaises(ValueError):
+            list(fmt.parse(
+                "foo 12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
+            ))
+
     def test_unparse(self):
         root, _, (call, codeword, numbers) = monolyth()
         fmt = mkformat(root)

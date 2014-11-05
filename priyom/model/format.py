@@ -308,15 +308,23 @@ class FormatStructure(FormatNode):
             yield from child_statements(child, group)
 
     def parse(self, text):
-        regex = re.compile(self._get_compound_inner_child_regex())
-        count = 0
-        for i, match in enumerate(regex.finditer(text)):
-            count += 1
-            yield from self._parse_match(match, i)
-        if self.nmin > count:
-            raise ValueError("Too few repetitions of subpattern detected")
-        if self.nmax is not None and self.nmax < count:
-            raise ValueError("Too many repetitions of subpattern detected")
+        compound_inner_re = self._get_compound_inner_child_regex()
+        if self.nmin == self.nmax == 1:
+            # special case: require a single full match here
+            match = re.compile("^"+compound_inner_re+"$").match(text)
+            if match is None:
+                raise ValueError("Match of a subpattern failed")
+            yield from self._parse_match(match, 0)
+        else:
+            regex = re.compile(compound_inner_re)
+            count = 0
+            for i, match in enumerate(regex.finditer(text)):
+                count += 1
+                yield from self._parse_match(match, i)
+            if self.nmin > count:
+                raise ValueError("Too few repetitions of subpattern detected")
+            if self.nmax is not None and self.nmax < count:
+                raise ValueError("Too many repetitions of subpattern detected")
 
     def unparse(self, data, child_number=0):
         items = []
