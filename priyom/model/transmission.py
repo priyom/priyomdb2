@@ -119,26 +119,8 @@ class StructuredContents(Contents):
         super().__init__(mime, **kwargs)
         self.format = fmt
 
-    def unparse_struct(self):
-        """
-        Convert this message into a *struct* as required by
-        :cls:`Format.unparse` recursively and return that structure.
-        """
-        result = {}
-        for node in filter(lambda x: x.parent is None, self.nodes):
-            _, child_list = result.setdefault(
-                node.format_node.key, (node.format_node, []))
-            child_list.append(node.unparse_struct())
-        return result
-
-    def unparse(self):
-        """
-        Return a string representation of this message.
-        """
-        return self.format.unparse(self.unparse_struct())
-
     def __str__(self):
-        return self.unparse()
+        return self.format.unparse(self.nodes)
 
 
 class ContentNode(Base):

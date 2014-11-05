@@ -193,31 +193,19 @@ def log_POST(request: teapot.request.Request):
                 event.station_id = pages[0].station.id
                 event.start_time = pages[0].timestamp
                 event.end_time = pages[0].timestamp
-                event.approved = any(
-                    request.auth.user.has_capability(Capability.LOG_UNMODERATED))
+                event.approved = request.auth.user.has_capability(Capability.LOG_UNMODERATED)
                 event.submitter = request.auth.user
                 for row in pages[1].frequencies:
                     frequency = priyom.model.EventFrequency()
                     frequency.frequency = row.frequency
-                    frequency.mode_id = row.mode_id
+                    frequency.mode = row.mode
                     event.frequencies.append(frequency)
             else:
                 event = pages[1].event
 
-            for contentrow in pages[2].contents:
-                fmt = contentrow.get_format(request)
-                content = fmt.parse(contentrow.contents)
-                content.attribution = contentrow.attribution
-                content.alphabet_id = contentrow.alphabet_id
-                for transcriptrow in contentrow.transcripts:
-                    transcribed = fmt.parse(transcriptrow.contents)
-                    transcribed.is_transcribed = True
-                    transcribed.attribution = transcriptrow.attribution
-                    transcribed.alphabet_id = transcriptrow.alphabet_id
-                    transcribed.parent_contents = content
-                    event.contents.append(transcribed)
-                event.contents.append(content)
-
+            event.contents.extend(event_rows_to_contents(
+                request,
+                pages[2].contents))
             dbsession.add(event)
             dbsession.commit()
             from . import dash

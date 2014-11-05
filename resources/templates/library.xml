@@ -227,11 +227,14 @@ errors = form.errors.get(field, [])</exec:code>
                 </option>
                 <tea:for-each bind="event_frequency"
                               from="existing_frequencies">
-                  <option exec:value="event_frequency">
+                  <option exec:value="event_frequency.id">
                     <exec:text>event_frequency</exec:text>
                   </option>
                 </tea:for-each>
               </select>
+              <tea:call name="errors">
+                <tea:pass name="field">'existing_event_frequency'</tea:pass>
+              </tea:call>
             </div>
             <div class="ym-fbox">
               <button type="submit"

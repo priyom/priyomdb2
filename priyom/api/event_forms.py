@@ -14,6 +14,7 @@ __all__ = [
     "EventFrequencyRow",
     "EventContentsRow",
     "EventTopLevelContentsRow",
+    "event_rows_to_contents",
 ]
 
 logger = logging.getLogger(__name__)
@@ -79,9 +80,7 @@ class EventContentsRow(teapot.forms.Row):
         super().__init__(**kwargs)
         if from_contents is not None:
             self.alphabet = from_contents.alphabet
-            # this will crash for raw contents -- which are not fully supported
-            # yet!
-            self.contents = from_contents.unparse() # AttributeError here? see above
+            self.contents = str(from_contents)
             self.attribution = from_contents.attribution
 
     alphabet = priyom.logic.fields.ObjectRefField(priyom.model.Alphabet)
@@ -125,3 +124,20 @@ class EventTopLevelContentsRow(EventContentsRow):
         return self.format
 
     transcripts = teapot.forms.Rows(EventContentsRow)
+
+def event_rows_to_contents(request, rows):
+    for contentrow in rows:
+        fmt = contentrow.get_format(request)
+        content = priyom.model.StructuredContents("text/plain", fmt)
+        content.nodes.extend(fmt.parse(contentrow.contents))
+        content.attribution = contentrow.attribution
+        content.alphabet = contentrow.alphabet
+        for transcriptrow in contentrow.transcripts:
+            transcribed = priyom.model.StructuredContents("text/plain", fmt)
+            transcribed.nodes.extend(fmt.parse(transcriptrow.contents))
+            transcribed.is_transcribed = True
+            transcribed.attribution = transcriptrow.attribution
+            transcribed.alphabet = transcriptrow.alphabet
+            transcribed.parent_contents = content
+            yield transcribed
+        yield content

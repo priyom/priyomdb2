@@ -201,19 +201,9 @@ def edit_event_POST(event_id, request: teapot.request.Request):
         for existing in event.contents:
             dbsession.delete(existing)
         event.contents.clear()
-        for contentrow in form.contents:
-            fmt = contentrow.get_format(request)
-            content = fmt.parse(contentrow.contents)
-            content.attribution = contentrow.attribution
-            content.alphabet = contentrow.alphabet
-            for transcriptrow in contentrow.transcripts:
-                transcribed = fmt.parse(transcriptrow.contents)
-                transcribed.is_transcribed = True
-                transcribed.attribution = transcriptrow.attribution
-                transcribed.alphabet = transcriptrow.alphabet
-                transcribed.parent_contents = content
-                event.contents.append(transcribed)
-            event.contents.append(content)
+        event.contents.extend(event_rows_to_contents(
+            request,
+            form.contents))
         dbsession.commit()
 
         raise teapot.make_redirect_response(
