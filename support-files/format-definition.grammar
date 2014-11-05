@@ -67,7 +67,7 @@ spaces:
 ranged_part:
     part:
         $$.sem = $1.sem
-    part range_spec:
+    part checked_range_spec:
         if isinstance($1.sem, FormatStructure):
             if $1.sem.from_group or $1.sem.nmin == $1.sem.nmax == 1:
                 $1.sem.nmin, $1.sem.nmax = $2.sem
@@ -90,7 +90,7 @@ ranged_part:
                 $1.sem))
     spaces:
         $$.sem = $1.sem
-    spaces range_spec:
+    spaces checked_range_spec:
         raise SyntaxError("Cannot apply range spec to spaces", $2.pos)
 
 part:
@@ -123,6 +123,12 @@ range_spec:
         $$.sem = (1, None)
     BRACE_OPEN explicit_range:
         $$.sem = $2.sem
+
+checked_range_spec:
+    range_spec:
+        $$.sem = $1.sem
+    checked_range_spec range_spec:
+        raise SyntaxError("Multiple range specifications", $2.pos)
 
 group_flag:
     STORETO DESTINATION_LITERAL:
