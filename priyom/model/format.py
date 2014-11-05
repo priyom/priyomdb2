@@ -7,6 +7,54 @@ from sqlalchemy.orm import relationship, backref, validates, Session
 
 from .base import Base, TopLevel
 
+GENERATION_CHAR_UPPER_BOUND = 12
+GENERATION_GROUP_UPPER_BOUND = 3
+
+def gen_char_amount(nmin, nmax, rng):
+    if nmax is None:
+        nmax = GENERATION_CHAR_UPPER_BOUND
+    return rng.randint(nmin, max(nmin, min(nmax, GENERATION_CHAR_UPPER_BOUND)))
+
+def gen_group_amount(nmin, nmax, rng):
+    if nmax is None:
+        nmax = GENERATION_GROUP_UPPER_BOUND
+    return rng.randint(nmin, max(nmin, min(nmax, GENERATION_GROUP_UPPER_BOUND)))
+
+def gen_alphanumerics(nmin, nmax, rng):
+    amount = gen_char_amount(nmin, nmax, rng)
+    for i in range(amount):
+        value = rng.randint(0, (26+10)-1)
+        if value < 10:
+            yield chr(ord('0')+value)
+        else:
+            yield chr(ord('A')+value-10)
+
+def gen_alphabet_characters(nmin, nmax, rng):
+    amount = gen_char_amount(nmin, nmax, rng)
+    for i in range(amount):
+        value = rng.randint(0, 26-1)
+        yield chr(ord('A')+value)
+
+def gen_digits(nmin, nmax, rng):
+    amount = gen_char_amount(nmin, nmax, rng)
+    for i in range(amount):
+        value = rng.randint(0, 9)
+        yield chr(ord('0')+value)
+
+def gen_nonspaces(nmin, nmax, rng):
+    amount = gen_char_amount(nmin, nmax, rng)
+    for i in range(amount):
+        char = " "
+        while char.isspace():
+            char = chr(rng.randint(32, 127))
+        yield char
+
+def gen_spaces(nmin, nmax, rng):
+    if nmax is None:
+        nmax = nmin
+    amount = gen_char_amount(nmin, max(nmin, min(nmax, 1)), rng)
+    return " "*amount
+
 def make_regex_range(nmin, nmax):
     if nmax is None:
         if nmin == 1:
@@ -115,6 +163,12 @@ class FormatNode(Base):
         This is the same kind of list as returned by :meth:`parse`.
         """
         raise NotImplementedError("Cannot unparse this node standalone.")
+
+    def generate(self, rng):
+        """
+        Generate a random string which can be parsed by this format tree.
+        """
+        raise NotImplementedError("Cannot generate a string for this node.")
 
 class FormatStructure(FormatNode):
     IDENTITY = "srct"
@@ -285,6 +339,16 @@ class FormatStructure(FormatNode):
         # recompose
         return (self.joiner_const or "").join(items)
 
+    def generate(self, rng):
+        amount = gen_group_amount(self.nmin, self.nmax, rng)
+        parts = []
+        for i in range(amount):
+            child_parts = []
+            for child in self.children:
+                child_parts.append(child.generate(rng))
+            parts.append("".join(child_parts))
+        return (self.joiner_const or "").join(parts)
+
     def __eq__(self, other):
         if type(other) != type(self):
             return NotImplemented
@@ -312,11 +376,11 @@ class FormatSimpleContent(FormatNode):
     KIND_SPACE = "space"
 
     KINDS = {
-        KIND_ALPHANUMERIC: (r"[\d\w?]", "X"),
-        KIND_ALPHABET_CHARACTER: (r"[\w?]", "A"),
-        KIND_DIGIT: (r"[\d?]", "#"),
-        KIND_NONSPACE: (r"\S", "?"),
-        KIND_SPACE: (r"\s", " "),
+        KIND_ALPHANUMERIC: (r"[\d\w?]", "X", gen_alphanumerics),
+        KIND_ALPHABET_CHARACTER: (r"[\w?]", "A", gen_alphabet_characters),
+        KIND_DIGIT: (r"[\d?]", "#", gen_digits),
+        KIND_NONSPACE: (r"\S", "?", gen_nonspaces),
+        KIND_SPACE: (r"\s", " ", gen_spaces),
     }
 
     __tablename__ = "format_simple_content_node"
@@ -387,6 +451,9 @@ class FormatSimpleContent(FormatNode):
 
     def unparse(self, data, child_number=0):
         return self.KINDS[self.kind][1] * self.nmin
+
+    def generate(self, rng):
+        return "".join(self.KINDS[self.kind][2](self.nmin, self.nmax, rng))
 
     def __eq__(self, other):
         if type(self) != type(other):

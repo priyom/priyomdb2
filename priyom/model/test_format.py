@@ -1,9 +1,10 @@
 # encoding=utf8
 from __future__ import absolute_import, print_function, unicode_literals
 
-import unittest
+import random
 import re
 import operator
+import unittest
 
 from . import transmission, format
 from .format_templates import monolyth, mkformat, redundant_monolyth
@@ -166,3 +167,21 @@ class Format(unittest.TestCase):
             text,
             fmt.unparse(list(fmt.parse(text)))
         )
+
+class TestGeneration(unittest.TestCase):
+    system_random = random.SystemRandom()
+
+    def test_parsability(self):
+        root, *_ = monolyth()
+        rng = random.Random()
+        seed = self.system_random.getrandbits(32)
+        rng.seed(seed)
+        # this test checks with a certain probability that parsability works
+        for i in range(32):
+            randstr = root.generate(rng)
+            try:
+                list(root.parse(randstr))
+            except ValueError:
+                raise AssertionError(
+                    "Generated invalid string: {!r} (initial seed = {})".format(
+                        randstr, seed))
