@@ -5,12 +5,12 @@ import unittest
 import re
 import operator
 
-from . import transmission
+from . import transmission, format
 from .format_templates import monolyth, mkformat, redundant_monolyth
 
-FN = transmission.FormatNode
-FS = transmission.FormatStructure
-FSC = transmission.FormatSimpleContent
+FN = format.FormatNode
+FS = format.FormatStructure
+FSC = format.FormatSimpleContent
 CN = transmission.ContentNode
 
 class FormatStructureNode(unittest.TestCase):

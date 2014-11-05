@@ -2,11 +2,11 @@
 This module contains some format templates, mainly used for testing.
 """
 
-from . import transmission
+from . import format, transmission
 
-FN = transmission.FormatNode
-FS = transmission.FormatStructure
-FSC = transmission.FormatSimpleContent
+FN = format.FormatNode
+FS = format.FormatStructure
+FSC = format.FormatSimpleContent
 CN = transmission.ContentNode
 
 def monolyth_savables():

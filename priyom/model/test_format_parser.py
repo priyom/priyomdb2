@@ -1,9 +1,9 @@
 import unittest
 
-from . import format_parser, transmission, format_templates
+from . import format_parser, format, format_templates
 
-FSC = transmission.FormatSimpleContent
-FS = transmission.FormatStructure
+FSC = format.FormatSimpleContent
+FS = format.FormatStructure
 
 class ParserTester(unittest.TestCase):
     def assertParserTreeEqual(self, t1, t2):

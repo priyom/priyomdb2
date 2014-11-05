@@ -1,4 +1,4 @@
-from .transmission import FormatStructure, FormatSimpleContent
+from .format import FormatStructure, FormatSimpleContent
 
 FSC_REVERSE_MAP = {
     'X': FormatSimpleContent.KIND_ALPHANUMERIC,
