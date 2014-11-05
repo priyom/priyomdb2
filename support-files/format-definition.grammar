@@ -83,7 +83,7 @@ ranged_part:
                 $$.sem = FormatStructure(
                     $1.sem,
                     nmin=$2.sem[0],
-                    nmax=$2.sem[0]
+                    nmax=$2.sem[1]
                 )
         else:
             raise AssertionError("Unexpected node (unknown type): {!r}".format(

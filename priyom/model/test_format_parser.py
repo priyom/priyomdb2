@@ -87,6 +87,16 @@ class TestParser(ParserTester):
             format_parser.parse_string("(X)+").children[0]
         )
 
+    def test_multiple_simple_content_with_range(self):
+        self.assertParserTreeEqual(
+            FS(
+                FSC(FSC.KIND_ALPHABET_CHARACTER, nmin=2, nmax=2),
+                nmin=1,
+                nmax=None,
+            ),
+            format_parser.parse_string("AA+").children[0]
+        )
+
     def test_complex(self):
         t1 = format_templates.monolyth()[0]
         t2 = format_parser.parse_string("""(## ###)[->"call"]+ ((A+)[->"codeword"] ((##){4})[->"numbers"])+""")
