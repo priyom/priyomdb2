@@ -24,6 +24,8 @@ def dash(request: teapot.request.Request):
 
     template_args["recents"] = dbsession.query(
         priyom.model.Event
+    ).filter(
+        priyom.model.Event.approved
     ).order_by(
         priyom.model.Event.created.desc()
     ).limit(10)
