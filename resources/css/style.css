@@ -366,6 +366,10 @@ td.tx-content {
 
 /* END OF parser foo */
 
+textarea.code {
+    font-family: Consolas, "Lucida Console", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier;
+}
+
 .action-column.ym-form {
     border: none;
     box-shadow: none;

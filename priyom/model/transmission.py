@@ -144,11 +144,6 @@ class FormatStructure(FormatNode):
 
     __tablename__ = "format_structure_node"
 
-    __mapper_args__ = {
-        "polymorphic_identity": IDENTITY,
-        "inherit_condition": id == FormatNode.id,
-    }
-
     id = Column(Integer,
                 ForeignKey(FormatNode.id,
                            ondelete="CASCADE",
@@ -159,6 +154,11 @@ class FormatStructure(FormatNode):
     save_to = Column(Unicode(255), nullable=True)
     nmin = Column(Integer, nullable=False)
     nmax = Column(Integer, nullable=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": IDENTITY,
+        "inherit_condition": id == FormatNode.id,
+    }
 
     def __init__(self, *children,
                  joiner=None, joiner_regex=None,

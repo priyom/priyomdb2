@@ -3,9 +3,12 @@ import sqlalchemy.exc
 
 import teapot
 import teapot.sqlalchemy
+import teapot.forms
+import teapot.html
 
 import priyom.logic
 import priyom.model
+import priyom.model.format_parser
 
 from sqlalchemy import func
 
@@ -13,6 +16,47 @@ from .auth import *
 from .shared import *
 
 from priyom.model.format_templates import mkformat, monolyth
+
+class FormatForm(teapot.forms.Form):
+    display_name = teapot.html.TextField()
+    description = teapot.html.TextField()
+    format_string = teapot.html.TextField()
+
+    @classmethod
+    def instance_from_object(cls, obj):
+        instance = cls()
+        instance.display_name = obj.display_name
+        instance.description = obj.description
+        instance.format_string = obj.root_node.to_parser_expression()
+        return instance
+
+    def to_database_object(self, destination=None):
+        if destination is None:
+            return priyom.model.Format(
+                self.display_name,
+                self.format_tree,
+                description=self.description)
+        else:
+            destination.display_name = self.display_name
+            destination.root_node = self.format_tree
+            destination.description = self.description
+            return destination
+
+    def postvalidate(self, request):
+        try:
+            self.format_tree = priyom.model.format_parser.parse_string(self.format_string)
+        except UnicodeEncodeError as err:
+            teapot.forms.ValidationError(
+                ValueError("Unsupported character at position {}: {!r}", err.start, err.object[err.start:err.end]),
+                FormatForm.format_string,
+                self).register()
+        except priyom.model.format_parser.SyntaxError as err:
+            msg = err.message
+            teapot.forms.ValidationError(
+                ValueError("Syntax error: {}:{}: {}", err.position.line0, err.position.col0,
+                           msg),
+                FormatForm.format_string,
+                self).register()
 
 @require_capability(Capability.VIEW_FORMAT)
 @teapot.sqlalchemy.dbview.dbview(teapot.sqlalchemy.dbview.make_form(
@@ -57,7 +101,7 @@ def edit_format(request: teapot.request.Request, format_id=0):
     else:
         fmt = request.dbsession.query(priyom.model.Format).get(format_id)
 
-    form = priyom.logic.FormatForm.instance_from_object(fmt)
+    form = FormatForm.instance_from_object(fmt)
 
     yield teapot.response.Response(None)
     yield {
@@ -73,51 +117,40 @@ def edit_format_POST(request: teapot.request.Request, format_id=0):
     post_data = request.post_data
     dbsession = request.dbsession
 
-    form = priyom.logic.FormatForm(
-        post_data=post_data)
+    form = FormatForm(request=request)
 
-    target, action = form.find_action(post_data)
+    target, action = form.find_action(request.post_data)
 
     if action == "update":
         pass
-    elif action == "add_child":
-        target.children.append(priyom.logic.FormatRow())
-    elif hasattr(target, "parent") and target.parent:
-        if action == "move_up":
-            i = target.index
-            l = target.parent
-            if i >= 1:
-                l.pop(i)
-                l.insert(i-1, target)
-        elif action == "move_down":
-            i = target.index
-            l = target.parent
-            if i < len(l):
-                l.pop(i)
-                l.insert(i+1, target)
-        elif action == "delete":
-            del target.parent[target.index]
-    elif not form.errors and action in {"save_to_db", "save_copy"}:
+    elif action in {"save_to_db", "save_copy"}:
         if action == "save_to_db":
             format = dbsession.query(priyom.model.Format).get(
                 format_id)
             if format and format.get_has_users():
-                raise ValueError("It is not allowed to modify a format with users")
+                teapot.forms.ValidationError(
+                    ValueError("Cannot save: This format currently has users"),
+                    None,
+                    form).register()
         else:
             format = None
 
-        try:
-            format = form.to_database_object(destination=format)
-            dbsession.add(format)
-            dbsession.commit()
-        except sqlalchemy.exc.IntegrityError as err:
-            dbsession.rollback()
-            logging.error(err)
-        else:
-            raise teapot.make_redirect_response(
-                request,
-                edit_format,
-                format_id=format.id)
+        if not form.errors:
+            try:
+                format = form.to_database_object(destination=format)
+                dbsession.add(format)
+                dbsession.commit()
+            except sqlalchemy.exc.IntegrityError as err:
+                dbsession.rollback()
+                teapot.forms.ValidationError(
+                    ValueError(str(err)),
+                    None,
+                    form).register()
+            else:
+                raise teapot.make_redirect_response(
+                    request,
+                    edit_format,
+                    format_id=format.id)
 
     format = request.dbsession.query(priyom.model.Format).get(
         format_id)
