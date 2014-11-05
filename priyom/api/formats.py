@@ -28,6 +28,7 @@ class FormatForm(teapot.forms.Form):
         instance.display_name = obj.display_name
         instance.description = obj.description
         instance.format_string = obj.root_node.to_parser_expression()
+        instance.format_tree = obj.root_node
         return instance
 
     def to_database_object(self, destination=None):

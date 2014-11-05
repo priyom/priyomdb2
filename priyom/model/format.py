@@ -508,6 +508,8 @@ class Format(TopLevel):
             for node in content_nodes])
 
     def get_has_users(self):
+        from .transmission import StructuredContents
+
         session = Session.object_session(self)
         if not session:
             return False

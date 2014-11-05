@@ -56,12 +56,36 @@
           </button>
         </div>
         <h6 class="ym-fbox-heading"><i18n:_>Format description</i18n:_></h6>
-        <div class="fmt-root">
+        <div class="ym-fbox">
           <label form:for-field="format_string">Format string:</label>
           <textarea form:field="format_string" rows="5" class="code"/>
           <tea:call src="library.xml" name="errors">
             <tea:pass name="field">'format_string'</tea:pass>
           </tea:call>
+        </div>
+        <h6 class="ym-fbox-heading"><i18n:_>Examples for current format</i18n:_></h6>
+        <div class="ym-fbox">
+          <tea:switch>
+            <tea:case exec:eval="hasattr(form, 'format_tree') and form.format_tree is not None">
+              <p><i18n:_>
+                These are some auto-generated texts which can be parsed by this
+                format. To update these examples with your changes to the format,
+                make sure you hit the "Update / Check for errors" button.
+              </i18n:_></p>
+              <exec:code>import random</exec:code>
+              <ul>
+                <tea:for-each bind="i" from="range(5)">
+                  <li><code><exec:text>form.format_tree.generate(random)</exec:text></code></li>
+                </tea:for-each>
+              </ul>
+            </tea:case>
+            <tea:default>
+              <p><i18n:_>
+                The parser expression contains errors (see above). Thus, no
+                random data which can be matched by the parser can be generated.
+              </i18n:_></p>
+            </tea:default>
+          </tea:switch>
         </div>
         <div class="ym-fbox-footer ym-fbox-button">
           <tea:if exec:eval="not arguments['has_users']">
