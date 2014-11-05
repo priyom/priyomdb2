@@ -16,7 +16,7 @@ FSC_REVERSE_MAP = {
     identifier [a-zA-Z_][\w_]*
 
 %scope($INITIAL)
-    [\ ] SPACE
+    [\ ]+ SPACES
     \( PAREN_OPEN
     \) PAREN_CLOSE
     \+ PLUS
@@ -58,11 +58,9 @@ pattern:
                           $2.pos)
 
 spaces:
-    SPACE:
+    SPACES:
         $$.sem = FormatSimpleContent(FormatSimpleContent.KIND_SPACE,
                                      nmin=1, nmax=None)
-    spaces SPACE:
-        $$.sem = $1.sem
 
 ranged_part:
     part:
