@@ -134,7 +134,6 @@ class FormatNode(unittest.TestCase):
         self.assertRaises(ValueError, list, root.parse("12 123 FOO 12 34 56"))
         self.assertRaises(ValueError, list, root.parse("12 123 FOO 12 34 56 XX"))
 
-
     def test_unparse(self):
         root, _, _ = monolyth()
         text = "12 123 HONKING 20 07 03 50 ANTELOPE 20 07 03 50"
