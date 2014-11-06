@@ -384,7 +384,7 @@ class FormatSimpleContent(FormatNode):
     KIND_SPACE = "space"
 
     KINDS = {
-        KIND_ALPHANUMERIC: (r"[\d\w?']", "X", gen_alphanumerics),
+        KIND_ALPHANUMERIC: (r"[\d\w?'-]", "X", gen_alphanumerics),
         KIND_ALPHABET_CHARACTER: (r"[\w?']", "A", gen_alphabet_characters),
         KIND_DIGIT: (r"[\d?]", "#", gen_digits),
         KIND_NONSPACE: (r"\S", "?", gen_nonspaces),

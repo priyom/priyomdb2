@@ -26,7 +26,7 @@ class FormatStructureNode(unittest.TestCase):
     def test_regex_no_repeat_no_joiner(self):
         node = FS(FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1))
         self.assertEqual(
-            r"[\d\w?']",
+            r"[\d\w?'-]",
             node.get_outer_regex())
 
     def test_regex_no_repeat_joiner(self):
@@ -37,7 +37,7 @@ class FormatStructureNode(unittest.TestCase):
             joiner="bar"
         )
         self.assertEqual(
-            r"[\d\w?']",
+            r"[\d\w?'-]",
             node.get_outer_regex())
 
     def test_regex_repeat_no_joiner(self):
@@ -47,7 +47,7 @@ class FormatStructureNode(unittest.TestCase):
             nmax=None
         )
         self.assertEqual(
-            r"(?:[\d\w?'])*",
+            r"(?:[\d\w?'-])*",
             node.get_outer_regex()
         )
 
@@ -59,7 +59,7 @@ class FormatStructureNode(unittest.TestCase):
             joiner="foo"
         )
         self.assertEqual(
-            r"(?:[\d\w?']foo)*[\d\w?']",
+            r"(?:[\d\w?'-]foo)*[\d\w?'-]",
             node.get_outer_regex()
         )
 
@@ -86,7 +86,7 @@ class FormatNode(unittest.TestCase):
         )
 
         self.assertEqual(
-            r"(?:[\d\w?']+\s*)*[\d\w?']+",
+            r"(?:[\d\w?'-]+\s*)*[\d\w?'-]+",
             node.get_outer_regex())
 
         self.assertSequenceEqual(
