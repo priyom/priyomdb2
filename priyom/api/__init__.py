@@ -83,7 +83,8 @@ group1 = user_sitemap.new(
 group1.new(
     events.edit_event,
     label="Edit event",
-    aliased_routables={events.edit_event_POST})
+    # aliased_routables={events.edit_event_POST}
+)
 group1.new(
     events.view_event,
     label="View event")
@@ -147,7 +148,8 @@ group1 = admin_sitemap.new(
 group1.new(
     formats.edit_format,
     label="Edit format",
-    aliased_routables={formats.edit_format_POST})
+    # aliased_routables={formats.edit_format_POST}
+)
 
 group1 = admin_sitemap.new(
     users.view_users,
