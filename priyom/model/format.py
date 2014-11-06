@@ -269,12 +269,15 @@ class FormatStructure(FormatNode):
                                 self.nmax)
         else:
             # this is the complex case. we have to take into account joiners
+            # this is especially painful for nmin=0.
             regex = (regex_range(children_regex + self.joiner_regex,
-                                 self.nmin-1,
+                                 max(self.nmin-1, 0),
                                  (self.nmax-1)
                                  if self.nmax is not None
                                  else None) +
                      children_regex)
+            if self.nmin == 0:
+                regex = "(?:" + regex + ")?"
 
         return regex
 

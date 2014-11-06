@@ -63,6 +63,18 @@ class FormatStructureNode(unittest.TestCase):
             node.get_outer_regex()
         )
 
+    def test_regex_star(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC, nmin=1, nmax=1),
+            nmin=0,
+            nmax=None,
+            joiner="foo"
+        )
+        self.assertEqual(
+            r"(?:(?:[\d\w?'-]foo)*[\d\w?'-])?",
+            node.get_outer_regex()
+        )
+
 class FormatNode(unittest.TestCase):
     def test_parse_no_repeat_no_joiner(self):
         node = FS(
@@ -96,6 +108,24 @@ class FormatNode(unittest.TestCase):
                 (2, node, "foobar")
             ],
             list(node.parse("test 123 foobar"))
+        )
+
+    def test_parse_nmin_zero(self):
+        node = FS(
+            FSC(FSC.KIND_ALPHANUMERIC),
+            save_to="foo",
+            nmin=0,
+            nmax=None
+        )
+
+        self.assertSequenceEqual(
+            [],
+            list(node.parse(""))
+        )
+
+        self.assertSequenceEqual(
+            [(0, node, "test")],
+            list(node.parse("test"))
         )
 
     def test_complex_tree(self):
