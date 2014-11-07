@@ -268,6 +268,9 @@ errors = form.errors.get(field, [])</exec:code>
       <textarea form:field="contents"
                 rows="10"
                 class="transmission"/>
+      <tea:call name="errors">
+        <tea:pass name="field">'contents'</tea:pass>
+      </tea:call>
     </div>
   </tea:def>
 
@@ -299,14 +302,10 @@ errors = form.errors.get(field, [])</exec:code>
             <td>
               <div class="ym-fbox">
                 <label form:for-field="format"><i18n:_>Format</i18n:_></label>
-                <select form:field="format">
-                  <tea:for-each bind="format" from="formats">
-                    <option exec:value="format.id"
-                            exec:selected="'selected' if row.format == format else None">
-                      <exec:text>format.display_name</exec:text>
-                    </option>
-                  </tea:for-each>
-                </select>
+                <select form:field="format" />
+                <tea:call name="errors">
+                  <tea:pass name="field">'format'</tea:pass>
+                </tea:call>
               </div>
               <tea:call name="transcriptdata" />
             </td>

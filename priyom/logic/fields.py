@@ -80,6 +80,87 @@ class ObjectRefField(teapot.forms.CustomField,
     def field_type(self):
         return "select"
 
+class TransmissionFormatField(teapot.forms.CustomField,
+                              teapot.html.fields.HTMLField):
+    STATIC_VALUES = {
+        priyom.model.FreeTextContents: -1,
+        priyom.model.BinaryContents: -2
+    }
+
+    STATIC_REVERSEMAP = {
+        -2: priyom.model.BinaryContents,
+        -1: priyom.model.FreeTextContents
+    }
+
+    def __init__(self):
+        super().__init__()
+
+    def get_default(self, instance):
+        return (priyom.model.FreeTextContents, None)
+
+    def mkoption(self, value, label, elem, current_value):
+        option = etree.SubElement(elem, xhtml_ns.option)
+        if value == current_value:
+            option.set("selected", "selected")
+        if value[1] is None:
+            # static value
+            option.set("value", str(self.STATIC_VALUES[value[0]]))
+            option.text = label
+        else:
+            option.set("value", str(value[1].id))
+            option.text = label
+        return option
+
+    def get_html_options(self, instance, context, elem):
+        value = self.__get__(instance, type(instance))
+        self.mkoption(
+            (priyom.model.BinaryContents, None),
+            context.i18n("BLOB (binary, enter hexdump or use file upload)"),
+            elem,
+            value)
+        self.mkoption(
+            (priyom.model.FreeTextContents, None),
+            context.i18n("Unformatted text"),
+            elem,
+            value)
+
+        formats = context.request.dbsession.query(
+            priyom.model.Format
+        ).order_by(
+            priyom.model.Format.display_name.asc()
+        )
+        # TODO: only show active formats
+        optgroup = etree.SubElement(elem, xhtml_ns.optgroup)
+        optgroup.set("label", context.i18n("Structured formats"))
+        for fmt in formats:
+            option = self.mkoption(
+                (None, fmt),
+                fmt.display_name,
+                optgroup,
+                value)
+            option.set("title", fmt.description or "")
+
+    def input_validate(self, request, value):
+        value = int(value)
+        try:
+            type_ = self.STATIC_REVERSEMAP[value]
+            fmt = None
+        except KeyError:
+            type_ = priyom.model.StructuredContents
+            fmt = request.dbsession.query(
+                priyom.model.Format
+            ).get(value)
+            if fmt is None:
+                raise ValueError("Not a valid format") from None
+
+        return type_, fmt
+        yield None
+
+    @property
+    def field_type(self):
+        return "select"
+
+
 class FrequencyField(teapot.forms.StaticDefaultField,
                      teapot.html.fields.HTMLField):
     FREQUENCY_RE = re.compile(

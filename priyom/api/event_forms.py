@@ -93,10 +93,17 @@ class EventContentsRow(teapot.forms.Row):
     def postvalidate(self, request):
         super().postvalidate(request)
         dbsession = request.dbsession
-        fmt = self.get_format(request)
+        type_, fmt = self.get_format(request)
         if fmt is not None:
             try:
                 fmt.root_node.parse(self.contents)
+            except ValueError:
+                teapot.forms.ValidationError("Message does not match format",
+                                             EventContentsRow.contents,
+                                             self).register()
+        else:
+            try:
+                type_.parse(self.contents)
             except ValueError:
                 teapot.forms.ValidationError("Message does not match format",
                                              EventContentsRow.contents,
@@ -106,7 +113,10 @@ class EventTopLevelContentsRow(EventContentsRow):
     def __init__(self, from_contents=None, with_children=True, **kwargs):
         super().__init__(from_contents=from_contents, **kwargs)
         if from_contents is not None:
-            self.format = from_contents.format
+            if hasattr(from_contents, "format"):
+                self.format = type(from_contents), from_contents.format
+            else:
+                self.format = type(from_contents), None
             if with_children:
                 for child in from_contents.children:
                     if not child.is_transcribed:
@@ -117,27 +127,28 @@ class EventTopLevelContentsRow(EventContentsRow):
                     self.transcripts.append(EventContentsRow(
                         from_contents=child))
 
-    format = priyom.logic.fields.ObjectRefField(
-        priyom.model.Format)
+    format = priyom.logic.fields.TransmissionFormatField()
 
     def get_format(self, request):
         return self.format
 
     transcripts = teapot.forms.Rows(EventContentsRow)
 
+def single_row_to_contents(request, row):
+    type_, fmt = row.get_format(request)
+    if fmt is not None:
+        content = type_("text/plain", fmt)
+    else:
+        content = type_(type_.parse(row.contents))
+    content.attribution = row.attribution
+    content.alphabet = row.alphabet
+    return content
+
 def event_rows_to_contents(request, rows):
     for contentrow in rows:
-        fmt = contentrow.get_format(request)
-        content = priyom.model.StructuredContents("text/plain", fmt)
-        content.nodes.extend(fmt.parse(contentrow.contents))
-        content.attribution = contentrow.attribution
-        content.alphabet = contentrow.alphabet
+        content = single_row_to_contents(request, contentrow)
         for transcriptrow in contentrow.transcripts:
-            transcribed = priyom.model.StructuredContents("text/plain", fmt)
-            transcribed.nodes.extend(fmt.parse(transcriptrow.contents))
-            transcribed.is_transcribed = True
-            transcribed.attribution = transcriptrow.attribution
-            transcribed.alphabet = transcriptrow.alphabet
+            transcribed = single_row_to_contents(request, transcriptrow)
             transcribed.parent_contents = content
             yield transcribed
         yield content

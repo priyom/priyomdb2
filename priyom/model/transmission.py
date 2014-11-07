@@ -95,9 +95,13 @@ class FreeTextContents(Contents):
                 primary_key=True)
     contents = Column(Text, nullable=True)
 
-    def __init__(self, mime, contents, *args, **kwargs):
+    def __init__(self, contents, *args, mime="text/plain", **kwargs):
         super().__init__(mime, *args, **kwargs)
         self.contents = contents
+
+    @classmethod
+    def parse(cls, s):
+        return s
 
     def __str__(self):
         return self.contents
@@ -112,12 +116,17 @@ class BinaryContents(Contents):
                 primary_key=True)
     contents = Column(Binary, nullable=True)
 
-    def __init__(self, mime, contents, *args, **kwargs):
+    def __init__(self, contents, *args,
+                 mime="application/octet-stream", **kwargs):
         super().__init__(mime, *args, **kwargs)
         self.contents = contents
 
+    @classmethod
+    def parse(cls, s):
+        return binascii.a2b_hex(s)
+
     def __str__(self):
-        return binascii.b2a_hex(self.contents)
+        return binascii.b2a_hex(self.contents).decode("ascii")
 
 class StructuredContents(Contents):
     __tablename__ = "transmission_structured_contents"
