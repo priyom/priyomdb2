@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, print_function, absolute_import
 
 import abc
+import binascii
 import operator
 import re
 import sys
@@ -71,7 +72,7 @@ class Contents(Base):
     def __init__(self, mime, is_transcribed=False,
             is_transcoded=False, alphabet=None,
             attribution=None):
-        super(Contents, self).__init__()
+        super().__init__()
         self.mime = mime
         self.is_transcribed = is_transcribed
         self.is_transcoded = is_transcoded
@@ -84,21 +85,39 @@ class Contents(Base):
             s = s[:max_len-len(ellipsis)] + ellipsis
         return s
 
-class RawContents(Contents):
-    __tablename__ = "transmission_raw_contents"
-    __mapper_args__ = {"polymorphic_identity": "raw_contents"}
+class FreeTextContents(Contents):
+    __tablename__ = "transmission_freetext_contents"
+    __mapper_args__ = {"polymorphic_identity": "txtc"}
 
     id = Column(Integer,
                 ForeignKey(Contents.id,
                            ondelete="CASCADE"),
                 primary_key=True)
-    encoding = Column(Unicode(63), nullable=False)
-    contents = Column(Binary, nullable=True)
+    contents = Column(Text, nullable=True)
+
+    def __init__(self, mime, contents, *args, **kwargs):
+        super().__init__(mime, *args, **kwargs)
+        self.contents = contents
 
     def __str__(self):
-        if self.encoding != "binary":
-            return self.contents.decode(self.encoding)
-        return "binary blob"
+        return self.contents
+
+class BinaryContents(Contents):
+    __tablename__ = "transmission_raw_contents"
+    __mapper_args__ = {"polymorphic_identity": "binc"}
+
+    id = Column(Integer,
+                ForeignKey(Contents.id,
+                           ondelete="CASCADE"),
+                primary_key=True)
+    contents = Column(Binary, nullable=True)
+
+    def __init__(self, mime, contents, *args, **kwargs):
+        super().__init__(mime, *args, **kwargs)
+        self.contents = contents
+
+    def __str__(self):
+        return binascii.b2a_hex(self.contents)
 
 class StructuredContents(Contents):
     __tablename__ = "transmission_structured_contents"
