@@ -109,7 +109,12 @@ class FormatNode(Base):
     parent = relationship(
         "FormatNode",
         backref=backref("children",
-                        order_by=order),
+                        order_by=order,
+                        cascade="all, delete-orphan",
+                        single_parent=True,
+                        lazy="joined",
+                        join_depth=4,
+                        passive_deletes=True),
         remote_side=[id])
 
     __table_args__ = (
@@ -491,7 +496,11 @@ class Format(TopLevel):
                               name="formats_fk_format_structure_node_id"),
                           nullable=False)
 
-    root_node = relationship(FormatStructure)
+    root_node = relationship(
+        FormatStructure,
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
     def __init__(self, display_name, root_node, description=""):
         super().__init__()
